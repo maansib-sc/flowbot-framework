@@ -1,0 +1,18 @@
+before_script:
+  - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+  - mkdir -p ~/.ssh
+  - eval $(ssh-agent -s)
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  - ssh-add <(echo "$PRIVATE_KEY")
+  - "( apt-get update -y && apt-get install rsync -y )"
+
+llm_chatbot:
+  stage: deploy
+  resource_group: production
+  script:
+    - cat "$ENV_SERVER" > .env
+    - ssh -p22 ubuntu@chat-taxplaniq.smarter.codes "mkdir -p server"
+    - rsync -rav -e ssh --exclude={'.git/'} ./ ubuntu@chat-taxplaniq.smarter.codes:server
+    - ssh -p22 ubuntu@chat-taxplaniq.smarter.codes "cd server && bash deploy.sh"
+  only:
+    - main
