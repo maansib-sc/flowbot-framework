@@ -24,15 +24,17 @@ export default function Home() {
   const [pdfList, setPdfList] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   // Add this state at the beginning of your component
-const [trainingInProgress, setTrainingInProgress] = useState(false);
-
-
+  const [trainingInProgress, setTrainingInProgress] = useState(false);
+  // const backendConnectorHost = process.env.REACT_APP_BACKEND_CONNECTOR_HOST as string;
+  // const backendConnectorKey = process.env.REACT_APP_BACKEND_CONNECTOR_KEY as string;  
+  const backendConnectorHost = "client-connector.smarter.codes"
+  const backendConnectorKey = "KJaksn9812nOdnAsSCd-1in31"
 
   async function fetchData() {
     try {
-      const response = await axios.get('https://client-connector.smarter.codes/pdf/list', {
+      const response = await axios.get(`https://${backendConnectorHost}/pdf/list`, {
         headers: {
-          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+          'API-KEY': backendConnectorKey,
         },
       });
       setApiData(response.data);
@@ -161,9 +163,9 @@ const [trainingInProgress, setTrainingInProgress] = useState(false);
 
   async function fetchPdfList() {
     try {
-      const response = await axios.get('https://client-connector.smarter.codes/pdf/list', {
+      const response = await axios.get(`https://${backendConnectorHost}/pdf/list`, {
         headers: {
-          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+          'API-KEY': backendConnectorKey,
           //'Connection': 'keep-alive',
           //'sec-ch-ua-mobile': '?0',
         },
@@ -200,7 +202,7 @@ const [trainingInProgress, setTrainingInProgress] = useState(false);
     data.append('file', file);
   
     const headers = {
-      'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+      'API-KEY': backendConnectorKey,
       //'Connection': 'keep-alive',
       'accept': 'application/json',
       //'sec-ch-ua-mobile': '?0'
@@ -209,7 +211,7 @@ const [trainingInProgress, setTrainingInProgress] = useState(false);
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'https://client-connector.smarter.codes/pdf/upload', // Replace with your API endpoint
+      url: `https://${backendConnectorHost}/pdf/upload`, // Replace with your API endpoint
       headers: headers,
       data: data
     };
@@ -229,9 +231,9 @@ const [trainingInProgress, setTrainingInProgress] = useState(false);
     
   async function handleUntrain() {
     try {
-      const response = await axios.get('https://client-connector.smarter.codes/chatbot/untrain', {
+      const response = await axios.get(`https://${backendConnectorHost}/chatbot/untrain`, {
         headers: {
-          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+          'API-KEY': backendConnectorKey,
           //'Connection': 'keep-alive',
           //'sec-ch-ua-mobile': '?0',
         },
@@ -247,9 +249,9 @@ const [trainingInProgress, setTrainingInProgress] = useState(false);
   async function handleTrain() {
     try {
       setTrainingInProgress(true);
-      const response = await axios.get('https://client-connector.smarter.codes/chatbot/train', {
+      const response = await axios.get(`https://${backendConnectorHost}/chatbot/train`, {
         headers: {
-          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+          'API-KEY': backendConnectorKey,
           //'Connection': 'keep-alive',
           //'sec-ch-ua-mobile': '?0',
         },

@@ -41,6 +41,11 @@ export class makeChain {
 
     let docs = await this.vectorstore.asRetriever().getRelevantDocuments(inputQuestion);
 
+    if (docs.length === 0) {
+      // Raise an exception if the docs array is empty
+      throw new Error("No documents found. Please train the chatbot.");
+    }
+    
     console.log("docs ==>", docs)
     
 
