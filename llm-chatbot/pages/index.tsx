@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
+import axios from 'axios';
 import {
   Accordion,
   AccordionContent,
@@ -16,7 +17,36 @@ import {
 export default function Home() {
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [selecteduploadFilename, setSelecteduploadFileName] = useState<string | null>(null);
+  const [selecteduploadFile, setSelecteduploadFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [apiData, setApiData] = useState<any>(null);
+  const [pdfList, setPdfList] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  // Add this state at the beginning of your component
+const [trainingInProgress, setTrainingInProgress] = useState(false);
+
+
+
+  async function fetchData() {
+    try {
+      const response = await axios.get('https://client-connector.smarter.codes/pdf/list', {
+        headers: {
+          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+        },
+      });
+      setApiData(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    // Call fetchPdfList function here
+    fetchPdfList();
+  }, []);
+
+
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -123,13 +153,126 @@ export default function Home() {
     }
   };
 
+  function removeSelectedField() {
+    setSelecteduploadFile(null)
+    setSelecteduploadFileName(null)
+  }
+
+
+  async function fetchPdfList() {
+    try {
+      const response = await axios.get('https://client-connector.smarter.codes/pdf/list', {
+        headers: {
+          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+          //'Connection': 'keep-alive',
+          //'sec-ch-ua-mobile': '?0',
+        },
+      });
+      const pdfData = response.data.data;
+      setPdfList(pdfData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+  const fileInputRef = useRef(null);
+
+  async function handleUpload() {
+    // e.preventDefault();
+    // Trigger the click event of the file input when the button is clicked
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+
+
+ 
+
+
+  async function uploadFileToApi(file: File) {
+    setUploading(true);
+    const axios = require('axios');
+    const FormData = require('form-data');
+  
+    let data = new FormData();
+    data.append('file', file);
+  
+    const headers = {
+      'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+      //'Connection': 'keep-alive',
+      'accept': 'application/json',
+      //'sec-ch-ua-mobile': '?0'
+    };
+  
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://client-connector.smarter.codes/pdf/upload', // Replace with your API endpoint
+      headers: headers,
+      data: data
+    };
+
+    try {
+      const response = await axios.request(config);     
+      console.log(JSON.stringify(response.data));
+      await fetchPdfList();
+      console.log("await fetchPdfList();");
+    } catch (error) {
+      console.log(error);
+    }finally {
+      setUploading(false); // Training process complete
+    }
+  }
+
+    
+  async function handleUntrain() {
+    try {
+      const response = await axios.get('https://client-connector.smarter.codes/chatbot/untrain', {
+        headers: {
+          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+          //'Connection': 'keep-alive',
+          //'sec-ch-ua-mobile': '?0',
+        },
+      });
+      console.log(JSON.stringify(response.data));
+      // Call the fetchPdfList function here
+    await fetchPdfList();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
+  async function handleTrain() {
+    try {
+      setTrainingInProgress(true);
+      const response = await axios.get('https://client-connector.smarter.codes/chatbot/train', {
+        headers: {
+          'API-KEY': 'KJaksn9812nOdnAsSCd-1in31',
+          //'Connection': 'keep-alive',
+          //'sec-ch-ua-mobile': '?0',
+        },
+      });
+      await fetchPdfList();
+      console.log(JSON.stringify(response.data));
+    } catch (error) {
+      console.log(error);
+    }finally {
+      setTrainingInProgress(false); // Training process complete
+    }
+  }
+
   return (
     <>
       <Layout>
-        <div className="mx-auto flex flex-col gap-4">
+            
+
+        <div className="mx-auto chatInterface md:w-3/4 flex flex-col gap-4">
           <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
           ChatBot
           </h1>
+          
           <main className={styles.main}>
             <div className={styles.cloud}>
               <div ref={messageListRef} className={styles.messagelist}>
@@ -238,6 +381,44 @@ export default function Home() {
                     onChange={(e) => setQuery(e.target.value)}
                     className={styles.textarea}
                   />
+
+                      <button
+                        type="button"
+                        disabled={uploading}
+                        onClick={handleUpload}
+                        className={styles.attachmentButton}
+                      >
+                        {/* Add your attachment icon */}
+                        {uploading ? (
+                    <div className={styles.loadingwheel}>
+                      <LoadingDots color="#000" />
+                    </div>
+                  ) : (
+                        <img
+                          src={'https://cdn1.iconfinder.com/data/icons/bootstrap-vol-3/16/filetype-pdf-512.png'}
+                          alt="Attachment Icon"
+                          width="20"
+                          height="20"
+                        />
+                        )}
+                      </button>
+                      {/* Hidden file input element */}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        accept="application/pdf"
+                        onChange={(e) => {
+                          // Handle file selection logic here, e.g., upload the selected file
+                          const selectedFile = e.target.files?.[0];
+                          if (selectedFile) {
+                            setSelecteduploadFile(selectedFile)
+                            setSelecteduploadFileName(selectedFile.name)
+                            uploadFileToApi(selectedFile);
+                          }
+                        }}
+                      />
+
                   <button
                     type="submit"
                     disabled={loading}
@@ -266,6 +447,82 @@ export default function Home() {
                 <p className="text-red-500">{error}</p>
               </div>
             )}
+
+<div className={styles.result}>     
+             
+<div className={styles.pdfContainer}>
+
+{pdfList.length > 0 && (
+<ul className={styles.pdfList}>
+{pdfList.map((pdf, index) => (
+<li key={index} className={styles.pdfListItem}>
+
+<span className={styles.pdfName}>
+   <img
+   src="https://cdn4.iconfinder.com/data/icons/files-111/64/pdf-interface-file-format-extension-document-archive-256.png"
+   alt="PDF Icon"
+   width="29"
+   height="29"
+   className={styles.pdfIcon}
+   />
+  
+   {pdf}</span>
+  </li>
+))}
+</ul>
+)}
+
+</div>        
+ </div>
+
+
+ {/* Buttons */}
+ <div className={styles.buttonContainer}>             
+
+
+ <button
+  className={`${styles.trainButton} ${styles.roundedButton}`}
+  onClick={handleTrain}
+  disabled={trainingInProgress} // Disable the button when training is in progress
+>
+  <div className={styles.buttonContent}>
+    {trainingInProgress ? (
+      <LoadingDots color="#fff" /> // Display loading dots
+    ) : (
+      <>
+        <img
+          src={'https://cdn0.iconfinder.com/data/icons/cloud-services-1/57/3-64.png'}
+          alt="Training Icon"
+          width="50"
+          height="40"
+        />
+        <p>Train</p>
+      </>
+    )}
+  </div>
+</button>
+
+
+                  <button className={`${styles.untrainButton} ${styles.roundedButton}`} onClick={handleUntrain}>
+                  <div className={styles.buttonContent}>
+                    
+                  <img
+                          src={'https://cdn4.iconfinder.com/data/icons/miscellaneous-261-solid/128/clearing_mop_wipe-out_keeping-clean_broom_duster_garbage-64.png'}
+                          alt="Training Icon"
+                          width="50"
+                          height="40"
+                          
+                        /><p>UnTrain</p>
+                         </div>
+
+                  </button>
+
+
+             {/* <button className={styles.trainButton}>Train</button>*/}
+        {/*<button className={styles.displayButton} onClick={fetchPdfList}>Display</button>*/}
+              
+ </div>
+
           </main>
         </div>
         <footer className="m-auto p-4">
