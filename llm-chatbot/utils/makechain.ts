@@ -10,15 +10,16 @@ Chat History:
 Follow Up Input: {question}
 Standalone question:`;
 
-const QA_PROMPT = `You are an AI language model, your responses are generated based on AI developed to provide information related to the chromatography and related to pharmaceutical standards and guidelines.
-you have been trained on a wide range of sources, such as books, websites, and other texts, in order to develop a broad understanding of human language. It's important to note that while you strive to provide accurate and up-to-date information, your responses may not always reflect the most current news events or developments and provide user friendly response.
-If you don't know the answer, just say you "I'm sorry, I am an AI developed to provide information related to the chromatography. My primary function is to provide information related to pharmaceutical standards and guidelines." DO NOT try to make up an answer.
-If the question is not related to the context, politely respond with "I'm sorry, I am an AI developed to provide information related to the chromatography. My primary function is to provide information related to pharmaceutical standards and guidelines." don't try to make answers if question is out of context of chromatography and remember that you are tuned to only answer questions that are related to chromatography.
-
-{context}
+const QA_PROMPT = `
+context: {context}
+Use the above context to answer the following question.
 
 Question: {question}
-Helpful answer in markdown:`;
+
+Output Instructions: 
+If the question is not related to the context, politely respond with "Please ask questions related to the given context”.
+If the answer to the given question does not lie in the given context, respond with "I am sorry, the context does not provide enough information". DO NOT try to make up an answer.
+`;
 
 // const QA_PROMPT = `Context: {context} \n\n Question: {question} \n\n Try answering Question using Context. 
 // Please ensure your responses are in American English and strictly pertain to the topic of HR solutions, Lanteria HR solutions and HR. 
@@ -40,7 +41,8 @@ export class makeChain {
 
     let docs = await this.vectorstore.asRetriever().getRelevantDocuments(inputQuestion);
 
-    // console.log("docs ==>", docs)
+    console.log("docs ==>", docs)
+    
 
     function isSentence(str: string) {
       let val = str.includes(' ');
@@ -49,9 +51,8 @@ export class makeChain {
     }
 
     if (!isSentence(docs[0].pageContent)) {
-      const template = `You are a helpful AI assistant to create any information for chromatography and pharmaceutical standards and guidelines
-      related data. Given the text of question, it is your job to write a answer that question if it is related to chromatography and pharmaceutical standards and guidelines.
-      If the question is not related to the context, politely respond with "I'm sorry, I am an AI developed to provide information related to the chromatography. My primary function is to provide information related to pharmaceutical standards and guidelines." don't try to make answers if question is out of context of chromatography and remember that you are tuned to only answer questions that are related to chromatography.
+      const template = `Given the text of question, it is your job to write a answer.
+      If you dont have answer, politely respond with "I'm sorry, I don't have enough information".
 
       Question: {text}
       Answer:
@@ -60,7 +61,7 @@ export class makeChain {
         inputVariables: ["text"],
         template: template,
       });
-
+      
       const gptchain = new LLMChain({ llm: this.model, prompt: prompt_template })
       // console.log("inside gpt chain")
       let obj = { 'text': "", "src": "gpt4" }
@@ -80,20 +81,19 @@ export class makeChain {
       // console.log("result from wikibase ===>", result)
 
       if (result.text.includes("I'm sorry,")) {
-        const template = `You are a helpful AI assistant to create any information for chromatography and pharmaceutical standards and guidelines
-        related data. Given the text of question, it is your job to write a answer that question if it is related to chromatography and pharmaceutical standards and guidelines.
-        If the question is not related to the context, politely respond with "I'm sorry, I am an AI developed to provide information related to the chromatography. My primary function is to provide information related to pharmaceutical standards and guidelines." don't try to make answers if question is out of context of chromatography and remember that you are tuned to only answer questions that are related to chromatography.
-
+        const template = `Given the text of question, it is your job to write a answer.
+        If you dont have answer, politely respond with "I'm sorry, I don't have enough information".
+  
         Question: {text}
         Answer:
-      `
+        `
         const prompt_template = new PromptTemplate({
           inputVariables: ["text"],
           template: template,
         });
 
         const gptchain = new LLMChain({ llm: this.model, prompt: prompt_template })
-        // console.log("inside gpt chain")
+                // console.log("inside gpt chain")
         let obj = { 'text': "", "src": "gpt4" }
         obj.text = await gptchain.run(inputQuestion);
         // console.log("result from chatgpt", obj)

@@ -5,7 +5,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse,
 ) {
-    const { article } = req.body;
+    const article  = req.body;
 
     console.log("ingest api got hit ==>", article)
 

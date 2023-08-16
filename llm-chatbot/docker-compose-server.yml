@@ -29,3 +29,10 @@ services:
 
   llm-chatbot:
     restart: always
+  
+  llm-connector:
+    container_name: llm-connector
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=llm-connector"
+      - "traefik.frontend.rule=Host:llm-connector.smarter.codes"

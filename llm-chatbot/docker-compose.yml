@@ -37,7 +37,19 @@ services:
       - "traefik.protocol=http"
     networks:
       - docker_net
-
+  
+  llm-connector:
+    build: ../../Table LLM Connector
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80 --log-level debug
+    container_name: llm-connector
+    ports:
+      - 8083:80
+    env_file: ../../Table LLM Connector/.env
+    labels:
+      - "traefik.port=80"
+    networks:
+      - docker_net
+      
 networks:
   docker_net:
     driver: bridge
