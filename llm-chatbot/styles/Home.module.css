@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    align-items: end;
     padding: 1rem;
 }
 
@@ -18,12 +18,40 @@
     position: relative;
 }
 
+.pdfContainer {
+    /* Remove any margin or padding that may affect the layout */
+    background: #ffffff;
+    border-radius: 0.5rem;
+    border: 1px solid #d9d9e3;
+    /*display: flex;*/
+    justify-content: center;
+    margin-top: 4%;
+    margin-left: 2%;
+    align-items: center;
+    padding: 10px;
+    padding: 0;
+    /* Ensure the list items are displayed vertically */
+    display: block;
+    /* Optional: Adjust styling for list items */
+    list-style-type: none;
+    padding: 0;
+    position: absolute;
+    width: 320px;
+}
+
+
+.pdfMain{
+    overflow-y: auto;
+    height: 350px;
+}
+
+
 .textarea {
     position: relative;
     resize: none;
     font-size: 1.1rem;
     padding: 1rem 2rem 1rem 2rem;
-    width: 75vw;
+    width: 73vw;
     border-radius: 0.5rem;
     border: 1px solid #d9d9e3;
     background: #ffffff;
@@ -200,7 +228,7 @@
 }
 
 .cloud {
-    width: 75vw;
+    width: 73vw;
     height: 65vh;
     background: #ffffff;
     border-radius: 0.5rem;
@@ -270,11 +298,13 @@
     }
 }
 
+
 .buttonContainer {
     display: flex;
     justify-content: space-between;
-    margin-top: 0px;
-    width: 75vw;
+    margin-top: 2%;
+    position: absolute;
+    width: 320px;
 }
 
 
@@ -294,9 +324,9 @@
 }
 
 .roundedButton {
-    border-radius: 8px;
+    border-radius: 30px;
     /* Half of the desired button height */
-    height: 62px;
+    height: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -309,8 +339,9 @@
     /* Distribute equal space */
     background-color: #7a7a7a;
     color: white;
-    border: none;
+    border: 2px solid #624f4f;
     padding: 10px;
+    height: 40px;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -348,7 +379,7 @@
 }
 
 .result {
-    width: 75vw;
+    width: 73vw;
     height: 65vh;
     background: #ffffff;
     border-radius: 0.5rem;
@@ -358,17 +389,6 @@
     align-items: center;
     padding: 10px;
     overflow-y: auto;
-}
-
-.pdfContainer {
-    /* Remove any margin or padding that may affect the layout */
-    margin: 0;
-    padding: 0;
-    /* Ensure the list items are displayed vertically */
-    display: block;
-    /* Optional: Adjust styling for list items */
-    list-style-type: none;
-    padding: 0;
 }
 
 .pdfName {
@@ -392,6 +412,7 @@
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     padding: 10px;
+    border-radius: 15px;
     margin-bottom: 2px;
     /* Add any other styling you want */
 }

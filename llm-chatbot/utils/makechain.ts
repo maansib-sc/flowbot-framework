@@ -57,7 +57,7 @@ export class makeChain {
 
     if (!isSentence(docs[0].pageContent)) {
       const template = `Given the text of question, it is your job to write a answer.
-      If you dont have answer, politely respond with "I'm sorry, I don't have enough information".
+      If you dont have answer, politely respond with "I am sorry, I don't have enough information".
 
       Question: {text}
       Answer:
@@ -84,8 +84,11 @@ export class makeChain {
       // console.log("qa_prompt ==>", qa_prompt)
       let result = await loadQAStuffChain(this.model, { prompt: qa_prompt }).call(inputs);
       // console.log("result from wikibase ===>", result)
-
-      if (result.text.includes("I'm sorry,")) {
+      
+      // Enable this if you want to enable chat gpt
+      // Todo to enable/disbale with help with env
+      var is_gpt4_enabled = false;
+      if (result.text.includes("I am sorry,") && is_gpt4_enabled) {
         const template = `Given the text of question, it is your job to write a answer.
         If you dont have answer, politely respond with "I'm sorry, I don't have enough information".
   
@@ -98,7 +101,7 @@ export class makeChain {
         });
 
         const gptchain = new LLMChain({ llm: this.model, prompt: prompt_template })
-                // console.log("inside gpt chain")
+        //.console.log("inside gpt chain")
         let obj = { 'text': "", "src": "gpt4" }
         obj.text = await gptchain.run(inputQuestion);
         // console.log("result from chatgpt", obj)

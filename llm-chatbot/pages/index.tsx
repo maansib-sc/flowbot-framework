@@ -25,10 +25,12 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   // Add this state at the beginning of your component
   const [trainingInProgress, setTrainingInProgress] = useState(false);
-  // const backendConnectorHost = process.env.REACT_APP_BACKEND_CONNECTOR_HOST as string;
-  // const backendConnectorKey = process.env.REACT_APP_BACKEND_CONNECTOR_KEY as string;  
-  const backendConnectorHost = "client-connector.smarter.codes"
-  const backendConnectorKey = "KJaksn9812nOdnAsSCd-1in31"
+  const [untrainingInProgress, setUnTrainingInProgress] = useState(false);
+
+  // const backendConnectorHost = "client-connector.smarter.codes"
+  // const backendConnectorKey = "KJaksn9812nOdnAsSCd-1in31"
+  const backendConnectorHost = "test"
+  const backendConnectorKey = "test-1in31"
 
   async function fetchData() {
     try {
@@ -190,24 +192,24 @@ export default function Home() {
   }
 
 
- 
+
 
 
   async function uploadFileToApi(file: File) {
     setUploading(true);
     const axios = require('axios');
     const FormData = require('form-data');
-  
+
     let data = new FormData();
     data.append('file', file);
-  
+
     const headers = {
       'API-KEY': backendConnectorKey,
       //'Connection': 'keep-alive',
       'accept': 'application/json',
       //'sec-ch-ua-mobile': '?0'
     };
-  
+
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -217,19 +219,20 @@ export default function Home() {
     };
 
     try {
-      const response = await axios.request(config);     
+      const response = await axios.request(config);
       console.log(JSON.stringify(response.data));
       await fetchPdfList();
       console.log("await fetchPdfList();");
     } catch (error) {
       console.log(error);
-    }finally {
+    } finally {
       setUploading(false); // Training process complete
     }
   }
 
-    
+
   async function handleUntrain() {
+    setUnTrainingInProgress(true);
     try {
       const response = await axios.get(`https://${backendConnectorHost}/chatbot/untrain`, {
         headers: {
@@ -240,12 +243,14 @@ export default function Home() {
       });
       console.log(JSON.stringify(response.data));
       // Call the fetchPdfList function here
-    await fetchPdfList();
+      await fetchPdfList();
     } catch (error) {
       console.log(error);
+    } finally {
+      setUnTrainingInProgress(false); 
     }
   }
-  
+
   async function handleTrain() {
     try {
       setTrainingInProgress(true);
@@ -258,9 +263,10 @@ export default function Home() {
       });
       await fetchPdfList();
       console.log(JSON.stringify(response.data));
+      window.alert('Your bot is trained!');
     } catch (error) {
       console.log(error);
-    }finally {
+    } finally {
       setTrainingInProgress(false); // Training process complete
     }
   }
@@ -268,13 +274,79 @@ export default function Home() {
   return (
     <>
       <Layout>
-            
 
-        <div className="mx-auto chatInterface md:w-3/4 flex flex-col gap-4">
+
+        <div className="flex flex-col gap-4">
+            <div className={styles.pdfContainer} id='pdfContainer'>
+              <div className={styles.pdfMain}>
+                <center><h1>Your PDF Lists</h1></center>
+                {pdfList.length > 0 && (
+                  <ul className={styles.pdfList}>
+                    {pdfList.map((pdf, index) => (
+                      <li key={index} className={styles.pdfListItem}>
+
+                        <span className={styles.pdfName}>
+                          <img
+                            src="https://cdn4.iconfinder.com/data/icons/files-111/64/pdf-interface-file-format-extension-document-archive-256.png"
+                            alt="PDF Icon"
+                            width="29"
+                            height="29"
+                            className={styles.pdfIcon}
+                          />
+
+                          {pdf}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              {/* Buttons */}
+              <div className={styles.buttonContainer} id='buttonContainer'>
+                <button
+                  className={`${styles.trainButton} ${styles.roundedButton}`}
+                  onClick={handleTrain}
+                  disabled={trainingInProgress} // Disable the button when training is in progress
+                >
+                  <div className={styles.buttonContent}>
+                    {trainingInProgress ? (
+                      <LoadingDots color="#fff" /> // Display loading dots
+                    ) : (
+                      <>
+                        <img
+                          src={'https://cdn0.iconfinder.com/data/icons/cloud-services-1/57/3-64.png'}
+                          alt="Training Icon"
+                          width="50"
+                          height="40"
+                        />
+                        <p>Train</p>
+                      </>
+                    )}
+                  </div>
+                </button>
+                <button className={`${styles.untrainButton} ${styles.roundedButton}`} onClick={handleUntrain} disabled={untrainingInProgress}>
+                  <div className={styles.buttonContent}>
+                  {untrainingInProgress ? (
+                      <LoadingDots color="#fff" /> // Display loading dots
+                    ) : (
+                      <>
+                      <img
+                        src={'https://cdn4.iconfinder.com/data/icons/miscellaneous-261-solid/128/clearing_mop_wipe-out_keeping-clean_broom_duster_garbage-64.png'}
+                        alt="Training Icon"
+                        width="35"
+                        height="30"
+                      /><p>UnTrain</p>
+                    </>
+                  )}
+                  </div>
+                </button>
+                {/* <button className={styles.trainButton}>Train</button>*/}
+                {/*<button className={styles.displayButton} onClick={fetchPdfList}>Display</button>*/}
+              </div>
+            </div>
           <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
-          ChatBot
+            ChatBot
           </h1>
-          
+
           <main className={styles.main}>
             <div className={styles.cloud}>
               <div ref={messageListRef} className={styles.messagelist}>
@@ -384,42 +456,42 @@ export default function Home() {
                     className={styles.textarea}
                   />
 
-                      <button
-                        type="button"
-                        disabled={uploading}
-                        onClick={handleUpload}
-                        className={styles.attachmentButton}
-                      >
-                        {/* Add your attachment icon */}
-                        {uploading ? (
-                    <div className={styles.loadingwheel}>
-                      <LoadingDots color="#000" />
-                    </div>
-                  ) : (
-                        <img
-                          src={'https://cdn1.iconfinder.com/data/icons/bootstrap-vol-3/16/filetype-pdf-512.png'}
-                          alt="Attachment Icon"
-                          width="20"
-                          height="20"
-                        />
-                        )}
-                      </button>
-                      {/* Hidden file input element */}
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        accept="application/pdf"
-                        onChange={(e) => {
-                          // Handle file selection logic here, e.g., upload the selected file
-                          const selectedFile = e.target.files?.[0];
-                          if (selectedFile) {
-                            setSelecteduploadFile(selectedFile)
-                            setSelecteduploadFileName(selectedFile.name)
-                            uploadFileToApi(selectedFile);
-                          }
-                        }}
+                  <button
+                    type="button"
+                    disabled={uploading}
+                    onClick={handleUpload}
+                    className={styles.attachmentButton}
+                  >
+                    {/* Add your attachment icon */}
+                    {uploading ? (
+                      <div className={styles.loadingwheel}>
+                        <LoadingDots color="#000" />
+                      </div>
+                    ) : (
+                      <img
+                        src={'https://cdn1.iconfinder.com/data/icons/bootstrap-vol-3/16/filetype-pdf-512.png'}
+                        alt="Attachment Icon"
+                        width="20"
+                        height="20"
                       />
+                    )}
+                  </button>
+                  {/* Hidden file input element */}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    accept="application/pdf"
+                    onChange={(e) => {
+                      // Handle file selection logic here, e.g., upload the selected file
+                      const selectedFile = e.target.files?.[0];
+                      if (selectedFile) {
+                        setSelecteduploadFile(selectedFile)
+                        setSelecteduploadFileName(selectedFile.name)
+                        uploadFileToApi(selectedFile);
+                      }
+                    }}
+                  />
 
                   <button
                     type="submit"
@@ -450,80 +522,6 @@ export default function Home() {
               </div>
             )}
 
-<div className={styles.result}>     
-             
-<div className={styles.pdfContainer}>
-
-{pdfList.length > 0 && (
-<ul className={styles.pdfList}>
-{pdfList.map((pdf, index) => (
-<li key={index} className={styles.pdfListItem}>
-
-<span className={styles.pdfName}>
-   <img
-   src="https://cdn4.iconfinder.com/data/icons/files-111/64/pdf-interface-file-format-extension-document-archive-256.png"
-   alt="PDF Icon"
-   width="29"
-   height="29"
-   className={styles.pdfIcon}
-   />
-  
-   {pdf}</span>
-  </li>
-))}
-</ul>
-)}
-
-</div>        
- </div>
-
-
- {/* Buttons */}
- <div className={styles.buttonContainer}>             
-
-
- <button
-  className={`${styles.trainButton} ${styles.roundedButton}`}
-  onClick={handleTrain}
-  disabled={trainingInProgress} // Disable the button when training is in progress
->
-  <div className={styles.buttonContent}>
-    {trainingInProgress ? (
-      <LoadingDots color="#fff" /> // Display loading dots
-    ) : (
-      <>
-        <img
-          src={'https://cdn0.iconfinder.com/data/icons/cloud-services-1/57/3-64.png'}
-          alt="Training Icon"
-          width="50"
-          height="40"
-        />
-        <p>Train</p>
-      </>
-    )}
-  </div>
-</button>
-
-
-                  <button className={`${styles.untrainButton} ${styles.roundedButton}`} onClick={handleUntrain}>
-                  <div className={styles.buttonContent}>
-                    
-                  <img
-                          src={'https://cdn4.iconfinder.com/data/icons/miscellaneous-261-solid/128/clearing_mop_wipe-out_keeping-clean_broom_duster_garbage-64.png'}
-                          alt="Training Icon"
-                          width="50"
-                          height="40"
-                          
-                        /><p>UnTrain</p>
-                         </div>
-
-                  </button>
-
-
-             {/* <button className={styles.trainButton}>Train</button>*/}
-        {/*<button className={styles.displayButton} onClick={fetchPdfList}>Display</button>*/}
-              
- </div>
 
           </main>
         </div>
