@@ -286,14 +286,14 @@ export default function Home() {
                       <li key={index} className={styles.pdfListItem}>
 
                         <span className={styles.pdfName}>
-                          <img
-                            src="https://cdn4.iconfinder.com/data/icons/files-111/64/pdf-interface-file-format-extension-document-archive-256.png"
-                            alt="PDF Icon"
+                          <Image
+                            src="/pdf_upload.png"
+                            alt="AI"
                             width="29"
                             height="29"
+                            priority
                             className={styles.pdfIcon}
                           />
-
                           {pdf}</span>
                       </li>
                     ))}
@@ -312,11 +312,12 @@ export default function Home() {
                       <LoadingDots color="#fff" /> // Display loading dots
                     ) : (
                       <>
-                        <img
-                          src={'https://cdn0.iconfinder.com/data/icons/cloud-services-1/57/3-64.png'}
-                          alt="Training Icon"
-                          width="50"
+                        <Image
+                          src="/train.png"
+                          alt="Train"
+                          width="40"
                           height="40"
+                          priority
                         />
                         <p>Train</p>
                       </>
@@ -329,12 +330,14 @@ export default function Home() {
                       <LoadingDots color="#fff" /> // Display loading dots
                     ) : (
                       <>
-                      <img
-                        src={'https://cdn4.iconfinder.com/data/icons/miscellaneous-261-solid/128/clearing_mop_wipe-out_keeping-clean_broom_duster_garbage-64.png'}
-                        alt="Training Icon"
-                        width="35"
-                        height="30"
-                      /><p>UnTrain</p>
+                      <Image
+                          src="/untrain.png"
+                          alt="Untrain"
+                          width="35"
+                          height="30"
+                          priority
+                        />
+                      <p>UnTrain</p>
                     </>
                   )}
                   </div>
@@ -468,11 +471,12 @@ export default function Home() {
                         <LoadingDots color="#000" />
                       </div>
                     ) : (
-                      <img
-                        src={'https://cdn1.iconfinder.com/data/icons/bootstrap-vol-3/16/filetype-pdf-512.png'}
-                        alt="Attachment Icon"
+                      <Image
+                        src="/pdf_upload.png"
+                        alt="AI"
                         width="20"
                         height="20"
+                        priority
                       />
                     )}
                   </button>

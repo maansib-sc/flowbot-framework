@@ -11,14 +11,15 @@ Follow Up Input: {question}
 Standalone question:`;
 
 const QA_PROMPT = `
-context: {context}
-Use the above context to answer the following question.
+Context: {context}
+
+You are a helpful AI assistant. Use the above context to answer the question.
 
 Question: {question}
 
-Output Instructions: 
-If the question is not related to the context, politely respond with "Please ask questions related to the given context”.
-If the answer to the given question does not lie in the given context, respond with "I am sorry, the context does not provide enough information". DO NOT try to make up an answer.
+Output Instructions:
+1. If the question is not related to the context, respond with "Please ask questions related to the given context."
+2. If you don't know the answer, just say "I am sorry," you don't know. DO NOT try to make up an answer
 `;
 
 // const QA_PROMPT = `Context: {context} \n\n Question: {question} \n\n Try answering Question using Context. 
@@ -32,7 +33,7 @@ export class makeChain {
   constructor(vectorstore: PineconeStore) {
     this.vectorstore = vectorstore;
     this.model = new OpenAI({
-      temperature: 0, // increase temepreature to get more creative answers
+      temperature: 0.7, // increase temepreature to get more creative answers
       modelName: 'gpt-4', //change this to gpt-4 if you have access
     });
   }
@@ -90,7 +91,7 @@ export class makeChain {
       var is_gpt4_enabled = false;
       if (result.text.includes("I am sorry,") && is_gpt4_enabled) {
         const template = `Given the text of question, it is your job to write a answer.
-        If you dont have answer, politely respond with "I'm sorry, I don't have enough information".
+        If you dont have answer, politely respond with "I am sorry, I don't have enough information".
   
         Question: {text}
         Answer:
