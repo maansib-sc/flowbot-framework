@@ -68,6 +68,9 @@ export class makeChain {
     };
     let requestData = {}
     let docs:Array<Document> = await retriever.getRelevantDocuments(inputQuestion);
+    
+    console.log("docs ==>", docs)
+    
 
     if (docs.length == 0) {
       const ignoranceTemplate = "I am sorry, I do not have enough information to give answer!"

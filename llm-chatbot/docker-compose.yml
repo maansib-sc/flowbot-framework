@@ -24,6 +24,8 @@ services:
       context: ./
       dockerfile: Dockerfile
     container_name: llm-chatbot
+    ports:
+      - 8085:80
     logging:
       options:
         max-size: "50m"
