@@ -11,7 +11,7 @@ import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
 */
 const filePath = 'docs';
 
-export const run = async (file: string | Blob) => {
+export const run = async (file: string | Blob, pinecone_name_space: string) => {
   try {
 
     const loader = new TextLoader(file); // provide document here
@@ -39,7 +39,7 @@ export const run = async (file: string | Blob) => {
     //embed the PDF documents
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,
-      namespace: PINECONE_NAME_SPACE,
+      namespace: pinecone_name_space || PINECONE_NAME_SPACE,
       textKey: 'text',
     });
 

@@ -10,7 +10,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const { question, history } = req.body;
-
+  const pinecone_name_space = req.query.pinecone_name_space;
   console.log('question', question);
 
   //only accept post requests
@@ -34,7 +34,7 @@ export default async function handler(
       {
         pineconeIndex: index,
         textKey: 'text',
-        namespace: PINECONE_NAME_SPACE, //namespace comes from your config folder
+        namespace: pinecone_name_space || PINECONE_NAME_SPACE,//namespace comes from your config folder
       },
     );
 
