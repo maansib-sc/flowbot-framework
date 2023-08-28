@@ -7,3 +7,8 @@ export type Message = {
   isStreaming?: boolean;
   sourceDocs?: Document[];
 };
+
+export type Page = {
+  page_number: string;
+  page_body:string
+};

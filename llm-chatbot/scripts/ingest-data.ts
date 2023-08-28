@@ -11,7 +11,7 @@ import {Page} from '@/types/chat'
 */
 const filePath = 'docs';
 
-export const run = async (file: string | Blob, pinecone_name_space: string) => {
+export const run = async (page: Page | Blob, pinecone_name_space: string) => {
   try {
 
     let pageNumber = page["page_number"];
