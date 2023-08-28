@@ -41,7 +41,7 @@ export class makeChain {
     const textSimilarityApi = "https://shipbot-helper.smarter.codes/shipbot/similarity";
     let retriever = this.vectorstore.asRetriever(25)
     let queryParams = {
-      'k': "5",
+      'k': "3",
       'question': inputQuestion
     };
     let requestData = {}
