@@ -1,33 +1,30 @@
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { RecursiveCharacterTextSplitter, CharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { pinecone } from '@/utils/pinecone-client';
-import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
+import {Page} from '@/types/chat'
 
 /* Name of directory to retrieve your files from 
    Make sure to add your PDF files inside the 'docs' folder
 */
 const filePath = 'docs';
 
-export const run = async (file: string | Blob, pinecone_name_space: string) => {
+export const run = async (page: Page) => {
   try {
 
-    const loader = new TextLoader(file); // provide document here
-
-
-    const rawDocs = await loader.load();
-
-    // console.log("rawDocs ==>", rawDocs)
-
-    /* Split text into chunks */
-    const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
-      chunkOverlap: 200,
+    let pageNumber = page["page_number"];
+    let pageBody = page["page_body"]
+    let pageMetadata = {"page_number": pageNumber}
+     /* Split text into chunks */
+    const textSplitter = new CharacterTextSplitter({
+      separator: "@@@@",
+      chunkSize: 1,
+      chunkOverlap: 0,
     });
 
-    const docs = await textSplitter.splitDocuments(rawDocs);
+    const docs = await textSplitter.createDocuments([pageBody], [pageMetadata])
 
     console.log('split docs', docs);
 
@@ -36,21 +33,15 @@ export const run = async (file: string | Blob, pinecone_name_space: string) => {
     const embeddings = new OpenAIEmbeddings();
     const index = pinecone.Index(PINECONE_INDEX_NAME); //change to your own index name
 
-    //embed the PDF documents
+  //  embed the PDF documents
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,
-      namespace: pinecone_name_space || PINECONE_NAME_SPACE,
+      namespace: PINECONE_NAME_SPACE,
       textKey: 'text',
     });
-
     return true
   } catch (error) {
     console.log('error', error);
     throw new Error('Failed to ingest your data');
   }
 };
-
-// (async () => {
-//   await run();
-//   console.log('ingestion complete');
-// })();
