@@ -3,13 +3,7 @@ version: "3"
 services:
   traefik:
     image: traefik:v1.7-alpine
-    container_name: traefik
-    logging:
-      options:
-        max-size: "50m"
-        max-file: "3"
-    labels:
-      - "traefik.port=8080"
+    container_name: llm_traefik
     restart: always
     ports:
       - "443:443"
@@ -34,8 +28,15 @@ services:
       --acme.httpchallenge.entrypoint=http"
     volumes:
       - ./acme:/etc/traefik/acme
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
     networks:
       - docker_net
+    labels:
+      - "traefik.port=8080"
 
   llm-chatbot:  
     image: $IMAGE_TAG
@@ -50,10 +51,11 @@ services:
       - "traefik.port=80"
       - "traefik.enable=true"
       - "traefik.backend=llm-chatbot"
-      - "traefik.frontend.rule=Host:$HOST"
       - "traefik.protocol=http"
+      - "traefik.frontend.rule=Host:$HOST"
     networks:
       - docker_net
+      
 networks:
   docker_net:
     driver: bridge

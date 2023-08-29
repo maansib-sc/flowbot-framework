@@ -30,10 +30,10 @@ export default function Home() {
   const router = useRouter();
   const { query: { 'chat-id': chatId } } = router
 
-  // const backendConnectorHost = "client-connector.smarter.codes"
-  // const backendConnectorKey = "KJaksn9812nOdnAsSCd-1in31"
-  const backendConnectorHost = "test"
-  const backendConnectorKey = "test-1in31"
+  const backendConnectorHost = "table-llm-bot.smarter.codes"
+  const backendConnectorKey = "KJaksn9812nOdnAsSCd-1in31"
+  // const backendConnectorHost = "test"
+  // const backendConnectorKey = "test-1in31"
 
   useEffect(() => {
     // Only run this code if chatId is defined (i.e., only on the client side)
@@ -59,8 +59,11 @@ export default function Home() {
 
   useEffect(() => {
     // Call fetchPdfList function here
-    fetchPdfList();
-  }, []);
+    if (chatId) {
+      fetchPdfList();
+      // Now you can use the 'chatId' in your component's logic
+    }
+  }, [chatId]);
 
 
   const [messageState, setMessageState] = useState<{
