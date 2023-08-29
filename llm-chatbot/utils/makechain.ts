@@ -38,7 +38,7 @@ export class makeChain {
   }
 
   run = async (inputQuestion: string) => {
-    const textSimilarityApi = "https://shipbot-helper.smarter.codes/shipbot/similarity";
+    const textSimilarityApi = "http://34.93.99.128/staging/shipbot/similarity";
     let retriever = this.vectorstore.asRetriever(25)
     let queryParams = {
       'k': "3",
