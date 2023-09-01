@@ -1,8 +1,10 @@
 import { OpenAI } from 'langchain/llms/openai';
+import GPT4Tokenizer from 'gpt4-tokenizer';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { LLMChain, loadQAStuffChain } from 'langchain/chains';
 import { PromptTemplate } from 'langchain/prompts';
 import { Document } from 'langchain/document';
+import { contextItem, contextItemArray } from '@/types/chat';
 import axios from 'axios';
 
 
@@ -12,7 +14,7 @@ const QA_PROMPT = `
 Instructions for finding answer to the following question and displaying output:
 Search the answer for the question inside "content" keys present in above "context" key.
 If you find the answer:
-	- Always end your answer with this line: More information at <value of the "content_source" key of the "content" you find answer from>. <value of the "content_source" key of the "content" you find answer from> can have multiple values if answer is found is multiple "content" keys.
+	- Always end your answer with this line: More information at <value of the "content_source" key of the "content" you find answer from>. <value of the "content_source" key of the "content" you find answer from> can have multiple values if answer is found in multiple "content" keys.
 if you do not find the answer in the "context":
 	- do not try to make up an answer. Respond with "I am sorry, I do not have enough information to give answer!"
 If the question is not related to the context:
@@ -31,17 +33,34 @@ export class makeChain {
 
   constructor(vectorstore: PineconeStore) {
     this.vectorstore = vectorstore;
+    //can be configured
     this.model = new OpenAI({
       temperature: 0.7, // increase temepreature to get more creative answers
       modelName: 'gpt-4', //change this to gpt-4 if you have access
     });
   }
-
+  token_limit_check = function (context: contextItemArray){
+    const tokenizer = new GPT4Tokenizer({ type: 'gpt3' });
+    let stringContext = JSON.stringify(context)
+    let estimatedTokenCount = tokenizer.estimateTokenCount(stringContext);
+    let contextLength = context.length;
+    //can be configured
+    while(estimatedTokenCount > 7000){
+      contextLength = contextLength - 1;
+      context = context.slice(0, contextLength);
+      stringContext = JSON.stringify(context);
+      estimatedTokenCount = tokenizer.estimateTokenCount(stringContext);
+    }
+    return context
+  }
   run = async (inputQuestion: string) => {
-    const textSimilarityApi = "https://shipbot-helper.smarter.codes/shipbot/similarity";
+    const textSimilarityApi = "http://34.93.99.128/staging/shipbot/similarity";
+    //can be configured
+    let top_k_docs = 10
+    //can be configured
     let retriever = this.vectorstore.asRetriever(25)
     let queryParams = {
-      'k': "3",
+      'k': top_k_docs,
       'question': inputQuestion
     };
     let requestData = {}
@@ -52,11 +71,6 @@ export class makeChain {
       let obj = { 'text': ignoranceTemplate, "src": "talkingDB" }
       return obj
     }else {
-      type contextItem = {
-        content: Array<string>;
-        content_source: string;
-      };
-      type contextItemArray = contextItem[];
       let sourceClassifiedDocs: contextItemArray = [];
       docs.map((doc: Document) => {
         let sourcePage = String(doc["metadata"]["page_number"]);
@@ -86,28 +100,43 @@ export class makeChain {
       let textSimilarityApiResp = await axios.request(options)
       let similarDocs = textSimilarityApiResp.data
 
+
+      // can be configured
+      let max_tries = 3
+      let chatbot_does_not_answer = true
+      let current_try = 1
       //create prompt template
       let qaPrompt = PromptTemplate.fromTemplate(QA_PROMPT);
-
-      // debug prompts
-      let paramValues = {"question": inputQuestion, "context":JSON.stringify({"context": JSON.stringify(similarDocs)})}
-      let formattedQAPrompt = await qaPrompt.format(paramValues);
-      // let kbResponse = {"text": formattedQAPrompt, "src":"talkingDB"}
-      console.log(formattedQAPrompt)
-
-      // create chain
-      let kbResponseChain = new LLMChain({ llm: this.model, prompt: qaPrompt });
-      let kbResponse = await kbResponseChain.call({ question: inputQuestion, context: JSON.stringify({"context": similarDocs}) })
-
-      if (kbResponse.text.includes("I am sorry,")) {
+      // let kbResponse:chatbotResponse = {"text": "", "src": ""}
+      let kbResponse = {}
+      while(current_try <= max_tries && chatbot_does_not_answer && similarDocs.length > 0){
+        //check token limit and slice similar docs
+        console.log(`try no: , ${current_try}`)
+        let slicedSimilarDocs = this.token_limit_check(similarDocs)
+        // debug prompts
+        let paramValues = {"question": inputQuestion, "context":JSON.stringify({"context": JSON.stringify(slicedSimilarDocs)})}
+        let formattedQAPrompt = await qaPrompt.format(paramValues);
+        console.log(formattedQAPrompt)
+        //for debugging responses
+        // kbResponse = {"text": "I am sorry, I do not have enough information to give answer!", "src":"talkingDB"}
+        // create chain
+        let kbResponseChain = new LLMChain({ llm: this.model, prompt: qaPrompt });
+        kbResponse = await kbResponseChain.call({ question: inputQuestion, context: JSON.stringify({"context": slicedSimilarDocs}) })
+        if(kbResponse.text.includes("I am sorry,")){
+          let slicedSimilarDocsLength = slicedSimilarDocs.length
+          similarDocs = similarDocs.slice(slicedSimilarDocsLength)
+        }else{
+          chatbot_does_not_answer = false
+        }
+        current_try = current_try + 1
+      }
+      if(chatbot_does_not_answer ==  true){
         const ignorance_template = "I am sorry, I do not have enough information to give answer!"
         let obj = { 'text': ignorance_template, "src": "talkingDB" }
         return obj
       }
-
-      kbResponse.src = "talkingDb"
-
-      return kbResponse;  
+      return kbResponse
+      // kbResponse.src = "talkingDb"  
     }
   }
 };

@@ -8,6 +8,13 @@ export type Message = {
   sourceDocs?: Document[];
 };
 
+export type contextItem = {
+  content: Array<string>;
+  content_source: string;
+};
+
+export type contextItemArray = contextItem[];
+
 export type Page = {
   page_number: string;
   page_body:string
