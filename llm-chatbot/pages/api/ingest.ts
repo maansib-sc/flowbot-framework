@@ -28,7 +28,7 @@ export default async function handler(
         // const blob = new Blob([jsonString], { type: 'application/json' });
         console.log(article)
         for (const item of article) {
-            await run(item, pinecone_name_space)
+            let response = await run(item, pinecone_name_space)
         }
         res.status(200).json({ msg: "article embedded in vectorDB" });
         
