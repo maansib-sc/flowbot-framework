@@ -39,7 +39,7 @@ export default async function handler(
     );
 
     //create chain
-    const chain = new makeChain(vectorStore);
+    const chain = new makeChain(vectorStore, pinecone_name_space);
 
     const response = await chain.run(sanitizedQuestion)
     if (response) {

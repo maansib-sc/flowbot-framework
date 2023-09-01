@@ -21,7 +21,7 @@ IMAGE_TAG="${GCP_REGISTRY_REPO}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}-${BIT
 
 
 GCE_VM="table-to-json"
-HOST="client-connector.smarter.codes"
+HOST="client-bot.smarter.codes"
 
 build() {
     if [ -n "$ARTIFACT_KEY" ]; then

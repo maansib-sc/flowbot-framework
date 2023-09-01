@@ -30,9 +30,11 @@ Question: {question}
 export class makeChain {
   vectorstore: PineconeStore;
   model: OpenAI;
+  chat_id: string;
 
-  constructor(vectorstore: PineconeStore) {
+  constructor(vectorstore: PineconeStore, chat_id: string) {
     this.vectorstore = vectorstore;
+    this.chat_id = chat_id
     //can be configured
     this.model = new OpenAI({
       temperature: 0.7, // increase temepreature to get more creative answers
@@ -61,7 +63,8 @@ export class makeChain {
     let retriever = this.vectorstore.asRetriever(25)
     let queryParams = {
       'k': top_k_docs,
-      'question': inputQuestion
+      'question': inputQuestion,
+      'chat-id':this.chat_id
     };
     let requestData = {}
     let docs:Array<Document> = await retriever.getRelevantDocuments(inputQuestion);

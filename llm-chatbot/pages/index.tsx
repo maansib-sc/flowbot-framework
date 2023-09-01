@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 import {
   Accordion,
   AccordionContent,
@@ -26,15 +27,26 @@ export default function Home() {
   // Add this state at the beginning of your component
   const [trainingInProgress, setTrainingInProgress] = useState(false);
   const [untrainingInProgress, setUnTrainingInProgress] = useState(false);
+  const router = useRouter();
+  const { query: { 'chat-id': chatId } } = router
 
-  // const backendConnectorHost = "client-connector.smarter.codes"
-  // const backendConnectorKey = "KJaksn9812nOdnAsSCd-1in31"
-  const backendConnectorHost = "test"
-  const backendConnectorKey = "test-1in31"
+  const backendConnectorHost = "table-llm-bot.smarter.codes"
+  const backendConnectorKey = "KJaksn9812nOdnAsSCd-1in31"
+  // const backendConnectorHost = "test"
+  // const backendConnectorKey = "test-1in31"
+
+  useEffect(() => {
+    // Only run this code if chatId is defined (i.e., only on the client side)
+    if (chatId) {
+      fetchData();
+      // Now you can use the 'chatId' in your component's logic
+    }
+  }, [chatId]);
+
 
   async function fetchData() {
     try {
-      const response = await axios.get(`https://${backendConnectorHost}/pdf/list`, {
+      const response = await axios.get(`https://${backendConnectorHost}/pdf/list?chatbot_id=${chatId}`, {
         headers: {
           'API-KEY': backendConnectorKey,
         },
@@ -47,8 +59,11 @@ export default function Home() {
 
   useEffect(() => {
     // Call fetchPdfList function here
-    fetchPdfList();
-  }, []);
+    if (chatId) {
+      fetchPdfList();
+      // Now you can use the 'chatId' in your component's logic
+    }
+  }, [chatId]);
 
 
   const [messageState, setMessageState] = useState<{
@@ -105,7 +120,7 @@ export default function Home() {
     setQuery('');
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(`/api/chat?pinecone_name_space=${chatId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +180,7 @@ export default function Home() {
 
   async function fetchPdfList() {
     try {
-      const response = await axios.get(`https://${backendConnectorHost}/pdf/list`, {
+      const response = await axios.get(`https://${backendConnectorHost}/pdf/list?chatbot_id=${chatId}`, {
         headers: {
           'API-KEY': backendConnectorKey,
           //'Connection': 'keep-alive',
@@ -213,7 +228,7 @@ export default function Home() {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: `https://${backendConnectorHost}/pdf/upload`, // Replace with your API endpoint
+      url: `https://${backendConnectorHost}/pdf/upload?chatbot_id=${chatId}`, // Replace with your API endpoint
       headers: headers,
       data: data
     };
@@ -234,7 +249,7 @@ export default function Home() {
   async function handleUntrain() {
     setUnTrainingInProgress(true);
     try {
-      const response = await axios.get(`https://${backendConnectorHost}/chatbot/untrain`, {
+      const response = await axios.get(`https://${backendConnectorHost}/chatbot/untrain?chatbot_id=${chatId}`, {
         headers: {
           'API-KEY': backendConnectorKey,
           //'Connection': 'keep-alive',
@@ -254,7 +269,7 @@ export default function Home() {
   async function handleTrain() {
     try {
       setTrainingInProgress(true);
-      const response = await axios.get(`https://${backendConnectorHost}/chatbot/train`, {
+      const response = await axios.get(`https://${backendConnectorHost}/chatbot/train?chatbot_id=${chatId}`, {
         headers: {
           'API-KEY': backendConnectorKey,
           //'Connection': 'keep-alive',
