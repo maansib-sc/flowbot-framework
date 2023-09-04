@@ -38,7 +38,7 @@ export class makeChain {
     //can be configured
     this.model = new OpenAI({
       temperature: 0.7, // increase temepreature to get more creative answers
-      modelName: 'gpt-3.5-turbo', //change this to gpt-4 if you have access
+      modelName: 'gpt-4', //change this to gpt-4 if you have access
     });
   }
   token_limit_check = function (context: contextItemArray){
@@ -56,7 +56,7 @@ export class makeChain {
     return context
   }
   run = async (inputQuestion: string) => {
-    const textSimilarityApi = "http://34.93.99.128/staging/shipbot/similarity";
+    const textSimilarityApi = "http://35.238.41.105/staging/shipbot/similarity";
     //can be configured
     let top_k_docs = 10
     //can be configured
