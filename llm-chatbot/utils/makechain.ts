@@ -38,7 +38,7 @@ export class makeChain {
     //can be configured
     this.model = new OpenAI({
       temperature: 0.7, // increase temepreature to get more creative answers
-      modelName: 'gpt-4', //change this to gpt-4 if you have access
+      modelName: 'gpt-3.5-turbo', //change this to gpt-4 if you have access
     });
   }
   token_limit_check = function (context: contextItemArray){
@@ -64,7 +64,7 @@ export class makeChain {
     let queryParams = {
       'k': top_k_docs,
       'question': inputQuestion,
-      'chat-id':this.chat_id
+      'chat_id':this.chat_id
     };
     let requestData = {}
     let docs:Array<Document> = await retriever.getRelevantDocuments(inputQuestion);

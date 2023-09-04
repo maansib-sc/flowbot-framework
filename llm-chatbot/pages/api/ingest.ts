@@ -26,7 +26,6 @@ export default async function handler(
 
         // Create a Blob from the JSON string
         // const blob = new Blob([jsonString], { type: 'application/json' });
-        console.log(article)
         for (const item of article) {
             let response = await run(item, pinecone_name_space)
         }
