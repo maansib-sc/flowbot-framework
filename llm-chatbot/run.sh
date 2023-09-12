@@ -51,8 +51,8 @@ deploy() {
     docker-compose-server.yml > docker-compose-deploy.tmp.yml
     
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG
-    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_STAGE_VM -- mkdir -p server/llm-chatbot-staging/$BITBUCKET_REPO_SLUG/acme
-    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT acme/acme.sh ubuntu@$GCE_STAGE_VM:server/llm-chatbot-staging/$BITBUCKET_REPO_SLUG/acme/
+    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme
+    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT acme/acme.sh ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme/
     gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT .env docker-compose-deploy.tmp.yml artifact-key.json ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- "cd server/llm-chatbot/$BITBUCKET_REPO_SLUG \
         && cat artifact-key.json | docker login -u _json_key --password-stdin https://$GCP_REGISTRY \
