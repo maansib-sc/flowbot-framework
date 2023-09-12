@@ -20,8 +20,8 @@ fi
 IMAGE_TAG="${GCP_REGISTRY_REPO}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}-${BITBUCKET_BUILD_NUMBER}"
 
 
-GCE_VM="table-to-json"
-HOST="client-bot.smarter.codes"
+GCE_VM="staging-chatbot-llm"
+HOST="chat-staging.smarter.codes"
 
 build() {
     if [ -n "$ARTIFACT_KEY" ]; then
@@ -35,6 +35,9 @@ build() {
 }
 
 deploy() {    
+    if [ -n "$ARTIFACT_KEY" ]; then
+        echo "$ARTIFACT_KEY" > artifact-key.json
+    fi
     if [ -n "$COMPUTE_KEY" ]; then
         echo "$COMPUTE_KEY" > compute-key.json
     fi
@@ -48,6 +51,8 @@ deploy() {
     docker-compose-server.yml > docker-compose-deploy.tmp.yml
     
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG
+    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme
+    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT acme/acme.sh ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme/
     gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT .env docker-compose-deploy.tmp.yml artifact-key.json ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- "cd server/llm-chatbot/$BITBUCKET_REPO_SLUG \
         && cat artifact-key.json | docker login -u _json_key --password-stdin https://$GCP_REGISTRY \
