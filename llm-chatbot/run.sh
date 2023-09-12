@@ -35,6 +35,9 @@ build() {
 }
 
 deploy() {    
+    if [ -n "$ARTIFACT_KEY" ]; then
+        echo "$ARTIFACT_KEY" > artifact-key.json
+    fi
     if [ -n "$COMPUTE_KEY" ]; then
         echo "$COMPUTE_KEY" > compute-key.json
     fi
