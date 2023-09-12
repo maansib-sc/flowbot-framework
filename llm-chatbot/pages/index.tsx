@@ -49,7 +49,7 @@ export default function Home() {
     try {
       const response = await axios.get(`https://${backendConnectorHost}/pdf/list?chatbot_id=${chatId}`, {
         headers: {
-          'API-KEY': backendConnectorKey,
+          'API-KEY': backendConnectorKey || '',
         },
       });
       setApiData(response.data);
@@ -178,7 +178,7 @@ export default function Home() {
     try {
       const response = await axios.get(`https://${backendConnectorHost}/pdf/list?chatbot_id=${chatId}`, {
         headers: {
-          'API-KEY': backendConnectorKey,
+          'API-KEY': backendConnectorKey || '',
         },
       });
       const pdfData = response.data.data;
@@ -235,7 +235,7 @@ export default function Home() {
     try {
       const response = await axios.get(`https://${backendConnectorHost}/chatbot/untrain?chatbot_id=${chatId}`, {
         headers: {
-          'API-KEY': backendConnectorKey,
+          'API-KEY': backendConnectorKey || '',
         },
       });
       // console.log("untrain response ==>", response.data);
@@ -253,7 +253,7 @@ export default function Home() {
       setTrainingInProgress(true);
       const response = await axios.get(`https://${backendConnectorHost}/chatbot/train?chatbot_id=${chatId}`, {
         headers: {
-          'API-KEY': backendConnectorKey,
+          'API-KEY': backendConnectorKey || '',
           //'Connection': 'keep-alive',
           //'sec-ch-ua-mobile': '?0',
         },
