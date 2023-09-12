@@ -2,8 +2,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: end;
-    padding: 1rem;
+    /* align-items: end; */
+    /* padding: 1rem; */
+    border: 1px solid #d9d9e3;
+    border-radius: 0.5rem;
 }
 
 .header {
@@ -12,6 +14,63 @@
 
 .header p {
     text-align: center;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.buttonWrapper {
+    display: inline-block;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 12px;
+    border: none;
+    border-radius: 20.5px;
+    cursor: pointer;
+    width: auto;
+    font-weight: 500;
+    transition: background-color 0.3s ease-in-out;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    position: relative;
+}
+
+.coming-soon-button {
+    display: inline-block;
+    background-color: #007BFF;
+    /* Change the background color as desired */
+    color: #fff;
+    /* Change the text color as desired */
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    position: relative;
+}
+
+.comingSoonLabel {
+    position: absolute;
+    transform: translate(30%, -90%);
+    background-color: #FF5733;
+    /* Change the background color as desired */
+    color: #fff;
+    /* Change the text color as desired */
+    padding: 5px 10px;
+    border-radius: 25px;
+    font-size: 10px;
+    z-index: 10;
+}
+
+.crossicon {
+    width: 25px;
+    height: 25px;
+    /* fill: #ffffff; */
+    opacity: 1;
+    padding-top: 0.5rem;
+    transition: opacity .2s ease-in-out;
 }
 
 .cloudform {
@@ -40,7 +99,7 @@
 }
 
 
-.pdfMain{
+.pdfMain {
     overflow-y: auto;
     height: 350px;
 }
@@ -51,7 +110,7 @@
     resize: none;
     font-size: 1.1rem;
     padding: 1rem 2rem 1rem 2rem;
-    width: 73vw;
+    width: 63vw;
     border-radius: 0.5rem;
     border: 1px solid #d9d9e3;
     background: #ffffff;
@@ -154,6 +213,7 @@
     0% {
         background-position: -100% 0;
     }
+
     100% {
         background-position: 100% 0;
     }
@@ -170,6 +230,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -229,10 +290,10 @@
 
 .cloud {
     width: 73vw;
-    height: 65vh;
+    height: 70vh;
     background: #ffffff;
     border-radius: 0.5rem;
-    border: 1px solid #d9d9e3;
+    /* border: 1px solid #d9d9e3; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -272,25 +333,31 @@
         padding: 1rem;
         max-height: 90vh;
     }
+
     .cloud {
         width: 22rem;
         height: 28rem;
     }
+
     .textarea {
         width: 22rem;
     }
+
     .topnav {
         border: 1px solid black;
         align-items: center;
         padding: 0.85rem 0.75rem 0.85rem 0.75rem;
     }
+
     .navlogo {
         font-size: 1.25rem;
         width: 20rem;
     }
+
     .markdownanswer code {
         white-space: pre-wrap !important;
     }
+
     .footer {
         font-size: 0.7rem;
         width: 100%;

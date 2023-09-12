@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import FileList from '@/components/fileList';
 
 export default function Home() {
   const [query, setQuery] = useState<string>('');
@@ -172,11 +173,6 @@ export default function Home() {
     }
   };
 
-  function removeSelectedField() {
-    setSelecteduploadFile(null)
-    setSelecteduploadFileName(null)
-  }
-
 
   async function fetchPdfList() {
     try {
@@ -197,17 +193,6 @@ export default function Home() {
 
 
   const fileInputRef = useRef(null);
-
-  async function handleUpload() {
-    // e.preventDefault();
-    // Trigger the click event of the file input when the button is clicked
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  }
-
-
-
 
 
   async function uploadFileToApi(file: File) {
@@ -262,7 +247,7 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     } finally {
-      setUnTrainingInProgress(false); 
+      setUnTrainingInProgress(false);
     }
   }
 
@@ -286,86 +271,167 @@ export default function Home() {
     }
   }
 
+
+  const fileInputRefDoc = useRef(null);
+  const handleFileChange = (e: any) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      console.log("selected file ==>", selectedFile.name)
+      setSelecteduploadFile(selectedFile)
+    }
+  };
+
+  // const handleButtonClick = () => {
+  //   if (fileInputRefDoc) {
+  //     fileInputRefDoc.current.click();
+  //   }
+  // };
+
+  const removeSelectedField = () => {
+    setSelecteduploadFile(null)
+  }
+
+  function addEllipsis(str: string, maxLength: number) {
+    if (str.length <= maxLength) {
+      return str;
+    } else {
+      return str.substring(0, maxLength) + "...";
+    }
+  }
+
+  function uploadFileData() {
+    if (selecteduploadFile) {
+
+      setPdfList([...pdfList, selecteduploadFile.name])
+      setSelecteduploadFile(null)
+    }
+  }
+
+  function removefilefromfileList(index: number) {
+    let data = [...pdfList]
+    data.splice(index, 1)
+    setPdfList(data)
+  }
+
+
+
   return (
     <>
       <Layout>
 
 
-        <div className="flex flex-col gap-4">
-            <div className={styles.pdfContainer} id='pdfContainer'>
-              <div className={styles.pdfMain}>
-                <center><h1>Your PDF Lists</h1></center>
-                {pdfList.length > 0 && (
-                  <ul className={styles.pdfList}>
-                    {pdfList.map((pdf, index) => (
-                      <li key={index} className={styles.pdfListItem}>
+        <div className="flex m-5">
 
-                        <span className={styles.pdfName}>
-                          <Image
-                            src="/pdf_upload.png"
-                            alt="AI"
-                            width="29"
-                            height="29"
-                            priority
-                            className={styles.pdfIcon}
-                          />
-                          {pdf}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+          <div style={{ padding: "1rem", display: "flex", flexDirection: "column", maxWidth: "355px" }}>
+            <h1 className={styles.title}>TRAIN AI</h1>
+            <p>from the options below.</p>
+            <div className="mt-4 mb-4 flex flex-col">
+              <div className='flex mb-6'>
+                <div className='flex items-center  border border-blue rounded-lg  tracking-wide'>
+                  <label className="w-32 flex justify-between  items-center px-2 py-2 text-blue rounded-lg  tracking-wide  cursor-pointer ">
+                    <input type='file' className="hidden" onChange={handleFileChange} ref={fileInputRef} />
+                    <span className="mt-2 text-base leading-normal" >{selecteduploadFile ? addEllipsis(selecteduploadFile?.name, 10) : "Upload a Doc"}</span>
+
+                  </label>
+                  <div className='flex flex-col items-center'>
+                    {selecteduploadFile ?
+                      <button className={styles.crossiconButton} onClick={removeSelectedField}  >
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={styles.crossicon}><path fillRule="evenodd" clipRule="evenodd" d="M6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793Z"></path></svg>
+                      </button>
+                      : null
+                    }
+                    <button style={{ color: `${selecteduploadFile ? "black" : "grey"} ` }} onClick={uploadFileData}>
+
+                      <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                      </svg>
+                    </button>
+                  </div>
+
+                </div>
+                <div className='flex items-center'>
+                  <label className="w-43 ml-2 flex justify-between bg-gray-200  items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue ">
+
+                    <span className="mt-2 text-base leading-normal">Upload Conv.</span>
+                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                    </svg>
+                    <span className={styles.comingSoonLabel}>Coming soon</span>
+                  </label>
+
+                </div>
+
               </div>
-              {/* Buttons */}
-              <div className={styles.buttonContainer} id='buttonContainer'>
-                <button
-                  className={`${styles.trainButton} ${styles.roundedButton}`}
-                  onClick={handleTrain}
-                  disabled={trainingInProgress} // Disable the button when training is in progress
-                >
-                  <div className={styles.buttonContent}>
-                    {trainingInProgress ? (
-                      <LoadingDots color="#fff" /> // Display loading dots
-                    ) : (
-                      <>
-                        <Image
-                          src="/train.png"
-                          alt="Train"
-                          width="40"
-                          height="40"
-                          priority
-                        />
-                        <p>Train</p>
-                      </>
-                    )}
-                  </div>
-                </button>
-                <button className={`${styles.untrainButton} ${styles.roundedButton}`} onClick={handleUntrain} disabled={untrainingInProgress}>
-                  <div className={styles.buttonContent}>
-                  {untrainingInProgress ? (
-                      <LoadingDots color="#fff" /> // Display loading dots
-                    ) : (
-                      <>
-                      <Image
-                          src="/untrain.png"
-                          alt="Untrain"
-                          width="35"
-                          height="30"
-                          priority
-                        />
-                      <p>UnTrain</p>
-                    </>
-                  )}
-                  </div>
-                </button>
-                {/* <button className={styles.trainButton}>Train</button>*/}
-                {/*<button className={styles.displayButton} onClick={fetchPdfList}>Display</button>*/}
+              <div className='flex'>
+
+                <label className="w-64 flex justify-between bg-gray-200  items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+
+                  <span className="mt-2 text-base leading-normal">Upload Video</span>
+                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                  </svg>
+                  <span className={styles.comingSoonLabel}>Coming soon</span>
+                </label>
+                <label className="w-64 flex justify-between bg-gray-200  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+
+                  <span className="mt-2 text-base leading-normal">Import From</span>
+                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                  </svg>
+                  <span className={styles.comingSoonLabel}>Coming soon</span>
+                </label>
               </div>
             </div>
-          <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
-            ChatBot
-          </h1>
+
+            <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", borderTop: "1px solid black", paddingTop: "2rem" }} className='mt-10'>
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%"
+              }}>
+
+                <h1 className={styles.title}>Uploaded Doc</h1>
+                <p onClick={() => setPdfList([])} className='cursor-pointer'>Clear All</p>
+              </div>
+              <div style={{
+                display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", height: "100%",
+                minHeight: "250px"
+              }}>
+                {
+                  pdfList.length > 0 ?
+
+                    <div style={{ width: "100%" }}>
+                      {
+                        pdfList.map((item, index) =>
+                          <FileList filename={item} removefilefromfileList={removefilefromfileList} index={index} />
+                        )
+                      }
+                    </div>
+                    :
+                    <>
+                      <Image
+                        src="/pdf_upload.png"
+                        alt="AI"
+                        width="55"
+                        height="55"
+                        priority
+                        className='mt-2'
+                      />
+                      <div className='p-8'>Please upload a Doc to train the AI automatically</div>
+                    </>
+                }
+
+              </div>
+
+            </div>
+          </div>
 
           <main className={styles.main}>
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "1rem", alignItems: "center" }}>
+              <h1 className={styles.title}>LLM CHATBOT</h1>
+              <button className={styles.buttonWrapper}>Publish & Share</button>
+            </div>
             <div className={styles.cloud}>
               <div ref={messageListRef} className={styles.messagelist}>
                 {messages.map((message, index) => {
@@ -407,46 +473,12 @@ export default function Home() {
                       <div key={`chatMessage-${index}`} className={className}>
                         {icon}
 
-                        {(message.type === 'apiMessage') ?
-                          <div style={{ "marginRight": "20px" }}><p>{message.src == "gpt4" && message.type === 'apiMessage' ? "GPT4" : "TalkingDB"}</p></div>
-                          : null
-                        }
                         <div className={styles.markdownanswer}>
                           <ReactMarkdown linkTarget="_blank">
                             {message.message}
                           </ReactMarkdown>
                         </div>
                       </div>
-                      {message.sourceDocs && (
-                        <div
-                          className="p-5"
-                          key={`sourceDocsAccordion-${index}`}
-                        >
-                          <Accordion
-                            type="single"
-                            collapsible
-                            className="flex-col"
-                          >
-                            {message.sourceDocs.map((doc, index) => (
-                              <div key={`messageSourceDocs-${index}`}>
-                                <AccordionItem value={`item-${index}`}>
-                                  <AccordionTrigger>
-                                    <h3>Source {index + 1}</h3>
-                                  </AccordionTrigger>
-                                  <AccordionContent>
-                                    <ReactMarkdown linkTarget="_blank">
-                                      {doc.pageContent}
-                                    </ReactMarkdown>
-                                    <p className="mt-2">
-                                      <b>Source:</b> {doc.metadata.source}
-                                    </p>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              </div>
-                            ))}
-                          </Accordion>
-                        </div>
-                      )}
                     </>
                   );
                 })}
@@ -474,43 +506,7 @@ export default function Home() {
                     className={styles.textarea}
                   />
 
-                  <button
-                    type="button"
-                    disabled={uploading}
-                    onClick={handleUpload}
-                    className={styles.attachmentButton}
-                  >
-                    {/* Add your attachment icon */}
-                    {uploading ? (
-                      <div className={styles.loadingwheel}>
-                        <LoadingDots color="#000" />
-                      </div>
-                    ) : (
-                      <Image
-                        src="/pdf_upload.png"
-                        alt="AI"
-                        width="20"
-                        height="20"
-                        priority
-                      />
-                    )}
-                  </button>
-                  {/* Hidden file input element */}
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    accept="application/pdf"
-                    onChange={(e) => {
-                      // Handle file selection logic here, e.g., upload the selected file
-                      const selectedFile = e.target.files?.[0];
-                      if (selectedFile) {
-                        setSelecteduploadFile(selectedFile)
-                        setSelecteduploadFileName(selectedFile.name)
-                        uploadFileToApi(selectedFile);
-                      }
-                    }}
-                  />
+
 
                   <button
                     type="submit"
@@ -544,11 +540,11 @@ export default function Home() {
 
           </main>
         </div>
-        <footer className="m-auto p-4">
+        {/* <footer className="m-auto p-4">
           <a href="https://smarter.codes/">
             Powered by TalkingDB
           </a>
-        </footer>
+        </footer> */}
       </Layout>
     </>
   );
