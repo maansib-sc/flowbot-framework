@@ -22,8 +22,6 @@ IMAGE_TAG="${GCP_REGISTRY_REPO}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}-${BIT
 
 GCE_VM="${GCE_VM}"
 HOST="${HOST}"
-# GCE_VM="staging-chatbot-llm"
-# HOST="chat-staging.smarter.codes"
 
 build() {
     if [ -n "$ARTIFACT_KEY" ]; then

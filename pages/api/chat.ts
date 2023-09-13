@@ -12,10 +12,17 @@ export default async function handler(
   const { question, history } = req.body;
   const pinecone_name_space = req.query.pinecone_name_space;
   console.log('question', question);
+  const hiKeywords = ['hi', 'hello', 'hey', 'hi!'];
+  const hiResposeMessage = process.env.NEXT_PUBLIC_HI_MESSAGE_RESPONSE
 
   //only accept post requests
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  if (hiKeywords.includes(question.toLowerCase())) {
+    res.status(200).json({ text: hiResposeMessage });
     return;
   }
 
