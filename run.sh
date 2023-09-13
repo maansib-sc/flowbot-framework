@@ -59,7 +59,7 @@ stage() {
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme
     gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT acme/acme.sh ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme/
-    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT .env docker-compose-deploy.tmp.yml artifact-key.json ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG
+    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT docker-compose-deploy.tmp.yml artifact-key.json ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- "cd server/llm-chatbot/$BITBUCKET_REPO_SLUG \
         && cat artifact-key.json | docker login -u _json_key --password-stdin https://$GCP_REGISTRY \
         && docker compose -f docker-compose-deploy.tmp.yml down\
@@ -92,7 +92,7 @@ deploy() {
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme
     gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT acme/acme.sh ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme/
-    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT .env docker-compose-deploy.tmp.yml artifact-key.json ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG
+    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT docker-compose-deploy.tmp.yml artifact-key.json ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- "cd server/llm-chatbot/$BITBUCKET_REPO_SLUG \
         && cat artifact-key.json | docker login -u _json_key --password-stdin https://$GCP_REGISTRY \
         && docker compose -f docker-compose-deploy.tmp.yml down\
