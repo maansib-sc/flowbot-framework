@@ -20,8 +20,10 @@ fi
 IMAGE_TAG="${GCP_REGISTRY_REPO}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}-${BITBUCKET_BUILD_NUMBER}"
 
 
-GCE_VM="staging-chatbot-llm"
-HOST="chat-staging.smarter.codes"
+GCE_VM="${GCE_VM}"
+HOST="${HOST}"
+# GCE_VM="staging-chatbot-llm"
+# HOST="chat-staging.smarter.codes"
 
 build() {
     if [ -n "$ARTIFACT_KEY" ]; then
@@ -32,6 +34,39 @@ build() {
     
     DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t "$IMAGE_TAG" .
     docker push "$IMAGE_TAG"
+}
+
+stage() {
+    if [ -n "$ARTIFACT_KEY" ]; then
+        echo "$ARTIFACT_KEY" > artifact-key.json
+    fi
+    if [ -n "$COMPUTE_KEY" ]; then
+        echo "$COMPUTE_KEY" > compute-key.json
+    fi
+    
+    gcloud auth activate-service-account --key-file compute-key.json
+    
+    
+    sed \
+    -e "s|\$IMAGE_TAG|${IMAGE_TAG}|" \
+    -e "s|\$HOST|${HOST}|" \
+    -e "s|\$OPENAI_API_KEY|${OPENAI_API_KEY}|" \
+    -e "s|\$PINECONE_API_KEY|${PINECONE_API_KEY}|" \
+    -e "s|\$PINECONE_ENVIRONMENT|${PINECONE_ENVIRONMENT}|" \
+    -e "s|\$PINECONE_INDEX_NAME|${PINECONE_INDEX_NAME}|" \
+    -e "s|\$NEXT_PUBLIC_BACKEND_CONNECTOR_HOST|${NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}|" \
+    -e "s|\$NEXT_PUBLIC_BACKEND_CONNECTOR_KEY|${NEXT_PUBLIC_BACKEND_CONNECTOR_KEY}|" \
+    docker-compose-server.yml > docker-compose-deploy.tmp.yml
+    
+    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG
+    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme
+    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT acme/acme.sh ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG/acme/
+    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT .env docker-compose-deploy.tmp.yml artifact-key.json ubuntu@$GCE_VM:server/llm-chatbot/$BITBUCKET_REPO_SLUG
+    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- "cd server/llm-chatbot/$BITBUCKET_REPO_SLUG \
+        && cat artifact-key.json | docker login -u _json_key --password-stdin https://$GCP_REGISTRY \
+        && docker compose -f docker-compose-deploy.tmp.yml down\
+        && echo y | docker image prune -a \
+        && docker compose -f docker-compose-deploy.tmp.yml up -d"
 }
 
 deploy() {    
@@ -48,6 +83,12 @@ deploy() {
     sed \
     -e "s|\$IMAGE_TAG|${IMAGE_TAG}|" \
     -e "s|\$HOST|${HOST}|" \
+    -e "s|\$OPENAI_API_KEY|${OPENAI_API_KEY}|" \
+    -e "s|\$PINECONE_API_KEY|${PINECONE_API_KEY}|" \
+    -e "s|\$PINECONE_ENVIRONMENT|${PINECONE_ENVIRONMENT}|" \
+    -e "s|\$PINECONE_INDEX_NAME|${PINECONE_INDEX_NAME}|" \
+    -e "s|\$NEXT_PUBLIC_BACKEND_CONNECTOR_HOST|${NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}|" \
+    -e "s|\$NEXT_PUBLIC_BACKEND_CONNECTOR_KEY|${NEXT_PUBLIC_BACKEND_CONNECTOR_KEY}|" \
     docker-compose-server.yml > docker-compose-deploy.tmp.yml
     
     gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT ubuntu@$GCE_VM -- mkdir -p server/llm-chatbot/$BITBUCKET_REPO_SLUG
@@ -67,6 +108,9 @@ case "$1" in
     ;;
     deploy)
         deploy
+    ;;
+    stage)
+        stage
     ;;
     *)
         echo "Unknown function: $1"

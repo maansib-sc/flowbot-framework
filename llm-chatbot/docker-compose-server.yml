@@ -54,8 +54,13 @@ services:
       - "traefik.backend=llm-chatbot"
       - "traefik.protocol=http"
       - "traefik.frontend.rule=Host:$HOST"
-    env_file:
-      - .env
+    environment:
+      - OPENAI_API_KEY=$OPENAI_API_KEY
+      - PINECONE_API_KEY=$PINECONE_API_KEY
+      - PINECONE_ENVIRONMENT=$PINECONE_ENVIRONMENT
+      - PINECONE_INDEX_NAME=$PINECONE_INDEX_NAME
+      - NEXT_PUBLIC_BACKEND_CONNECTOR_HOST=$NEXT_PUBLIC_BACKEND_CONNECTOR_HOST
+      - NEXT_PUBLIC_BACKEND_CONNECTOR_KEY=$NEXT_PUBLIC_BACKEND_CONNECTOR_KEY
     networks:
       - docker_net
       

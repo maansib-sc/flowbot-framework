@@ -1,0 +1,30 @@
+image: atlassian/default-image:3
+
+definitions:
+  services:
+    docker:
+      memory: 7168
+  steps:
+    - step: &build
+        name: Build
+        runs-on:
+          - "self.hosted"
+        size: 2x
+        script:
+          - bash ./run.sh build
+        services:
+          - docker
+        caches:
+          - docker
+
+pipelines:
+  branches:
+    create-ingest-endpoint:
+      - step: *build
+      - step:
+          name: Main
+          deployment: Staging
+          image: google/cloud-sdk:alpine
+          trigger: manual
+          script:
+            - bash ./run.sh stage
