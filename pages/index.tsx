@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import FileList from '@/components/fileList';
+import { ColorRing } from 'react-loader-spinner'
 
 export default function Home() {
   const [query, setQuery] = useState<string>('');
@@ -44,6 +45,17 @@ export default function Home() {
     }
   }, [chatId]);
 
+  useEffect(() => {
+    // Get the URL search parameters
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Check if the 'chat-id' query parameter is present
+    if (!urlParams.has('chat-id')) {
+      // Query parameter is not present, redirect to a new URL
+      window.location.href = `https://${backendConnectorHost}/chatbot/instance`;
+    }
+  }, []);
+
 
   async function fetchData() {
     try {
@@ -57,6 +69,7 @@ export default function Home() {
       console.log(error);
     }
   }
+
 
   useEffect(() => {
     // Call fetchPdfList function here
@@ -315,221 +328,232 @@ export default function Home() {
 
   return (
     <>
-      <Layout>
+
+      {chatId ?
+        <Layout>
 
 
-        <div className="flex m-5">
+          <div className="flex m-5">
 
-          <div style={{ padding: "1rem", display: "flex", flexDirection: "column", maxWidth: "355px" }}>
-            <h1 className={styles.title}>TRAIN AI</h1>
-            <p>from the options below.</p>
-            <div className="mt-4 mb-4 flex flex-col">
-              <div className='flex mb-6'>
+            <div style={{ padding: "1rem", display: "flex", flexDirection: "column", maxWidth: "355px" }}>
+              <h1 className={styles.title}>TRAIN AI</h1>
+              <p>from the options below.</p>
+              <div className="mt-4 mb-4 flex flex-col">
+                <div className='flex mb-6'>
 
-                <label className="w-64 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
-                  <input type='file' accept='.pdf' className="hidden" onChange={handleFileChange} ref={fileInputRef} />
-                  <span className="mt-2 text-base leading-normal">Upload a Doc</span>
-                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                  </svg>
-                </label>
-                <label className="w-64 flex justify-between bg-gray-200  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+                  <label className="w-64 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+                    <input type='file' accept='.pdf' className="hidden" onChange={handleFileChange} ref={fileInputRef} />
+                    <span className="mt-2 text-base leading-normal">Upload a Doc</span>
+                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                    </svg>
+                  </label>
+                  <label className="w-64 flex justify-between bg-gray-200  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
 
-                  <span className="mt-2 text-base leading-normal">Upload Conv.</span>
-                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                  </svg>
-                  <span className={styles.comingSoonLabel}>Coming soon</span>
-                </label>
-              </div>
-              <div className='flex'>
+                    <span className="mt-2 text-base leading-normal">Upload Conv.</span>
+                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                    </svg>
+                    <span className={styles.comingSoonLabel}>Coming soon</span>
+                  </label>
+                </div>
+                <div className='flex'>
 
-                <label className="w-64 flex justify-between bg-gray-200  items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+                  <label className="w-64 flex justify-between bg-gray-200  items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
 
-                  <span className="mt-2 text-base leading-normal">Upload Video</span>
-                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                  </svg>
-                  <span className={styles.comingSoonLabel}>Coming soon</span>
-                </label>
-                <label className="w-64 flex justify-between bg-gray-200  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+                    <span className="mt-2 text-base leading-normal">Upload Video</span>
+                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                    </svg>
+                    <span className={styles.comingSoonLabel}>Coming soon</span>
+                  </label>
+                  <label className="w-64 flex justify-between bg-gray-200  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
 
-                  <span className="mt-2 text-base leading-normal">Import From</span>
-                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                  </svg>
-                  <span className={styles.comingSoonLabel}>Coming soon</span>
-                </label>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", borderTop: "1px solid black", paddingTop: "2rem" }} className='mt-10'>
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%"
-              }}>
-
-                <h1 className={styles.title}>Uploaded Doc</h1>
-                <p onClick={() => clearAllPdfList()} className='cursor-pointer'>Clear All</p>
-              </div>
-              <div style={{
-                display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", height: "100%",
-                minHeight: "250px"
-              }}>
-                {
-                  pdfList.length > 0 ?
-
-                    <div style={{ width: "100%" }}>
-                      {
-                        pdfList.map((item, index) =>
-                          <FileList filename={item.name} index={index} trained={item.is_trained} />
-                        )
-                      }
-                    </div>
-                    :
-                    <>
-                      <Image
-                        src="/pdf_upload.png"
-                        alt="AI"
-                        width="55"
-                        height="55"
-                        priority
-                        className='mt-2'
-                      />
-                      <div className='p-8'>Please upload a Doc to train the AI automatically</div>
-                    </>
-                }
-
+                    <span className="mt-2 text-base leading-normal">Import From</span>
+                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                    </svg>
+                    <span className={styles.comingSoonLabel}>Coming soon</span>
+                  </label>
+                </div>
               </div>
 
-            </div>
-          </div>
+              <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", borderTop: "1px solid black", paddingTop: "2rem" }} className='mt-10'>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%"
+                }}>
 
-          <main className={styles.main}>
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "1rem", alignItems: "center" }}>
-              <h1 className={styles.title}>DOCUMENT CHATBOT</h1>
-              <div className='flex'>
+                  <h1 className={styles.title}>Uploaded Doc</h1>
+                  <p onClick={() => clearAllPdfList()} className='cursor-pointer'>Clear All</p>
+                </div>
+                <div style={{
+                  display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", height: "100%",
+                  minHeight: "250px"
+                }}>
+                  {
+                    pdfList.length > 0 ?
 
-                <button className={`${styles.buttonWrapper} bg-gray-200`}>Publish & Share</button>
-                <span className={styles.comingSoonLabel} style={{ transform: "translate(30%, -60%)" }}>Coming soon</span>
-              </div>
-            </div>
-            <div className={styles.cloud}>
-              <div ref={messageListRef} className={styles.messagelist}>
-                {messages.map((message, index) => {
-                  let icon;
-                  let className;
-                  if (message.type === 'apiMessage') {
-                    icon = (
-                      <Image
-                        key={index}
-                        src="/bot-image.png"
-                        alt="AI"
-                        width="40"
-                        height="40"
-                        className={styles.boticon}
-                        priority
-                      />
-                    );
-                    className = styles.apimessage;
-                  } else {
-                    icon = (
-                      <Image
-                        key={index}
-                        src="/usericon.png"
-                        alt="Me"
-                        width="30"
-                        height="30"
-                        className={styles.usericon}
-                        priority
-                      />
-                    );
-                    // The latest message sent by the user will be animated while waiting for a response
-                    className =
-                      loading && index === messages.length - 1
-                        ? styles.usermessagewaiting
-                        : styles.usermessage;
+                      <div style={{ width: "100%" }}>
+                        {
+                          pdfList.map((item, index) =>
+                            <FileList filename={item.name} index={index} trained={item.is_trained} />
+                          )
+                        }
+                      </div>
+                      :
+                      <>
+                        <Image
+                          src="/pdf_upload.png"
+                          alt="AI"
+                          width="55"
+                          height="55"
+                          priority
+                          className='mt-2'
+                        />
+                        <div className='p-8'>Please upload a Doc to train the AI automatically</div>
+                      </>
                   }
-                  return (
-                    <>
-                      <div key={`chatMessage-${index}`} className={className}>
-                        {icon}
 
-                        <div className={styles.markdownanswer}>
-                          <ReactMarkdown linkTarget="_blank">
-                            {message.message}
-                          </ReactMarkdown>
-                        </div>
-                      </div>
-                    </>
-                  );
-                })}
+                </div>
+
               </div>
             </div>
-            <div className={styles.center}>
-              <div className={styles.cloudform}>
-                <form onSubmit={handleSubmit}>
-                  <textarea
-                    disabled={loading}
-                    onKeyDown={handleEnter}
-                    ref={textAreaRef}
-                    autoFocus={false}
-                    rows={1}
-                    maxLength={10000}
-                    id="userInput"
-                    name="userInput"
-                    placeholder={
-                      loading
-                        ? 'Waiting for response...'
-                        : 'How can I assist you today?'
+
+            <main className={styles.main}>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "1rem", alignItems: "center" }}>
+                <h1 className={styles.title}>DOCUMENT CHATBOT</h1>
+                <div className='flex'>
+
+                  <button className={`${styles.buttonWrapper} bg-gray-200`}>Publish & Share</button>
+                  <span className={styles.comingSoonLabel} style={{ transform: "translate(30%, -60%)" }}>Coming soon</span>
+                </div>
+              </div>
+              <div className={styles.cloud}>
+                <div ref={messageListRef} className={styles.messagelist}>
+                  {messages.map((message, index) => {
+                    let icon;
+                    let className;
+                    if (message.type === 'apiMessage') {
+                      icon = (
+                        <Image
+                          key={index}
+                          src="/bot-image.png"
+                          alt="AI"
+                          width="40"
+                          height="40"
+                          className={styles.boticon}
+                          priority
+                        />
+                      );
+                      className = styles.apimessage;
+                    } else {
+                      icon = (
+                        <Image
+                          key={index}
+                          src="/usericon.png"
+                          alt="Me"
+                          width="30"
+                          height="30"
+                          className={styles.usericon}
+                          priority
+                        />
+                      );
+                      // The latest message sent by the user will be animated while waiting for a response
+                      className =
+                        loading && index === messages.length - 1
+                          ? styles.usermessagewaiting
+                          : styles.usermessage;
                     }
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className={styles.textarea}
-                  />
+                    return (
+                      <>
+                        <div key={`chatMessage-${index}`} className={className}>
+                          {icon}
 
-
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className={styles.generatebutton}
-                  >
-                    {loading ? (
-                      <div className={styles.loadingwheel}>
-                        <LoadingDots color="#000" />
-                      </div>
-                    ) : (
-                      // Send icon SVG in input field
-                      <svg
-                        viewBox="0 0 20 20"
-                        className={styles.svgicon}
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-                      </svg>
-                    )}
-                  </button>
-                </form>
+                          <div className={styles.markdownanswer}>
+                            <ReactMarkdown linkTarget="_blank">
+                              {message.message}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-            {error && (
-              <div className="border border-red-400 rounded-md p-4">
-                <p className="text-red-500">{error}</p>
+              <div className={styles.center}>
+                <div className={styles.cloudform}>
+                  <form onSubmit={handleSubmit}>
+                    <textarea
+                      disabled={loading}
+                      onKeyDown={handleEnter}
+                      ref={textAreaRef}
+                      autoFocus={false}
+                      rows={1}
+                      maxLength={10000}
+                      id="userInput"
+                      name="userInput"
+                      placeholder={
+                        loading
+                          ? 'Waiting for response...'
+                          : 'How can I assist you today?'
+                      }
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      className={styles.textarea}
+                    />
+
+
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className={styles.generatebutton}
+                    >
+                      {loading ? (
+                        <div className={styles.loadingwheel}>
+                          <LoadingDots color="#000" />
+                        </div>
+                      ) : (
+                        // Send icon SVG in input field
+                        <svg
+                          viewBox="0 0 20 20"
+                          className={styles.svgicon}
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                        </svg>
+                      )}
+                    </button>
+                  </form>
+                </div>
               </div>
-            )}
+              {error && (
+                <div className="border border-red-400 rounded-md p-4">
+                  <p className="text-red-500">{error}</p>
+                </div>
+              )}
 
 
-          </main>
+            </main>
+          </div>
+        </Layout>
+        :
+        <div style={{ display: "flex", width: "100%", height: "100%", justifyContent: "center", position: "absolute", top: "50%" }}>
+
+          <ColorRing
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="blocks-loading"
+            wrapperStyle={{}}
+            wrapperClass="blocks-wrapper"
+            colors={['#338bff', '#338bff', '#338bff', '#338bff', '#338bff']}
+          />
         </div>
-        {/* <footer className="m-auto p-4">
-          <a href="https://smarter.codes/">
-            Powered by TalkingDB
-          </a>
-        </footer> */}
-      </Layout>
+      }
     </>
   );
 }
