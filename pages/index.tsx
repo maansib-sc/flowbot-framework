@@ -277,6 +277,8 @@ export default function Home() {
     if (selectedFile) {
       // console.log("selected file ==>", selectedFile.name)
       setSelecteduploadFile(selectedFile)
+      uploadFileToApi(selectedFile)
+      setSelecteduploadFile(null)
     }
   };
 
@@ -298,14 +300,6 @@ export default function Home() {
     }
   }
 
-  function uploadFileData() {
-    if (selecteduploadFile) {
-
-      // setPdfList([...pdfList, { "name": selecteduploadFile.name, "trained": false }])
-      uploadFileToApi(selecteduploadFile)
-      setSelecteduploadFile(null)
-    }
-  }
 
   // function removefilefromfileList(index: number) {
   //   let data = [...pdfList]
@@ -331,40 +325,22 @@ export default function Home() {
             <p>from the options below.</p>
             <div className="mt-4 mb-4 flex flex-col">
               <div className='flex mb-6'>
-                <div className='flex items-center  border border-blue rounded-lg  tracking-wide'>
-                  <label className="w-32 flex justify-between  items-center px-2 py-2 text-blue rounded-lg  tracking-wide  cursor-pointer ">
-                    <input type='file' className="hidden" onChange={handleFileChange} ref={fileInputRef} />
-                    <span className="mt-2 text-base leading-normal" >{selecteduploadFile ? addEllipsis(selecteduploadFile?.name, 10) : "Upload a Doc"}</span>
 
-                  </label>
-                  <div className='flex flex-col items-center'>
-                    {selecteduploadFile ?
-                      <button className={styles.crossiconButton} onClick={removeSelectedField}  >
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={styles.crossicon}><path fillRule="evenodd" clipRule="evenodd" d="M6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793Z"></path></svg>
-                      </button>
-                      : null
-                    }
-                    <button style={{ color: `${selecteduploadFile ? "black" : "grey"} ` }} onClick={uploadFileData}>
+                <label className="w-64 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+                  <input type='file' className="hidden" onChange={handleFileChange} ref={fileInputRef} />
+                  <span className="mt-2 text-base leading-normal">Upload a Doc</span>
+                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                  </svg>
+                </label>
+                <label className="w-64 flex justify-between bg-gray-200  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
 
-                      <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                      </svg>
-                    </button>
-                  </div>
-
-                </div>
-                <div className='flex items-center'>
-                  <label className="w-43 ml-2 flex justify-between bg-gray-200  items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue ">
-
-                    <span className="mt-2 text-base leading-normal">Upload Conv.</span>
-                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                    </svg>
-                    <span className={styles.comingSoonLabel}>Coming soon</span>
-                  </label>
-
-                </div>
-
+                  <span className="mt-2 text-base leading-normal">Upload Conv.</span>
+                  <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                  </svg>
+                  <span className={styles.comingSoonLabel}>Coming soon</span>
+                </label>
               </div>
               <div className='flex'>
 
