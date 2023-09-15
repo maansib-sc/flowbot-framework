@@ -19,7 +19,7 @@ definitions:
 
 pipelines:
   branches:
-    create-ingest-endpoint:
+    stage:
       - step: *build
       - step:
           name: Deploy Stage
@@ -27,6 +27,8 @@ pipelines:
           image: google/cloud-sdk:alpine
           script:
             - bash ./run.sh stage
+            
+    create-ingest-endpoint:
       - step:
           name: Deploy Main
           deployment: Production
