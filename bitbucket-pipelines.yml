@@ -22,8 +22,15 @@ pipelines:
     create-ingest-endpoint:
       - step: *build
       - step:
-          name: Main
+          name: Deploy Stage
           deployment: Staging
           image: google/cloud-sdk:alpine
           script:
             - bash ./run.sh stage
+      - step:
+          name: Deploy Main
+          deployment: Production
+          image: google/cloud-sdk:alpine
+          trigger: manual
+          script:
+            - bash ./run.sh deploy
