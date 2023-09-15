@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-export default function FileList({ filename, index, trained
-}: { filename: string, index: number, trained: boolean }) {
+export default function FileList({ filename, index, trained, setTrainingInProgress
+}: { filename: string, index: number, trained: boolean, setTrainingInProgress: (value: boolean) => void }) {
     const router = useRouter();
     const { query: { 'chat-id': chatId } } = router
 
@@ -30,6 +30,7 @@ export default function FileList({ filename, index, trained
                     'API-KEY': process.env.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY || "",
                 },
             });
+            setTrainingInProgress(false)
 
         } catch (error) {
             console.log(error);
@@ -74,7 +75,7 @@ export default function FileList({ filename, index, trained
                                 null
 
                         }
-                        <p className="text-gray-700">{progress === 100 ? "AI Trained" : "Taining AI ..."}</p>
+                        <p className="text-gray-700">{progress === 100 ? "AI Trained" : "Training AI ..."}</p>
                     </div>
                 </div>
             </li >

@@ -46,16 +46,16 @@ export default function Home() {
     }
   }, [chatId]);
 
-  useEffect(() => {
-    // Get the URL search parameters
-    const urlParams = new URLSearchParams(window.location.search);
+  // useEffect(() => {
+  //   // Get the URL search parameters
+  //   const urlParams = new URLSearchParams(window.location.search);
 
-    // Check if the 'chat-id' query parameter is present
-    if (!urlParams.has('chat-id')) {
-      // Query parameter is not present, redirect to a new URL
-      window.location.href = `https://${backendConnectorHost}/chatbot/instance`;
-    }
-  }, []);
+  //   // Check if the 'chat-id' query parameter is present
+  //   if (!urlParams.has('chat-id')) {
+  //     // Query parameter is not present, redirect to a new URL
+  //     window.location.href = `https://${backendConnectorHost}/chatbot/instance`;
+  //   }
+  // }, []);
 
 
   async function fetchData() {
@@ -257,11 +257,11 @@ export default function Home() {
       // console.log("untrain response ==>", response.data);
       // Call the fetchPdfList function here
       await fetchPdfList();
-      setShowLoader(false)
     } catch (error) {
       console.log(error);
     } finally {
       setUnTrainingInProgress(false);
+      setShowLoader(false)
     }
   }
 
@@ -297,6 +297,7 @@ export default function Home() {
       setSelecteduploadFile(selectedFile)
       uploadFileToApi(selectedFile)
       setSelecteduploadFile(null)
+      setTrainingInProgress(true)
     }
   };
 
@@ -393,7 +394,12 @@ export default function Home() {
                 }}>
 
                   <h1 className={styles.title}>Uploaded Doc</h1>
-                  <p onClick={() => clearAllPdfList()} className='cursor-pointer'>Clear All</p>
+                  {pdfList.length !== 0 && !trainingInProgress
+                    ?
+                    <p onClick={() => clearAllPdfList()} className='cursor-pointer font-semibold '>Clear All</p>
+                    :
+                    <p className='font-semibold text-gray-400'>Clear All</p>
+                  }
                 </div>
                 <div style={{
                   display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", height: "100%",
@@ -404,8 +410,12 @@ export default function Home() {
 
                       <div style={{ width: "100%" }}>
                         {
-                          pdfList.map((item, index) =>
-                            <FileList filename={item.name} index={index} trained={item.is_trained} />
+                          pdfList.map((item, index) => {
+                            return (
+
+                              <FileList filename={item.name} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
+                            )
+                          }
                           )
                         }
                       </div>
