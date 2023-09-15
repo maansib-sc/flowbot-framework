@@ -27,8 +27,9 @@ pipelines:
           image: google/cloud-sdk:alpine
           script:
             - bash ./run.sh stage
-            
+
     create-ingest-endpoint:
+      - step: *build
       - step:
           name: Deploy Main
           deployment: Production
