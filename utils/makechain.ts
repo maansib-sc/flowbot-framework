@@ -12,7 +12,7 @@ export class makeChain {
     let queryParams = {
       'question': inputQuestion,
       'chat_id': this.chat_id,
-      'enablegptfallback': enablegptfallback
+      'enable_gpt_fallback': enablegptfallback
     };
     const options = {
       method: 'POST',
