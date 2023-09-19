@@ -5,8 +5,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { question, history } = req.body;
-  const pinecone_name_space = req.query.pinecone_name_space;
+  const { question, history, enablegptfallback } = req.body;
+  const { pinecone_name_space } = req.query;
   console.log('question', question);
   const hiKeywords = ['hi', 'hello', 'hey', 'hi!'];
   const hiResposeMessage = process.env.NEXT_PUBLIC_HI_MESSAGE_RESPONSE
@@ -29,14 +29,14 @@ export default async function handler(
   const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
   try {
-      //create chain
-      const chain = new makeChain(pinecone_name_space);
+    //create chain
+    const chain = new makeChain(pinecone_name_space);
 
-      const response = await chain.run(sanitizedQuestion)
-      if (response) {
-        res.status(200).json(response);
-      }
-  
+    const response = await chain.run(sanitizedQuestion, Number(enablegptfallback))
+    if (response) {
+      res.status(200).json(response);
+    }
+
   } catch (error: any) {
     console.log('error', error);
     res.status(500).json({ error: error.message || 'Something went wrong' });
