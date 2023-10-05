@@ -19,20 +19,21 @@ definitions:
 
 pipelines:
   branches:
-    stage:
+    dev:
       - step: *build
       - step:
-          name: Deploy Stage
-          deployment: Staging
+          name: dev
+          deployment: Development
           image: google/cloud-sdk:alpine
+          trigger: manual
           script:
-            - bash ./run.sh stage
+            - bash ./run.sh deploy
 
-    create-ingest-endpoint:
+    release/*:
       - step: *build
       - step:
-          name: Deploy Main
-          deployment: Production
+          name: release
+          deployment: Staging
           image: google/cloud-sdk:alpine
           trigger: manual
           script:

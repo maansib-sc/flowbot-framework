@@ -1,0 +1,8 @@
+cloud deployment/
+visual-guide/
+.env
+.env.example
+*.yml
+*.sh
+*.md
+acme/
