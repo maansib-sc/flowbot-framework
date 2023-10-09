@@ -16,16 +16,21 @@ import {
 } from '@/components/ui/accordion';
 import FileList from '@/components/fileList';
 import { Oval } from 'react-loader-spinner'
+import { deleteConvList, deletePDFList, getConvList, getPDFList, uploadConv, uploadPDF } from '@/apiRequests';
+import WhatsAppList from '@/components/whatsAppList';
 
 export default function Home() {
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [selecteduploadFilename, setSelecteduploadFileName] = useState<string | null>(null);
   const [selecteduploadFile, setSelecteduploadFile] = useState<File | null>(null);
+  const [selectedConvUploadFile, setSelectedConvUploadFile] = useState<FileList | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [apiData, setApiData] = useState<any>(null);
   // const [pdfList, setPdfList] = useState<string[]>([]);
   const [pdfList, setPdfList] = useState<{ name: string; is_trained: boolean }[]>([]);
+  const [convList, setConvList] = useState<{ training_id: string; is_trained: boolean }[]>([]);
+  const [selectedFileType, setSelectedFileType] = useState<string>("PDF")
 
   const [uploading, setUploading] = useState(false);
   // Add this state at the beginning of your component
@@ -39,45 +44,39 @@ export default function Home() {
   const backendConnectorHost = process.env.NEXT_PUBLIC_BACKEND_CONNECTOR_HOST
   const backendConnectorKey = process.env.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY
 
-  useEffect(() => {
-    // Only run this code if chatId is defined (i.e., only on the client side)
-    if (chatId) {
-      fetchData();
-      // Now you can use the 'chatId' in your component's logic
-    }
-  }, [chatId]);
+  // useEffect(() => {
+  //   // Get the URL search parameters
+  //   const urlParams = new URLSearchParams(window.location.search);
 
-  useEffect(() => {
-    // Get the URL search parameters
-    const urlParams = new URLSearchParams(window.location.search);
+  //   // Check if the 'chat-id' query parameter is present
+  //   if (!urlParams.has('chat-id')) {
+  //     // Query parameter is not present, redirect to a new URL
+  //     function generateRandomStringWithNumbers(length: number) {
+  //       const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  //       const numbers = '0123456789';
+  //       let result = 'chat-';
 
-    // Check if the 'chat-id' query parameter is present
-    if (!urlParams.has('chat-id')) {
-      // Query parameter is not present, redirect to a new URL
-      window.location.href = `https://${backendConnectorHost}/chatbot/instance`;
-    }
-  }, []);
+  //       for (let i = 0; i < length - 5; i++) {
+  //         const randomChar = characters.charAt(Math.floor(Math.random() * characters.length));
+  //         result += randomChar;
+  //       }
 
+  //       for (let i = 0; i < 3; i++) {
+  //         const randomDigit = numbers.charAt(Math.floor(Math.random() * numbers.length));
+  //         result += randomDigit;
+  //       }
 
-  async function fetchData() {
-    try {
-      const response = await axios.get(`https://${backendConnectorHost}/pdf/list?chatbot_id=${chatId}`, {
-        headers: {
-          'API-KEY': backendConnectorKey || '',
-        },
-      });
-      setApiData(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //       return result;
+  //     }
+  //     window.location.href = `https://chats-reader-ai.document-chatbot.hybrid.chat/?chat-id=${generateRandomStringWithNumbers(8)}`
+  //   }
+  // }, []);
 
 
   useEffect(() => {
     // Call fetchPdfList function here
     if (chatId) {
       fetchPdfList();
-      // Now you can use the 'chatId' in your component's logic
     }
   }, [chatId]);
 
@@ -189,15 +188,11 @@ export default function Home() {
     }
   };
 
+  const fileInputRef = useRef(null);
 
   async function fetchPdfList() {
     try {
-      const response = await axios.get(`https://${backendConnectorHost}/pdf/list?chatbot_id=${chatId}`, {
-        headers: {
-          'API-KEY': backendConnectorKey || '',
-        },
-      });
-      const pdfData = response.data.data;
+      const pdfData = await getPDFList(chatId)
       setPdfList(pdfData);
       setSelecteduploadFile(null)
     } catch (error) {
@@ -205,36 +200,14 @@ export default function Home() {
     }
   }
 
-
-
-  const fileInputRef = useRef(null);
-
-
-  async function uploadFileToApi(file: File) {
+  async function uploadPDFFile() {
     setUploading(true);
-    const axios = require('axios');
     const FormData = require('form-data');
-
     let data = new FormData();
-    data.append('file', file);
-
-    const headers = {
-      'API-KEY': backendConnectorKey,
-      //'Connection': 'keep-alive',
-      'accept': 'application/json',
-      //'sec-ch-ua-mobile': '?0'
-    };
-
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `https://${backendConnectorHost}/pdf/upload?chatbot_id=${chatId}`, // Replace with your API endpoint
-      headers: headers,
-      data: data
-    };
+    data.append('file', selecteduploadFile);
 
     try {
-      const response = await axios.request(config);
+      await uploadPDF(chatId, data)
       // console.log("upload file response ==>", response.data);
       setTimeout(async () => {
         await fetchPdfList();
@@ -247,16 +220,10 @@ export default function Home() {
     }
   }
 
-
   async function handleUntrain() {
     setUnTrainingInProgress(true);
     try {
-      const response = await axios.get(`https://${backendConnectorHost}/chatbot/untrain?chatbot_id=${chatId}`, {
-        headers: {
-          'API-KEY': backendConnectorKey || '',
-        },
-      });
-      // console.log("untrain response ==>", response.data);
+      await deletePDFList(chatId)
       // Call the fetchPdfList function here
       await fetchPdfList();
     } catch (error) {
@@ -267,51 +234,17 @@ export default function Home() {
     }
   }
 
-  async function handleTrain() {
-    try {
-      setTrainingInProgress(true);
-      const response = await axios.get(`https://${backendConnectorHost}/chatbot/train?chatbot_id=${chatId}`, {
-        headers: {
-          'API-KEY': backendConnectorKey || '',
-          //'Connection': 'keep-alive',
-          //'sec-ch-ua-mobile': '?0',
-        },
-      });
-      await fetchPdfList();
-      console.log(JSON.stringify(response.data));
-      window.alert('Your bot is trained!');
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setTrainingInProgress(false); // Training process complete
-    }
-  }
-
-
-
-
   const fileInputRefDoc = useRef(null);
-  const handleFileChange = (e: any) => {
+  const handlePDFFileChange = (e: any) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      // console.log("selected file ==>", selectedFile.name)
       setShowLoader(true);
+      setSelectedFileType('PDF')
       setSelecteduploadFile(selectedFile)
-      uploadFileToApi(selectedFile)
-      setSelecteduploadFile(null)
       setTrainingInProgress(true)
     }
   };
 
-  // const handleButtonClick = () => {
-  //   if (fileInputRefDoc) {
-  //     fileInputRefDoc.current.click();
-  //   }
-  // };
-
-  const removeSelectedField = () => {
-    setSelecteduploadFile(null)
-  }
 
   function addEllipsis(str: string, maxLength: number) {
     if (str.length <= maxLength) {
@@ -321,16 +254,13 @@ export default function Home() {
     }
   }
 
-
-  // function removefilefromfileList(index: number) {
-  //   let data = [...pdfList]
-  //   data.splice(index, 1)
-  //   setPdfList(data)
-  // }
-
   function clearAllPdfList() {
     setShowLoader(true);
-    handleUntrain()
+    if (selectedFileType === "PDF") {
+      handleUntrain()
+    } else {
+      handleDeleteNameSpace()
+    }
   }
 
   function handleToggleChange() {
@@ -338,7 +268,68 @@ export default function Home() {
   }
 
 
+  // whatsApp
 
+  async function fetchConvList() {
+    try {
+      const conList = await getConvList(chatId)
+      setConvList(conList);
+      setSelectedConvUploadFile(null)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function uploadConvToApi() {
+    setUploading(true);
+    setShowLoader(true)
+    const FormData = require('form-data');
+
+    let data = new FormData();
+    if (selectedConvUploadFile) {
+
+      [...selectedConvUploadFile].forEach((file, i) => {
+        data.append(`chats_files`, file, file.name)
+      })
+    }
+
+    try {
+      await uploadConv(chatId, data)
+      setSelectedConvUploadFile(null);
+      setTimeout(async () => {
+        await fetchConvList();
+        setShowLoader(false)
+      }, 2000)
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUploading(false); // Training process complete
+    }
+  }
+
+  async function handleDeleteNameSpace() {
+    try {
+      await deleteConvList(chatId)
+      // Call the fetchPdfList function here
+      await fetchConvList();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUnTrainingInProgress(false);
+      setShowLoader(false)
+    }
+  }
+
+  useEffect(() => {
+    console.log("fileChange ==>", selectedFileType, selecteduploadFile, selectedConvUploadFile)
+    if (selectedFileType === "PDF" && selecteduploadFile) {
+      setConvList([])
+      uploadPDFFile()
+    } else if (selectedFileType === "WHATSAPP" && selectedConvUploadFile) {
+      setPdfList([])
+      uploadConvToApi()
+    }
+  }, [selectedFileType, selecteduploadFile, selectedConvUploadFile])
 
   return (
     <>
@@ -356,19 +347,18 @@ export default function Home() {
                 <div className='flex mb-6'>
 
                   <label className="w-64 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  cursor-pointer">
-                    <input type='file' accept='.pdf' className="hidden" onChange={handleFileChange} ref={fileInputRef} />
+                    <input type='file' accept='.pdf' className="hidden" onChange={handlePDFFileChange} ref={fileInputRef} />
                     <span className="mt-2 text-base leading-normal">Upload a Doc</span>
                     <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                       <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                     </svg>
                   </label>
-                  <label className="w-64 flex justify-between bg-gray-200  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
-
+                  <label className="w-64 flex justify-between  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  cursor-pointer">
+                    <input type='file' className="hidden" accept='.txt' placeholder={"Upload conv."} onChange={(e) => { setSelectedConvUploadFile(e.target.files); setSelectedFileType("WHATSAPP") }} multiple />
                     <span className="mt-2 text-base leading-normal">Upload Conv.</span>
                     <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                       <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
                     </svg>
-                    <span className={styles.comingSoonLabel}>Coming soon</span>
                   </label>
                 </div>
                 <div className='flex'>
@@ -412,15 +402,27 @@ export default function Home() {
                   display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", height: "100%",
                   minHeight: "250px"
                 }}>
-                  {
+                  {selectedFileType === "PDF" &&
                     pdfList.length > 0 && !showLoader ?
 
+                    <div style={{ width: "100%" }}>
+                      {
+                        pdfList.map((item, index) => {
+                          return (
+                            <FileList filename={item.name} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
+                          )
+                        }
+                        )
+                      }
+                    </div>
+                    :
+                    selectedFileType === "WHATSAPP" &&
+                      convList.length > 0 && !showLoader ?
                       <div style={{ width: "100%" }}>
                         {
-                          pdfList.map((item, index) => {
+                          convList.map((item, index) => {
                             return (
-
-                              <FileList filename={item.name} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
+                              <WhatsAppList filename={item.training_id} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
                             )
                           }
                           )

@@ -1,43 +1,24 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { pdfFileProgress } from '@/apiRequests';
+import { whatsAppFileProgress } from '@/apiRequests';
 
-export default function FileList({ filename, index, trained, setTrainingInProgress
+export default function WhatsAppList({ filename, trained, index, setTrainingInProgress
 }: { filename: string, index: number, trained: boolean, setTrainingInProgress: (value: boolean) => void }) {
-    const router = useRouter();
-    const { query: { 'chat-id': chatId } } = router
-
-
     const [progress, setProgress] = useState(trained ? 100 : 0);
 
     async function pdfProgress() {
         try {
-            const response = await pdfFileProgress(filename)
+            const response = await whatsAppFileProgress(filename)
             if (response) {
-                setProgress(Math.ceil(Number(response.data.data.replace(/%/g, ""))))
+                setProgress(Math.ceil(Number(response.data)))
             }
         } catch (error) {
             console.log(error);
         }
     }
 
-    async function trainAI() {
-        try {
-            const response = await axios.get(`https://${process.env.NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}/chatbot/train?chatbot_id=${chatId}`, {
-                headers: {
-                    'API-KEY': process.env.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY || "",
-                },
-            });
-            setTrainingInProgress(false)
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
     useEffect(() => {
-        if (!trained && progress !== 100) {
+        // console.log("progress from ==>", progress)
+        if (progress !== 100) {
             let interval: any;
             if (progress < 100) {
                 interval = setInterval(() => {
@@ -50,10 +31,7 @@ export default function FileList({ filename, index, trained, setTrainingInProgre
             };
         }
 
-        if (!trained && progress === 100) {
-            setTimeout(() => {
-                trainAI()
-            }, 5000);
+        if (progress === 100) {
         }
     }, [progress]);
     return (
