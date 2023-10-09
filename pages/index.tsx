@@ -352,6 +352,10 @@ export default function Home() {
 
   const updatePrompt = async () => {
     await submitPromptTemplate(chatId, { "template_instructions": promptTemplate })
+    const temp = await getDefaultPromptTemplate(chatId)
+    if (temp) {
+      setPromptTemplate(temp.data)
+    }
   }
 
   return (
