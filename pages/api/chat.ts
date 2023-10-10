@@ -32,7 +32,7 @@ export default async function handler(
     //create chain
     const chain = new makeChain(pinecone_name_space);
 
-    const response = await chain.run(sanitizedQuestion, Number(enablegptfallback))
+    const response = await chain.run(sanitizedQuestion)
     if (response) {
       res.status(200).json(response);
     }

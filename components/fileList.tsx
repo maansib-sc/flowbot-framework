@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { pdfFileProgress } from '@/apiRequests';
+import { pdfFileProgress, whatsAppFileProgress } from '@/apiRequests';
 
-export default function FileList({ filename, index, trained, setTrainingInProgress
-}: { filename: string, index: number, trained: boolean, setTrainingInProgress: (value: boolean) => void }) {
+export default function FileList({ selectedFileType, filename, index, trained, setTrainingInProgress
+}: { selectedFileType: string, filename: string | undefined, index: number, trained: boolean, setTrainingInProgress: (value: boolean) => void }) {
     const router = useRouter();
     const { query: { 'chat-id': chatId } } = router
 
@@ -12,13 +12,28 @@ export default function FileList({ filename, index, trained, setTrainingInProgre
     const [progress, setProgress] = useState(trained ? 100 : 0);
 
     async function pdfProgress() {
-        try {
-            const response = await pdfFileProgress(filename)
-            if (response) {
-                setProgress(Math.ceil(Number(response.data.data.replace(/%/g, ""))))
+        if (filename) {
+            try {
+                const response = await pdfFileProgress(filename)
+                if (response) {
+                    setProgress(Math.ceil(Number(response.data.data.replace(/%/g, ""))))
+                }
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            console.log(error);
+        }
+    }
+
+    async function ConvProgress() {
+        if (filename) {
+            try {
+                const response = await whatsAppFileProgress(filename)
+                if (response) {
+                    setProgress(Math.ceil(Number(response.data)))
+                }
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 
@@ -37,25 +52,43 @@ export default function FileList({ filename, index, trained, setTrainingInProgre
     }
 
     useEffect(() => {
-        if (!trained && progress !== 100) {
-            let interval: any;
-            if (progress < 100) {
-                interval = setInterval(() => {
-                    pdfProgress()
-                }, 1200); // 1200 milliseconds (2 minutes divided by 100 steps)
+        if (selectedFileType === "PDF") {
+            if (!trained && progress !== 100) {
+                let interval: any;
+                if (progress < 100) {
+                    interval = setInterval(() => {
+                        pdfProgress()
+                    }, 1200); // 1200 milliseconds (2 minutes divided by 100 steps)
+                }
+
+                return () => {
+                    clearInterval(interval);
+                };
             }
 
-            return () => {
-                clearInterval(interval);
-            };
-        }
+            if (!trained && progress === 100) {
+                setTimeout(() => {
+                    trainAI()
+                }, 5000);
+            }
+        } else if (selectedFileType === "WHATSAPP") {
+            if (progress !== 100) {
+                let interval: any;
+                if (progress < 100) {
+                    interval = setInterval(() => {
+                        ConvProgress()
+                    }, 1200); // 1200 milliseconds (2 minutes divided by 100 steps)
+                }
 
-        if (!trained && progress === 100) {
-            setTimeout(() => {
-                trainAI()
-            }, 5000);
+                return () => {
+                    clearInterval(interval);
+                };
+            }
+            if (!trained && progress === 100) {
+                setTrainingInProgress(false)
+            }
         }
-    }, [progress]);
+    }, [progress, selectedFileType]);
     return (
         <ul className="bg-white rounded-lg shadow divide-y divide-gray-200 max-w-sm mt-2">
             <li className="px-6 py-4">

@@ -7,12 +7,11 @@ export class makeChain {
   constructor(chat_id: string) {
     this.chat_id = chat_id
   }
-  run = async (inputQuestion: string, enablegptfallback: Number) => {
-    const documentSearchAPI = "http://stage-document-backend.smarter.codes:8084/generate/answer";
+  run = async (inputQuestion: string) => {
+    const documentSearchAPI = "https://dev.document-search.smarter.codes/generate/answer";
     let queryParams = {
-      'question': inputQuestion,
-      'chat_id': this.chat_id,
-      'enable_gpt_fallback': enablegptfallback
+      'user_input': inputQuestion,
+      'chat_id': this.chat_id
     };
     const options = {
       method: 'POST',

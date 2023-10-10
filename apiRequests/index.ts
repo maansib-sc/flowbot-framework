@@ -37,7 +37,7 @@ export const pdfFileProgress = async (filename: string) => {
 
 export const getConvList = async (chatId: CHAT_ID) => {
     try {
-        const response = await axiosConvInstance.get(`/training/chats/training_ids?namespace=${chatId}`);
+        const response = await axiosConvInstance.get(`/training/training_ids?namespace=${chatId}`);
         return response.data;
     } catch (error) {
 
@@ -46,7 +46,7 @@ export const getConvList = async (chatId: CHAT_ID) => {
 
 export const uploadConv = async (chatId: CHAT_ID, data: any) => {
     try {
-        await axiosConvInstance.post(`/training/chats?namespace=${chatId}`, data);
+        await axiosConvInstance.post(`/training/chats?chat_id=${chatId}&book_type=whatsapp-conversation`, data);
     } catch (error) {
 
     }
@@ -62,7 +62,7 @@ export const deleteConvList = async (chatId: CHAT_ID) => {
 
 export const whatsAppFileProgress = async (filename: string) => {
     try {
-        return await axiosConvInstance.get(`/training/chats/progress?training_id=${filename}`);
+        return await axiosConvInstance.get(`/training/progress?training_id=${filename}`);
     } catch (error) {
 
     }

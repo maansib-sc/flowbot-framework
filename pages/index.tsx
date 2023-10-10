@@ -29,7 +29,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [apiData, setApiData] = useState<any>(null);
   // const [pdfList, setPdfList] = useState<string[]>([]);
-  const [pdfList, setPdfList] = useState<{ name: string; is_trained: boolean }[]>([]);
+  const [pdfList, setPdfList] = useState<{ name?: string; training_id?: string; is_trained: boolean }[]>([]);
   const [convList, setConvList] = useState<{ training_id: string; is_trained: boolean }[]>([]);
   const [selectedFileType, setSelectedFileType] = useState<string>("PDF")
 
@@ -79,7 +79,6 @@ export default function Home() {
   useEffect(() => {
     // Call fetchPdfList function here
     if (chatId) {
-
       fetchPdfList();
     }
   }, [chatId]);
@@ -196,12 +195,14 @@ export default function Home() {
 
   async function fetchPdfList() {
     try {
+      setPdfList([])
       const temp = await getDefaultPromptTemplate(chatId)
       if (temp) {
         setPromptTemplate(temp.data)
       }
       const pdfData = await getPDFList(chatId)
-      setPdfList(pdfData);
+      const conList = await getConvList(chatId)
+      setPdfList([...pdfData, ...conList]);
       setSelecteduploadFile(null)
     } catch (error) {
       console.log(error);
@@ -262,15 +263,6 @@ export default function Home() {
     }
   }
 
-  function clearAllPdfList() {
-    setShowLoader(true);
-    if (selectedFileType === "PDF") {
-      handleUntrain()
-    } else {
-      handleDeleteNameSpace()
-    }
-  }
-
   function handleToggleChange() {
     setToggleStatus(!toggleStatus)
   }
@@ -278,15 +270,16 @@ export default function Home() {
 
   // whatsApp
 
-  async function fetchConvList() {
-    try {
-      const conList = await getConvList(chatId)
-      setConvList(conList);
-      setSelectedConvUploadFile(null)
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // async function fetchConvList() {
+  //   try {
+  //     const conList = await getConvList(chatId)
+  //     // setConvList(conList);
+  //     setPdfList((previousValue) => [...previousValue, ...conList])
+  //     setSelectedConvUploadFile(null)
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   async function uploadConvToApi() {
     setUploading(true);
@@ -297,7 +290,7 @@ export default function Home() {
     if (selectedConvUploadFile) {
 
       [...selectedConvUploadFile].forEach((file, i) => {
-        data.append(`chats_files`, file, file.name)
+        data.append(`training_files`, file, file.name)
       })
     }
 
@@ -305,7 +298,7 @@ export default function Home() {
       await uploadConv(chatId, data)
       setSelectedConvUploadFile(null);
       setTimeout(async () => {
-        await fetchConvList();
+        await fetchPdfList();
         setShowLoader(false)
       }, 2000)
     } catch (error) {
@@ -319,7 +312,7 @@ export default function Home() {
     try {
       await deleteConvList(chatId)
       // Call the fetchPdfList function here
-      await fetchConvList();
+      await fetchPdfList();
     } catch (error) {
       console.log(error);
     } finally {
@@ -338,10 +331,8 @@ export default function Home() {
 
   useEffect(() => {
     if (selectedFileType === "PDF" && selecteduploadFile) {
-      setConvList([])
       uploadPDFFile()
     } else if (selectedFileType === "WHATSAPP" && selectedConvUploadFile) {
-      setPdfList([])
       uploadConvToApi()
     }
   }, [selectedFileType, selecteduploadFile, selectedConvUploadFile])
@@ -356,6 +347,14 @@ export default function Home() {
     if (temp) {
       setPromptTemplate(temp.data)
     }
+  }
+
+
+  async function clearAllPdfList() {
+    setShowLoader(true);
+    setPdfList([])
+    await handleUntrain()
+    await handleDeleteNameSpace()
   }
 
   return (
@@ -429,27 +428,14 @@ export default function Home() {
                   display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", height: "100%",
                   minHeight: "250px"
                 }}>
-                  {selectedFileType === "PDF" &&
-                    pdfList.length > 0 && !showLoader ?
+                  {
+                    pdfList?.length > 0 && !showLoader ?
 
-                    <div style={{ width: "100%" }}>
-                      {
-                        pdfList.map((item, index) => {
-                          return (
-                            <FileList filename={item.name} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
-                          )
-                        }
-                        )
-                      }
-                    </div>
-                    :
-                    selectedFileType === "WHATSAPP" &&
-                      convList.length > 0 && !showLoader ?
                       <div style={{ width: "100%" }}>
                         {
-                          convList.map((item, index) => {
+                          pdfList.map((item, index) => {
                             return (
-                              <WhatsAppList filename={item.training_id} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
+                              <FileList selectedFileType={selectedFileType} filename={item.name || item.training_id} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
                             )
                           }
                           )
