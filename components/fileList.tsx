@@ -37,20 +37,6 @@ export default function FileList({ selectedFileType, filename, index, trained, s
         }
     }
 
-    async function trainAI() {
-        try {
-            const response = await axios.get(`https://${process.env.NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}/chatbot/train?chatbot_id=${chatId}`, {
-                headers: {
-                    'API-KEY': process.env.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY || "",
-                },
-            });
-            setTrainingInProgress(false)
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
     useEffect(() => {
         if (selectedFileType === "PDF") {
             if (!trained && progress !== 100) {
@@ -68,7 +54,7 @@ export default function FileList({ selectedFileType, filename, index, trained, s
 
             if (!trained && progress === 100) {
                 setTimeout(() => {
-                    trainAI()
+                    setTrainingInProgress(false)
                 }, 5000);
             }
         } else if (selectedFileType === "WHATSAPP") {
