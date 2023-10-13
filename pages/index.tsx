@@ -54,24 +54,7 @@ export default function Home() {
     // Check if the 'chat-id' query parameter is present
     if (!urlParams.has('chat-id')) {
       // Query parameter is not present, redirect to a new URL
-      function generateRandomStringWithNumbers(length: number) {
-        const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const numbers = '0123456789';
-        let result = 'chat-';
-
-        for (let i = 0; i < length - 5; i++) {
-          const randomChar = characters.charAt(Math.floor(Math.random() * characters.length));
-          result += randomChar;
-        }
-
-        for (let i = 0; i < 3; i++) {
-          const randomDigit = numbers.charAt(Math.floor(Math.random() * numbers.length));
-          result += randomDigit;
-        }
-
-        return result;
-      }
-      window.location.href = `https://dev.document-chatbot.hybrid.chat/?chat-id=${generateRandomStringWithNumbers(8)}`
+      window.location.href = `https://dev.document-chatbot.hybrid.chat/?chat-id=default`
     }
   }, []);
 
