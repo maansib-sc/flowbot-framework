@@ -74,9 +74,15 @@ export default function Home() {
       window.location.href = `https://dev.document-chatbot.hybrid.chat/?chat-id=default`
     }
 
+    createNewChatRoom()
+  }, []);
+
+
+  const createNewChatRoom = () => {
     const chatroom = generateRandomChatRoom(8)
     setNewChatRoom(chatroom)
-  }, []);
+  }
+
 
 
   useEffect(() => {
@@ -551,7 +557,11 @@ export default function Home() {
                   {promptModal && <PromptModal onChangeHandler={onPromptChange} onClose={(val: string | undefined) => { val === "submit" ? updatePrompt() : null; setPromptModal(false) }} resetTemplate={resetdefaultPromptTemplate} data={promptTemplate} onSubmit={() => updatePrompt()} />}
 
                   <div className='flex'>
-                    <button className={`${styles.buttonWrapper}`} onClick={() => window.alert(`Copy the Url for chatbot - https://dev.document-chatbot.hybrid.chat/?chat-id=${newChatRoom}`)}>Publish & Share</button>
+                    <button className={`${styles.buttonWrapper}`} onClick={() => {
+                      window.alert(`Copy the Url for chatbot - https://dev.document-chatbot.hybrid.chat/?chat-id=${newChatRoom}`);
+                      createNewChatRoom()
+                    }
+                    }>Publish & Share</button>
                     {/* <span className={styles.comingSoonLabel} style={{ transform: "translate(30%, -60%)" }}>Coming soon</span> */}
                   </div>
                 </div>
