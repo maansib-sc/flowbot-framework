@@ -47,6 +47,7 @@ export default function Home() {
   const [JSModule, setJSModule] = useState<any>(null);
   const [styles, setStyle] = useState<any>(null);
   const [newChatRoom, setNewChatRoom] = useState<string>('test');
+  const [isPublishUrl, setIsPublishUrl] = useState<boolean>(false);
 
 
   function generateRandomChatRoom(length: number) {
@@ -67,7 +68,15 @@ export default function Home() {
   useEffect(() => {
     // Get the URL search parameters
     const urlParams = new URLSearchParams(window.location.search);
+    const chatId = urlParams.get("chat-id");
+    console.log("ChatId  Params ==>", urlParams)
 
+    // Check if the chatId contains "publish"
+    if (chatId && chatId.includes("publish")) {
+      setIsPublishUrl(true)
+    } else {
+      setIsPublishUrl(false)
+    }
     // Check if the 'chat-id' query parameter is present
     if (!urlParams.has('chat-id')) {
       // Query parameter is not present, redirect to a new URL
@@ -76,7 +85,6 @@ export default function Home() {
 
     createNewChatRoom()
   }, []);
-
 
   const createNewChatRoom = () => {
     const chatroom = generateRandomChatRoom(8)
@@ -432,8 +440,8 @@ export default function Home() {
     <>
       {chatId && styles ?
         <Layout>
-          <div className="flex m-5">
-            <div style={{ padding: "1rem", display: "flex", flexDirection: "column", maxWidth: "355px" }}>
+          <div className={`${isPublishUrl ? "flex m-5 justify-center " : "flex m-5"}`}>
+            {!isPublishUrl && <div style={{ padding: "1rem", display: "flex", flexDirection: "column", maxWidth: "355px" }}>
               <h1 className={styles.title}>TRAIN AI</h1>
               <p>from the options below.</p>
               <div className="mt-4 mb-4 flex flex-col">
@@ -540,7 +548,7 @@ export default function Home() {
                 </div>
 
               </div>
-            </div>
+            </div>}
 
             <main className={styles.main}>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "1rem", alignItems: "center" }}>
@@ -556,14 +564,16 @@ export default function Home() {
                   <button className={`${styles.buttonWrapper} bg-white mr-4`} onClick={() => setPromptModal(true)}>Custom Prompt</button>
                   {promptModal && <PromptModal onChangeHandler={onPromptChange} onClose={(val: string | undefined) => { val === "submit" ? updatePrompt() : null; setPromptModal(false) }} resetTemplate={resetdefaultPromptTemplate} data={promptTemplate} onSubmit={() => updatePrompt()} />}
 
-                  <div className='flex'>
-                    <button className={`${styles.buttonWrapper}`} onClick={() => {
-                      window.alert(`Copy the Url for chatbot - https://dev.document-chatbot.hybrid.chat/?chat-id=${newChatRoom}`);
-                      createNewChatRoom()
-                    }
-                    }>Publish & Share</button>
-                    {/* <span className={styles.comingSoonLabel} style={{ transform: "translate(30%, -60%)" }}>Coming soon</span> */}
-                  </div>
+                  {!isPublishUrl &&
+                    <div className='flex'>
+                      <button className={`${styles.buttonWrapper}`} onClick={() => {
+                        window.alert(`Copy the Url for chatbot - https://dev.document-chatbot.hybrid.chat/?chat-id=${newChatRoom}`);
+                        createNewChatRoom()
+                      }
+                      }>Publish & Share</button>
+                      {/* <span className={styles.comingSoonLabel} style={{ transform: "translate(30%, -60%)" }}>Coming soon</span> */}
+                    </div>
+                  }
                 </div>
               </div>
               <div className={styles.cloud}>
