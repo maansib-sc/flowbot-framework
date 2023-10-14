@@ -80,7 +80,7 @@ export default function Home() {
     // Check if the 'chat-id' query parameter is present
     if (!urlParams.has('chat-id')) {
       // Query parameter is not present, redirect to a new URL
-      getNewInstance().then((res) => window.location.href = res?.headers?.location)
+      window.location.href = `https://${window.location.host}/?chat-id=default`
     }
 
     const createNewChatRoom = () => {

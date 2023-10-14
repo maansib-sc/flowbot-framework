@@ -18,9 +18,15 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: $PORT
+          env:
+            - name: NEXT_PUBLIC_BACKEND_CONNECTOR_HOST
+              value: $CONNECTOR
+            - name: NEXT_PUBLIC_BACKEND_CONNECTOR_WHATSAPPHOST
+              value: $SIMILARITY
           envFrom:
             - secretRef:
                 name: $APP-env
+
 ---
 apiVersion: v1
 kind: Service

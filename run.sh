@@ -33,6 +33,14 @@ APP_PROD="$HOST_PROD"
 APP_DEV="dev.$HOST_DEV"
 APP_REL="$REL_TAG.$HOST_REL"
 
+CONNECTOR_PROD="https://llm-connect.$HOST_PROD"
+CONNECTOR_DEV="https://llm-connect-dev.$HOST_DEV"
+CONNECTOR_REL="https://llm-connect-$REL_TAG.$HOST_REL"
+
+SIMILARITY_PROD="https://text-similarity.$HOST_PROD"
+SIMILARITY_DEV="https://text-similarity-dev.$HOST_DEV"
+SIMILARITY_REL="https://text-similarity-$REL_TAG.$HOST_REL"
+
 build() {
     if [ -n "$COMPUTE_KEY" ]; then
         echo "$COMPUTE_KEY" > compute-key.json
@@ -58,6 +66,8 @@ deploy() {
     local URL="$1"
     local NAMESPACE="$2"
     local GCP_CLUSTER="$3"
+    local CONNECTOR="$4"
+    local SIMILARITY="$5"
     
     if [ -n "$K8S_KEY" ]; then
         echo "$K8S_KEY" > k8s-key.json
@@ -82,6 +92,8 @@ deploy() {
     -e "s|\$APP|${BITBUCKET_REPO_SLUG}|" \
     -e "s|\$URL|${URL}|" \
     -e "s|\$PORT|80|" \
+    -e "s|\$CONNECTOR|${CONNECTOR}|" \
+    -e "s|\$SIMILARITY|${SIMILARITY}|" \
     kube-deployment.yml > kube-deployment.tmp.yml
     
     kubectl apply --namespace="$NAMESPACE" -f kube-deployment.tmp.yml
@@ -91,21 +103,27 @@ deploy-dev() {
     deploy \
     "$APP_DEV" \
     "$BITBUCKET_BRANCH" \
-    "$GCP_CLUSTER_DEV"
+    "$GCP_CLUSTER_DEV" \
+    "$CONNECTOR_DEV" \
+    "$SIMILARITY_DEV"
 }
 
 deploy-prod() {
     deploy \
     "$APP_PROD" \
     "prod" \
-    "$GCP_CLUSTER_PROD"
+    "$GCP_CLUSTER_PROD" \
+    "$CONNECTOR_PROD" \
+    "$SIMILARITY_PROD"
 }
 
 deploy-rel() {
     deploy \
     "$APP_REL" \
     "$REL_TAG" \
-    "$GCP_CLUSTER_REL"
+    "$GCP_CLUSTER_REL" \
+    "$CONNECTOR_REL" \
+    "$SIMILARITY_REL"
 }
 
 case "$1" in
