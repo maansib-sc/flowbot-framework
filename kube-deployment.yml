@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-$APP
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $APP
+  template:
+    metadata:
+      labels:
+        app: $APP
+    spec:
+      containers:
+        - name: container-$APP
+          image: $IMAGE_TAG
+          imagePullPolicy: Always
+          ports:
+            - containerPort: $PORT
+          envFrom:
+            - secretRef:
+                name: $APP-env
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: entrypoint-$APP
+spec:
+  type: ClusterIP
+  selector:
+    app: $APP
+  ports:
+    - port: $PORT
+      targetPort: $PORT
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-$APP
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - $URL
+      secretName: $URL-tls
+  rules:
+    - host: $URL
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: entrypoint-$APP
+                port:
+                  number: $PORT

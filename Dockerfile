@@ -9,3 +9,5 @@ RUN yarn
 COPY . .
 
 ENV PORT 80
+
+CMD [ "yarn", "run", "dev"]

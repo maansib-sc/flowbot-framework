@@ -18,14 +18,20 @@ else
     REL_TAG="$BITBUCKET_BRANCH"
 fi
 
-IMAGE_TAG="${GCP_REGISTRY_REPO}/${BITBUCKET_REPO_SLUG}:${REL_TAG}-${BITBUCKET_BUILD_NUMBER}"
+IMAGE_TAG="${GCP_REGISTRY_REPO}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}-${BITBUCKET_BUILD_NUMBER}"
+IMAGE_TAG_CACHE="${GCP_REGISTRY_REPO}/${BITBUCKET_REPO_SLUG}:cache"
 
+GCP_CLUSTER_PROD=kg-hybrid-chat
+GCP_CLUSTER_DEV=kg-hybrid-chat
+GCP_CLUSTER_REL=kg-hybrid-chat
 
-GCE_VM="$GCE_VM"
-GCP_FOLDER_NAME="${BITBUCKET_REPO_SLUG}-${REL_TAG}"
-ROOT_NAME="document-chatbot"
-TLD_NAME="hybrid.chat"
-HOST_NAME="${REL_TAG}.${ROOT_NAME}.${TLD_NAME}"
+HOST_PROD="kg.hybrid.chat"
+HOST_DEV="kg.hybrid.chat"
+HOST_REL="kg.hybrid.chat"
+
+APP_PROD="$HOST_PROD"
+APP_DEV="dev.$HOST_DEV"
+APP_REL="$REL_TAG.$HOST_REL"
 
 build() {
     if [ -n "$COMPUTE_KEY" ]; then
@@ -38,64 +44,86 @@ build() {
     
     cat artifact-key.json | docker login -u _json_key --password-stdin https://$GCP_REGISTRY
     
-    DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t "$IMAGE_TAG" .
+    DOCKER_BUILDKIT=1 docker build \
+    --platform linux/amd64 \
+    --cache-from "$IMAGE_TAG_CACHE" \
+    --build-arg BUILDKIT_INLINE_CACHE=1 \
+    -t "$IMAGE_TAG" -t "$IMAGE_TAG_CACHE" .
+    
+    docker push "$IMAGE_TAG_CACHE"
     docker push "$IMAGE_TAG"
 }
 
-deploy() {    
-    if [ -n "$COMPUTE_KEY" ]; then
-        echo "$COMPUTE_KEY" > compute-key.json
-    fi
-
-    if [ -n "$ARTIFACT_KEY" ]; then
-        echo "$ARTIFACT_KEY" > artifact-key.json
+deploy() {
+    local URL="$1"
+    local NAMESPACE="$2"
+    local GCP_CLUSTER="$3"
+    
+    if [ -n "$K8S_KEY" ]; then
+        echo "$K8S_KEY" > k8s-key.json
     fi
     
-    gcloud auth activate-service-account --key-file compute-key.json
+    gcloud auth activate-service-account --key-file k8s-key.json
+    gcloud container clusters get-credentials $GCP_CLUSTER --zone $GCP_ZONE --project $GCP_PROJECT
     
+    kubectl create namespace "$NAMESPACE" -o yaml --dry-run=client | kubectl apply -f -
+    
+    if [ -n "$ENV_FILE" ]; then
+        echo -e "$ENV_FILE" > .env
+    fi
+    
+    if [ -f .env ]; then
+        kubectl delete secret "$BITBUCKET_REPO_SLUG-env" --namespace="$NAMESPACE" || :
+        kubectl create secret generic "$BITBUCKET_REPO_SLUG-env" --namespace="$NAMESPACE" --from-env-file=.env
+    fi
     
     sed \
     -e "s|\$IMAGE_TAG|${IMAGE_TAG}|" \
-    -e "s|\$HOST_NAME|${HOST_NAME}|" \
-    -e "s|\$REL_TAG|${REL_TAG}|" \
-    -e "s|\$OPENAI_API_KEY|${OPENAI_API_KEY}|" \
-    -e "s|\$PINECONE_API_KEY|${PINECONE_API_KEY}|" \
-    -e "s|\$PINECONE_ENVIRONMENT|${PINECONE_ENVIRONMENT}|" \
-    -e "s|\$PINECONE_INDEX_NAME|${PINECONE_INDEX_NAME}|" \
-    -e "s|\$NEXT_PUBLIC_BACKEND_CONNECTOR_HOST|${NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}|" \
-    -e "s|\$NEXT_PUBLIC_BACKEND_CONNECTOR_KEY|${NEXT_PUBLIC_BACKEND_CONNECTOR_KEY}|" \
-    -e "s|\$NEXT_PUBLIC_HI_MESSAGE_RESPONSE|${NEXT_PUBLIC_HI_MESSAGE_RESPONSE}|" \
-    -e "s|\$NEXT_PUBLIC_BACKEND_CONNECTOR_WHATSAPPHOST|${NEXT_PUBLIC_BACKEND_CONNECTOR_WHATSAPPHOST}|" \
-    docker-compose.main.yml > docker-compose-deploy.tmp.yml
+    -e "s|\$APP|${BITBUCKET_REPO_SLUG}|" \
+    -e "s|\$URL|${URL}|" \
+    -e "s|\$PORT|80|" \
+    kube-deployment.yml > kube-deployment.tmp.yml
     
-    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT chatbot@$GCE_VM -- mkdir -p server
-    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT docker-compose.traefik.yml chatbot@$GCE_VM:server
-    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT chatbot@$GCE_VM -- "docker network inspect doc-search-network >/dev/null 2>&1 || \
-    docker network create doc-search-network" 
-    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT chatbot@$GCE_VM -- "cd server \
-        && docker compose -f docker-compose.traefik.yml up --build -d"
-    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT chatbot@$GCE_VM -- mkdir -p server/$GCP_FOLDER_NAME
-    gcloud compute scp  --zone $GCP_ZONE --project $GCP_PROJECT docker-compose-deploy.tmp.yml artifact-key.json chatbot@$GCE_VM:server/$GCP_FOLDER_NAME
-    gcloud compute ssh --zone $GCP_ZONE --project $GCP_PROJECT chatbot@$GCE_VM -- "cd server/$GCP_FOLDER_NAME \
-        && cat artifact-key.json | docker login -u _json_key --password-stdin https://$GCP_REGISTRY \
-        && docker compose -f docker-compose-deploy.tmp.yml down \
-        && echo y | docker image prune -a \
-        && docker compose -f docker-compose-deploy.tmp.yml up --build -d"
+    kubectl apply --namespace="$NAMESPACE" -f kube-deployment.tmp.yml
+}
+
+deploy-dev() {
+    deploy \
+    "$APP_DEV" \
+    "$BITBUCKET_BRANCH" \
+    "$GCP_CLUSTER_DEV"
+}
+
+deploy-prod() {
+    deploy \
+    "$APP_PROD" \
+    "prod" \
+    "$GCP_CLUSTER_PROD"
+}
+
+deploy-rel() {
+    deploy \
+    "$APP_REL" \
+    "$REL_TAG" \
+    "$GCP_CLUSTER_REL"
 }
 
 case "$1" in
     build)
         build
     ;;
-    deploy)
-        deploy
+    deploy-dev)
+        deploy-dev
     ;;
-    stage)
-        stage
+    deploy-prod)
+        deploy-prod
+    ;;
+    deploy-rel)
+        deploy-rel
     ;;
     *)
         echo "Unknown function: $1"
-        echo "Available functions: build, deploy"
+        echo "Available functions: build, deploy-dev, deploy-prod, deploy-rel"
         exit 1
     ;;
 esac
