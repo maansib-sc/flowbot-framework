@@ -285,7 +285,7 @@ export default function Home() {
     data.append('file', selecteduploadFile);
 
     try {
-      await uploadPDF(chatId, data)
+      await uploadPDF(newChatRoom, data)
       // console.log("upload file response ==>", response.data);
       setTimeout(async () => {
         await fetchPdfList();
@@ -364,7 +364,7 @@ export default function Home() {
     }
 
     try {
-      await uploadConv(chatId, data)
+      await uploadConv(newChatRoom, data)
       setSelectedConvUploadFile(null);
       setTimeout(async () => {
         await fetchPdfList();
