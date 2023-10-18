@@ -21,7 +21,7 @@ spec:
           env:
             - name: NEXT_PUBLIC_BACKEND_CONNECTOR_HOST
               value: $CONNECTOR
-            - name: NEXT_PUBLIC_BACKEND_CONNECTOR_WHATSAPPHOST
+            - name: NEXT_PUBLIC_BACKEND_TEXT_SIMILARITY
               value: $SIMILARITY
           envFrom:
             - secretRef:

@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const textSimilarityBackendConnectorHost = process.env.NEXT_PUBLIC_BACKEND_TEXT_SIMILARITY
+
 export class makeChain {
   chat_id: string;
 
@@ -7,7 +9,7 @@ export class makeChain {
   constructor(chat_id: string) {
     this.chat_id = chat_id
   }
-  run = async (inputQuestion: string, backendUrl: string = "https://dev.document-search.smarter.codes/generate/answer") => {
+  run = async (inputQuestion: string, backendUrl: string = textSimilarityBackendConnectorHost) => {
     let queryParams = {
       'user_input': inputQuestion,
       'chat_id': this.chat_id
