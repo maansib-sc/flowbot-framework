@@ -22,9 +22,14 @@ export class makeChain {
         'content-type': 'application/json',
       },
     };
+    try {
+      let documentSearchAPIResp = await axios.request(options);
+      let kbResponse = { "text": documentSearchAPIResp.data, "src": "talkingDb" };
+      return kbResponse;
 
-    let documentSearchAPIResp = await axios.request(options);
-    let kbResponse = { "text": documentSearchAPIResp.data, "src": "talkingDb" };
-    return kbResponse;
+    } catch (error) {
+      return { "text": "Please try again later", "src": "talkingDb" };
+    }
+
   }
 };

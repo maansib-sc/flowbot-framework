@@ -5,31 +5,17 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
-import { useRouter } from 'next/router';
-import FileList from '@/components/fileList';
+import { useRouter } from 'next/router'
 import { Oval } from 'react-loader-spinner'
-import { deleteConvList, deletePDFList, getConvList, getDefaultPromptTemplate, getPDFList, resetPromptTemplate, submitPromptTemplate, uploadConv, uploadPDF } from '@/apiRequests';
+import { getDefaultPromptTemplate, resetPromptTemplate, submitPromptTemplate } from '@/apiRequests';
 import { PromptModal } from '@/components/customPromptModal';
+import ChatbotInfo from '@/components/ui/ChatbotInfo';
 
 
 export default function Home() {
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [selecteduploadFilename, setSelecteduploadFileName] = useState<string | null>(null);
-  const [selecteduploadFile, setSelecteduploadFile] = useState<File | null>(null);
-  const [selectedConvUploadFile, setSelectedConvUploadFile] = useState<FileList | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [apiData, setApiData] = useState<any>(null);
-  // const [pdfList, setPdfList] = useState<string[]>([]);
-  const [pdfList, setPdfList] = useState<{ name?: string; training_id?: string; is_trained: boolean }[]>([]);
-  const [convList, setConvList] = useState<{ training_id: string; is_trained: boolean }[]>([]);
-  const [selectedFileType, setSelectedFileType] = useState<string>("PDF")
-
-  const [uploading, setUploading] = useState(false);
-  // Add this state at the beginning of your component
-  const [trainingInProgress, setTrainingInProgress] = useState(false);
-  const [untrainingInProgress, setUnTrainingInProgress] = useState(false);
-  const [showLoader, setShowLoader] = useState<boolean>(false)
   const [toggleStatus, setToggleStatus] = useState<boolean>(false)
   const [promptModal, setPromptModal] = useState<boolean>(false);
   const [promptTemplate, setPromptTemplate] = useState<string | any>('');
@@ -40,6 +26,44 @@ export default function Home() {
   const [newChatRoom, setNewChatRoom] = useState<string>('test');
   const [isPublishUrl, setIsPublishUrl] = useState<boolean>(false);
   const [currentUrl, setCurrentUrl] = useState<string>("");
+
+  const [messageState, setMessageState] = useState<{
+    messages: Message[];
+    pending?: string;
+    history: [string, string][];
+    pendingSourceDocs?: Document[];
+  }>({
+    messages: [
+      {
+        message: JSModule?.getWelcomeMessage(),
+        type: 'apiMessage',
+        src: ''
+      },
+    ],
+    history: [],
+  });
+
+  const { messages, history } = messageState;
+
+  const messageListRef = useRef<HTMLDivElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResizeTextarea = () => {
+    const textarea = textAreaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto'; // Reset the height to auto to determine the new height
+      textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height
+    }
+  };
+
+
+  useEffect(() => {
+    textAreaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    autoResizeTextarea()
+  }, [query])
 
 
   function generateRandomChatRoom(length: number) {
@@ -83,7 +107,6 @@ export default function Home() {
     const createNewChatRoom = () => {
       const chatroom = generateRandomChatRoom(8)
       if (newChatRoom === "test") {
-        // console.log("new ChatRoom ==>", chatroom)
         setNewChatRoom(chatroom)
       }
     }
@@ -101,13 +124,8 @@ export default function Home() {
     };
   }, []);
 
-
-
-
   useEffect(() => {
-    // Call fetchPdfList function here
     if (chatId) {
-      fetchPdfList();
       import(`@/custom/JSFile/${chatId}`).then(module => {
         setJSModule(module)
       }).catch((error) => {
@@ -139,44 +157,6 @@ export default function Home() {
     })
   }, [JSModule])
 
-
-  const [messageState, setMessageState] = useState<{
-    messages: Message[];
-    pending?: string;
-    history: [string, string][];
-    pendingSourceDocs?: Document[];
-  }>({
-    messages: [
-      {
-        message: JSModule?.getWelcomeMessage(),
-        type: 'apiMessage',
-        src: ''
-      },
-    ],
-    history: [],
-  });
-
-  const { messages, history } = messageState;
-
-  const messageListRef = useRef<HTMLDivElement>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  const autoResizeTextarea = () => {
-    const textarea = textAreaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto'; // Reset the height to auto to determine the new height
-      textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height
-    }
-  };
-
-
-  useEffect(() => {
-    textAreaRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    autoResizeTextarea()
-  }, [query])
 
   //handle form submission
   async function handleSubmit(e: any) {
@@ -238,7 +218,6 @@ export default function Home() {
           history: [...state.history, [question, data.text]],
         }));
       }
-      console.log('messageState', messageState);
 
       setLoading(false);
 
@@ -260,134 +239,8 @@ export default function Home() {
     }
   };
 
-  const fileInputRef = useRef(null);
-
-  async function fetchPdfList() {
-    try {
-      setPdfList([])
-      const temp = await getDefaultPromptTemplate(chatId)
-      if (temp) {
-        setPromptTemplate(temp.data)
-      }
-      const pdfData = await getPDFList(chatId)
-      const conList = await getConvList(chatId)
-      setPdfList([...pdfData, ...conList]);
-      setSelecteduploadFile(null)
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function uploadPDFFile() {
-    setUploading(true);
-    const FormData = require('form-data');
-    let data = new FormData();
-    data.append('file', selecteduploadFile);
-
-    try {
-      await uploadPDF(newChatRoom, data)
-      // console.log("upload file response ==>", response.data);
-      setTimeout(async () => {
-        await fetchPdfList();
-        setShowLoader(false)
-      }, 2000)
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setUploading(false); // Training process complete
-    }
-  }
-
-  async function handleUntrain() {
-    setUnTrainingInProgress(true);
-    try {
-      await deletePDFList(chatId)
-      // Call the fetchPdfList function here
-      await fetchPdfList();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setUnTrainingInProgress(false);
-      setShowLoader(false)
-    }
-  }
-
-  const fileInputRefDoc = useRef(null);
-  const handlePDFFileChange = (e: any) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setShowLoader(true);
-      setSelectedFileType('PDF')
-      setSelecteduploadFile(selectedFile)
-      setTrainingInProgress(true)
-    }
-  };
-
-
-  function addEllipsis(str: string, maxLength: number) {
-    if (str.length <= maxLength) {
-      return str;
-    } else {
-      return str.substring(0, maxLength) + "...";
-    }
-  }
-
   function handleToggleChange() {
     setToggleStatus(!toggleStatus)
-  }
-
-
-  // whatsApp
-
-  // async function fetchConvList() {
-  //   try {
-  //     const conList = await getConvList(chatId)
-  //     // setConvList(conList);
-  //     setPdfList((previousValue) => [...previousValue, ...conList])
-  //     setSelectedConvUploadFile(null)
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-  async function uploadConvToApi() {
-    setUploading(true);
-    setShowLoader(true)
-    const FormData = require('form-data');
-
-    let data = new FormData();
-    if (selectedConvUploadFile) {
-
-      [...selectedConvUploadFile].forEach((file, i) => {
-        data.append(`training_files`, file, file.name)
-      })
-    }
-
-    try {
-      await uploadConv(newChatRoom, data)
-      setSelectedConvUploadFile(null);
-      setTimeout(async () => {
-        await fetchPdfList();
-        setShowLoader(false)
-      }, 2000)
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setUploading(false); // Training process complete
-    }
-  }
-
-  async function handleDeleteNameSpace() {
-    try {
-      await deleteConvList(chatId)
-      // Call the fetchPdfList function here
-      await fetchPdfList();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setUnTrainingInProgress(false);
-      setShowLoader(false)
-    }
   }
 
   async function resetdefaultPromptTemplate() {
@@ -397,14 +250,6 @@ export default function Home() {
       setPromptTemplate(temp.data)
     }
   }
-
-  useEffect(() => {
-    if (selectedFileType === "PDF" && selecteduploadFile) {
-      uploadPDFFile()
-    } else if (selectedFileType === "WHATSAPP" && selectedConvUploadFile) {
-      uploadConvToApi()
-    }
-  }, [selectedFileType, selecteduploadFile, selectedConvUploadFile])
 
   const onPromptChange = (value: string) => {
     setPromptTemplate(value)
@@ -418,148 +263,29 @@ export default function Home() {
     }
   }
 
-
-  async function clearAllPdfList() {
-    setShowLoader(true);
-    setPdfList([])
-    await handleUntrain()
-    await handleDeleteNameSpace()
-  }
-
-
-  // JS file change
-
-  const handleJSFileChange = async (event: any) => {
-    const file = event.target.files[0];
+  useEffect(() => {
     if (chatId) {
-      try {
-        const data = new FormData()
-        data.set('chatId', newChatRoom)
-        data.set('file', file)
-
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: data
-        })
-      } catch (error) {
-        console.log("error from handleJSFileChange ==> ", error)
+      const getDefaultPrompt = async () => {
+        const temp = await getDefaultPromptTemplate(chatId)
+        if (temp) {
+          setPromptTemplate(temp.data)
+        }
       }
+      getDefaultPrompt()
     }
-  };
+
+  }, [chatId])
+
 
   return (
     <>
       {chatId && styles ?
         <Layout>
           <div className={`${isPublishUrl ? "flex m-5 justify-center " : "flex m-5"}`}>
-            {!isPublishUrl && <div style={{ padding: "1rem", display: "flex", flexDirection: "column", maxWidth: "355px" }}>
-              <h1 className={styles.title}>TRAIN AI</h1>
-              <p>from the options below.</p>
-              <div className="mt-4 mb-4 flex flex-col">
-                <div className='flex mb-6'>
-
-                  <label className="w-64 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  cursor-pointer">
-                    <input type='file' accept='.pdf' className="hidden" onChange={handlePDFFileChange} ref={fileInputRef} />
-                    <span className="mt-2 text-base leading-normal">Upload a Doc</span>
-                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                    </svg>
-                  </label>
-                  <label className="w-64 flex justify-between  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  cursor-pointer">
-                    <input type='file' className="hidden" accept='.txt' placeholder={"Upload conv."} onChange={(e) => { setSelectedConvUploadFile(e.target.files); setSelectedFileType("WHATSAPP") }} multiple />
-                    <span className="mt-2 text-base leading-normal">Upload Conv.</span>
-                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                    </svg>
-                  </label>
-                </div>
-                <div className='flex'>
-
-                  <label className="w-64 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
-                    <input type="file" accept='.js' className="hidden" onChange={handleJSFileChange} />
-                    <span className="mt-2 text-base leading-normal">Upload JS</span>
-                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                    </svg>
-                  </label>
-                  <label className="w-64 flex justify-between  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
-                    <input type="file" accept='.css' className="hidden" onChange={handleJSFileChange} />
-                    <span className="mt-2 text-base leading-normal">Upload CSS</span>
-                    <svg className="w-8 h-8 pt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                      <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                    </svg>
-                  </label>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", borderTop: "1px solid black", paddingTop: "2rem" }} className='mt-10'>
-                <div style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "100%"
-                }}>
-
-                  <h1 className={styles.title}>Uploaded Doc</h1>
-                  {pdfList.length !== 0 && !trainingInProgress
-                    ?
-                    <p onClick={() => clearAllPdfList()} className='cursor-pointer font-semibold '>Clear All</p>
-                    :
-                    <p className='font-semibold text-gray-400'>Clear All</p>
-                  }
-                </div>
-                <div style={{
-                  display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", height: "100%",
-                  minHeight: "250px"
-                }}>
-                  {
-                    pdfList?.length > 0 && !showLoader ?
-
-                      <div style={{ width: "100%" }}>
-                        {
-                          pdfList.map((item, index) => {
-                            return (
-                              <FileList selectedFileType={selectedFileType} filename={item.name || item.training_id} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
-                            )
-                          }
-                          )
-                        }
-                      </div>
-                      :
-                      showLoader ?
-                        <div style={{ display: "flex", width: "100%", height: "100%", justifyContent: "center", position: "absolute", top: "50%" }}>
-                          <Oval
-                            height={40}
-                            width={40}
-                            color="#338bff"
-                            wrapperStyle={{}}
-                            wrapperClass=""
-                            visible={true}
-                            ariaLabel='oval-loading'
-                            secondaryColor="#338bff"
-                            strokeWidth={4}
-                            strokeWidthSecondary={4}
-
-                          />
-                        </div>
-                        :
-                        <>
-                          <Image
-                            src="/pdf_upload.png"
-                            alt="AI"
-                            width="55"
-                            height="55"
-                            priority
-                            className='mt-2'
-                          />
-                          <div className='p-8'>Please upload a Doc to train the AI automatically</div>
-                        </>
-                  }
-
-                </div>
-
-              </div>
-            </div>}
+            {!isPublishUrl
+              &&
+              <ChatbotInfo chatBotId={newChatRoom} />
+            }
 
             <main className={styles.main}>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "1rem", alignItems: "center" }}>
