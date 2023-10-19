@@ -15,7 +15,7 @@ const ChatbotInfo = ({
     const [showLoader, setShowLoader] = useState<boolean>(false)
     const [selectedFileType, setSelectedFileType] = useState<string>("PDF")
     const [selecteduploadFile, setSelecteduploadFile] = useState<File | null>(null);
-    const [pdfList, setPdfList] = useState<{ name?: string; training_id?: string; is_trained: boolean, is_shallow_trained: boolean }[]>([]);
+    const [pdfList, setPdfList] = useState<{ name?: string; training_id?: string; is_trained: boolean }[]>([]);
     const [selectedConvUploadFile, setSelectedConvUploadFile] = useState<FileList | null>(null);
     const [uploading, setUploading] = useState(false);
 
@@ -222,7 +222,7 @@ const ChatbotInfo = ({
                                 {
                                     pdfList.map((item, index) => {
                                         return (
-                                            <FileList selectedFileType={selectedFileType} filename={item.name || item.training_id} index={index} trained={item.is_trained} is_shallow_trained={item.is_shallow_trained} setTrainingInProgress={setTrainingInProgress} />
+                                            <FileList selectedFileType={selectedFileType} filename={item.name || item.training_id} index={index} trained={item.is_trained} setTrainingInProgress={setTrainingInProgress} />
                                         )
                                     }
                                     )
