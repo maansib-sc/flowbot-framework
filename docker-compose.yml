@@ -37,7 +37,29 @@ services:
       - "traefik.protocol=http"
     networks:
       - docker_net
-      
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PSSWD}
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - docker_net
+
+volumes:
+  mongodb-data:
+
+
 networks:
   docker_net:
     driver: bridge
