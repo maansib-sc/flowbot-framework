@@ -36,7 +36,7 @@ export default function Home() {
   }>({
     messages: [
       {
-        message: JSModule?.getWelcomeMessage(),
+        message: JSModule?.conversational ? JSModule?.ChatBotStep[0]?.question : JSModule?.getWelcomeMessage(),
         type: 'apiMessage',
         src: ''
       },
@@ -140,7 +140,7 @@ export default function Home() {
     setMessageState({
       messages: [
         {
-          message: JSModule?.getWelcomeMessage(),
+          message: JSModule?.conversational ? JSModule?.ChatBotStep[0]?.question : JSModule?.getWelcomeMessage(),
           type: 'apiMessage',
           src: ''
         },

@@ -24,7 +24,7 @@ const UserSchema: Schema = new Schema({
     },
     lastStep: {
         type: Number,
-        default: 0
+        default: 1
     },
     createdAt: {
         type: Date,
@@ -38,16 +38,17 @@ const UserSchema: Schema = new Schema({
     versionKey: false // This will disable the __v field
 });
 
-UserSchema.index({ chatbotId: 1 }, { unique: true });
+// UserSchema.index({ sessionId: 1 }, { unique: true });
 
 let UserModel = mongoose.models.User || mongoose.model<IUser>('User', UserSchema)
 
 
 export const upsertUser = async (chatbotId: string, sessionId: string) => {
     const result = await UserModel.findOneAndUpdate(
-        { chatbotId, sessionId },
+        { sessionId },
         {
-            $setOnInsert: { chatbotId },
+            $set: { sessionId, chatbotId },
+            $inc: { lastStep: 1 }, // Increment lastStep by 1
             $currentDate: { updatedAt: true }
         },
         {

@@ -3,6 +3,7 @@ import { makeChain } from '@/utils/makechain';
 import dbConnect from '@/config/mongodb';
 import { upsertSubscription } from '@/models/subscriptionModel';
 import { upsertUser } from '@/models/userModel';
+import axios from 'axios';
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,12 +37,19 @@ export default async function handler(
   try {
     //create chain
     const chain = new makeChain(pinecone_name_space);
-    const user = await upsertUser(pinecone_name_space, session)
-    import(`@/custom/JSFile/${pinecone_name_space}`).then(async (module) => {
 
-      const response = await module.start(chain, sanitizedQuestion)
-      if (response) {
-        return res.status(200).json(response);
+    const user = await upsertUser(pinecone_name_space, session)
+
+    import(`@/custom/JSFile/${pinecone_name_space}`).then(async (module) => {
+      if (module.conversational) {
+        const answ = module.ChatBotStep[user.lastStep]
+        if (answ === undefined) return res.status(200).json({ "text": module.finalMessage, "src": "talkingDb" });
+        return res.status(200).json({ "text": answ.question, "src": "talkingDb" });
+      } else {
+        const response = await module.start(chain, sanitizedQuestion)
+        if (response) {
+          return res.status(200).json(response);
+        }
       }
     }).catch((error) => {
       import(`@/custom/JSFile/default`).then(async (module) => {
