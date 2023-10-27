@@ -4,7 +4,7 @@ type CHAT_ID = string | string[] | undefined
 
 export const getPDFList = async (chatId: CHAT_ID) => {
     try {
-        const response = await axiosPDFInstance.get(`/pdf/list?chatbot_id=${chatId}`);
+        const response = await axiosPDFInstance.get(`/data/list?chatbot_id=${chatId}`);
         return response.data.data;
     } catch (error) {
 
@@ -13,7 +13,7 @@ export const getPDFList = async (chatId: CHAT_ID) => {
 
 export const uploadPDF = async (chatId: CHAT_ID, data: any) => {
     try {
-        await axiosPDFInstance.post(`/pdf/upload?chatbot_id=${chatId}`, data);
+        await axiosPDFInstance.post(`/data/upload?chatbot_id=${chatId}`, data);
     } catch (error) {
 
     }
@@ -29,7 +29,7 @@ export const deletePDFList = async (chatId: CHAT_ID) => {
 
 export const pdfFileProgress = async (filename: string) => {
     try {
-        return await axiosPDFInstance.get(`/pdf/progress?file_name=${filename}`);
+        return await axiosPDFInstance.get(`/data/progress?file_name=${filename}`);
     } catch (error) {
 
     }
