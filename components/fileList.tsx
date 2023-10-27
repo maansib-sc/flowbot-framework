@@ -19,15 +19,16 @@ export default function FileList({ selectedFileType, filename, index, trained, s
                 const response = await pdfFileProgress(filename)
                 if (response) {
                     setProgress(Math.ceil(Number(response.data.data.deep.replace(/%/g, ""))))
-                    if (response.data.data.shallow === "100.0%") {
-                        setTimeout(() => {
-                            setIs_Shallow_Trained(true)
-                        }, 10000)
-                    }
-
-                    if (response.data.data.deep === "100.0%") {
+                    let deepdataProgress = Math.ceil(Number(response.data.data.deep.replace(/%/g, "")))
+                    let shallowdataProgress = Math.ceil(Number(response.data.data.shallow.replace(/%/g, "")))
+                    if (deepdataProgress === 100) {
                         setTimeout(() => {
                             setIs_Trained(true)
+                        }, 10000)
+                    }
+                    if (shallowdataProgress === 100) {
+                        setTimeout(() => {
+                            setIs_Shallow_Trained(true)
                         }, 10000)
                     }
                 }
