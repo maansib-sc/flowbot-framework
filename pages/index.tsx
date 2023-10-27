@@ -182,7 +182,7 @@ export default function Home() {
     setQuery('');
 
     try {
-      const response = await fetch(`/api/chat?pinecone_name_space=${chatId}`, {
+      const response = await fetch(`/api/chat?pinecone_name_space=${newChatRoom}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -239,8 +239,8 @@ export default function Home() {
   }
 
   async function resetdefaultPromptTemplate() {
-    await resetPromptTemplate(chatId)
-    const temp = await getDefaultPromptTemplate(chatId)
+    await resetPromptTemplate(newChatRoom)
+    const temp = await getDefaultPromptTemplate(newChatRoom)
     if (temp) {
       setPromptTemplate(temp.data)
     }
@@ -251,17 +251,17 @@ export default function Home() {
   }
 
   const updatePrompt = async () => {
-    await submitPromptTemplate(chatId, { "template_instructions": promptTemplate })
-    const temp = await getDefaultPromptTemplate(chatId)
+    await submitPromptTemplate(newChatRoom, { "template_instructions": promptTemplate })
+    const temp = await getDefaultPromptTemplate(newChatRoom)
     if (temp) {
       setPromptTemplate(temp.data)
     }
   }
 
   useEffect(() => {
-    if (chatId) {
+    if (newChatRoom) {
       const getDefaultPrompt = async () => {
-        const temp = await getDefaultPromptTemplate(chatId)
+        const temp = await getDefaultPromptTemplate(newChatRoom)
         if (temp) {
           setPromptTemplate(temp.data)
         }
@@ -269,7 +269,7 @@ export default function Home() {
       getDefaultPrompt()
     }
 
-  }, [chatId])
+  }, [newChatRoom])
 
 
   return (
