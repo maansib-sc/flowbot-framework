@@ -111,7 +111,11 @@ export default function Home() {
         chatroom = generateRandomChatRoom("cover-", 8)
       }
       if (newChatRoom === "test" && chatId) {
-        setNewChatRoom(chatId)
+        if (chatId.includes("admin")) {
+          setNewChatRoom(chatroom)
+        } else {
+          setNewChatRoom(chatId)
+        }
         setCurrentSession(generateRandomChatRoom("session_", 9))
       }
     }
