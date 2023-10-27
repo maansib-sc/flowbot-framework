@@ -20,7 +20,7 @@ export default function FileList({ selectedFileType, filename, index, trained, s
                 if (response) {
                     setProgress(Math.ceil(Number(response.data.data.deep.replace(/%/g, ""))))
                     let deepdataProgress = Math.ceil(Number(response.data.data.deep.replace(/%/g, "")))
-                    let shallowdataProgress = Math.ceil(Number(response.data.data.deep.replace(/%/g, "")))
+                    let shallowdataProgress = Math.ceil(Number(response.data.data.shallow.replace(/%/g, "")))
                     if (deepdataProgress === 100) {
                         setTimeout(() => {
                             setIs_Trained(true)
