@@ -36,7 +36,10 @@ const ChatbotInfo = ({
         try {
             setPdfList([])
             const pdfData = await getPDFList(chatBotId)
-            const conList = await getConvList(chatBotId)
+            let conList = []
+            if (selectedFileType === "WHATSAPP") {
+                conList = await getConvList(chatBotId)
+            }
             setPdfList([...pdfData, ...conList]);
             setSelecteduploadFile(null)
         } catch (error) {
