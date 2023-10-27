@@ -110,8 +110,8 @@ export default function Home() {
       if (chatId && chatId.includes("cover")) {
         chatroom = generateRandomChatRoom("cover-", 8)
       }
-      if (newChatRoom === "test") {
-        setNewChatRoom(chatroom)
+      if (newChatRoom === "test" && chatId) {
+        setNewChatRoom(chatId)
         setCurrentSession(generateRandomChatRoom("session_", 9))
       }
     }
