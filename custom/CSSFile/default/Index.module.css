@@ -1,0 +1,53 @@
+/* button.module.css */
+
+.primaryButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  border-radius: 6px;
+  background: var(--orange-100, #ff6900);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.secondaryButton {
+  display: inline-flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  background: var(
+    --orange-20,
+    linear-gradient(0deg, #fdf0e7 0%, #fdf0e7 100%),
+    #fff
+  );
+  color: var(--orange-100, #ff6900);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.ghostButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  border: 1px solid #dfe2e9;
+  color: var(--orange-100, #ff6900);
+
+  /* 15px/medium */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
