@@ -1,0 +1,40 @@
+image: atlassian/default-image:3
+
+definitions:
+  steps:
+    - step: &build
+        name: Build
+        script:
+          - bash ./run.sh build
+        services:
+          - docker
+
+pipelines:
+  branches:
+    develop:
+      - step: *build
+      - step:
+          name: Deploy Dev
+          deployment: Development
+          image: google/cloud-sdk:alpine
+          script:
+            - gcloud components install kubectl
+            - bash ./run.sh deploy-dev
+    release/v*-*-*-prod:
+      - step: *build
+      - step:
+          name: Deploy Prod
+          deployment: Production
+          image: google/cloud-sdk:alpine
+          script:
+            - gcloud components install kubectl
+            - bash ./run.sh deploy-prod
+    release/v*-*-*-rc:
+      - step: *build
+      - step:
+          name: Deploy Release
+          deployment: Release
+          image: google/cloud-sdk:alpine
+          script:
+            - gcloud components install kubectl
+            - bash ./run.sh deploy-rel
