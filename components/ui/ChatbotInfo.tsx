@@ -153,7 +153,9 @@ const ChatbotInfo = ({
 
 
     useEffect(() => {
-        fetchPdfList()
+        if (chatBotId) {
+            fetchPdfList()
+        }
     }, [chatBotId])
 
 

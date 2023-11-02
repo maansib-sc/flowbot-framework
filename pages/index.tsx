@@ -23,7 +23,7 @@ export default function Home() {
   const { query: { 'chat-id': chatId } } = router
   const [JSModule, setJSModule] = useState<any>(null);
   const [styles, setStyle] = useState<any>(null);
-  const [newChatRoom, setNewChatRoom] = useState<string>('test');
+  const [newChatRoom, setNewChatRoom] = useState<string>('');
   const [isPublishUrl, setIsPublishUrl] = useState<boolean>(false);
   const [currentUrl, setCurrentUrl] = useState<string>("");
   const [currentSession, setCurrentSession] = useState<string>("")
@@ -110,7 +110,7 @@ export default function Home() {
       if (chatId && chatId.includes("cover")) {
         chatroom = generateRandomChatRoom("cover-", 8)
       }
-      if (newChatRoom === "test" && chatId) {
+      if (!newChatRoom && chatId) {
         if (chatId.includes("admin")) {
           setNewChatRoom(chatroom)
         } else {
