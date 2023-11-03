@@ -6,7 +6,7 @@ const Button = ({
   variant = 'primary', // Default variant is 'primary'
   children, // This prop will hold the content to display inside the button
 }: {
-  variant: 'primary' | 'secondary' | 'ghost';
+  variant: 'primary' | 'secondary' | 'ghost' | 'link';
   children: React.ReactNode;
 }) => {
   let buttonClasses = '';
@@ -18,6 +18,10 @@ const Button = ({
   } else if (variant === 'ghost') {
     buttonClasses = styles.ghostButton; // Define your ghost button class
   }
+  else if (variant === 'link') {
+    buttonClasses = styles.linkButton; // Define your ghost button class
+  }
+
 
   return (
     <button className={buttonClasses}>

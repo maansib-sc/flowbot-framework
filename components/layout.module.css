@@ -2,8 +2,8 @@
     display: flex;
     align-items: center;
     height: 65px;
-    background-color: white;
-    color: b;
+    border-bottom: 1px solid var(--grey-40-stroke, #E1E4EA);
+    background: var(--white, #FFF);    color: b;
     padding: 12px 27px;
     justify-content: space-between;
     color: var(--black, #112041);
@@ -26,8 +26,7 @@ line-height: 20px; /* 133.333% */
   .main-content {
     flex: 1; /* Takes the remaining height */
     padding: 20px;
-    background-color: #f0f0f0;
-  }
+    background: var(--grey-20-bg, #F1F4F9);  }
 
   
   .nav-links {

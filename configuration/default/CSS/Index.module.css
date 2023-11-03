@@ -52,6 +52,23 @@
   line-height: 20px; /* 133.333% */
 }
 
+.linkButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  color: var(--orange-100, #ff6900);
+
+  /* 15px/medium */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
 /* Radio */
 
 .radioGroup {
