@@ -165,7 +165,7 @@ const Signup = () => {
               <span>{registrationMessage?.description}
               </span>
               {/* <Button> */}
-              <div style={{ cursor: "pointer" }} onClick={() => nextStep()}>{`Get Started →`} </div>
+              <Button onClick={() => nextStep()}>{`Get Started →`} </Button>
               {/* </Button> */}
             </div>
           ) : (
@@ -205,7 +205,7 @@ const Signup = () => {
                       );
                       // The latest message sent by the user will be animated while waiting for a response
                       className =
-                        loading && index === messages.length - 1
+                        loading && index === messages?.length - 1
                           ? homestyles?.usermessagewaiting
                           : homestyles?.usermessage;
                     }

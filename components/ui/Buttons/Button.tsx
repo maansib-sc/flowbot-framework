@@ -3,11 +3,14 @@ import styles from '@/configuration/CSS/Index.module.css';
 
 
 const Button = ({
-  variant = 'primary', // Default variant is 'primary'
+  variant = 'primary', // Default variant is 'primary',
   children, // This prop will hold the content to display inside the button
+  onClick, // Add onClick prop,
+  ...props
 }: {
   variant: 'primary' | 'secondary' | 'ghost' | 'link';
   children: React.ReactNode;
+  onClick?: () => void; // Define the onClick prop with the appropriate type
 }) => {
   let buttonClasses = '';
 
@@ -24,7 +27,7 @@ const Button = ({
 
 
   return (
-    <button className={buttonClasses}>
+    <button className={buttonClasses} {...props} onClick={onClick}> 
       {children}
     </button>
   );

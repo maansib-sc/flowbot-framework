@@ -21,7 +21,9 @@ export default async function handler(
         return;
     }
     // OpenAI recommends replacing newlines with spaces for best results
-    const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
+    const sanitizedQuestion = question;
+    // const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
+
 
     try {
         //create chain
