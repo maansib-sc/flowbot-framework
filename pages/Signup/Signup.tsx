@@ -10,6 +10,8 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { generateRandomString } from '@/utils/generateRandomeString';
 import RadioGroup from '@/components/ui/Radio/RadioGroup';
+import Libby from '@/assets/svgs/Libby';
+import You from '@/assets/svgs/You';
 
 const Signup = () => {
   const [step, setStep] = useState(1);
@@ -145,6 +147,8 @@ const Signup = () => {
     }
   };
 
+  console.log(messages,"messagez")
+
 
   return (
     <div className={styles['signup']}>
@@ -180,28 +184,16 @@ const Signup = () => {
                     let className;
                     if (message.type === 'apiMessage') {
                       icon = (
-                        <Image
-                          key={index}
-                          src="/bot-image.png"
-                          alt="AI"
-                          width="40"
-                          height="40"
-                          className={homestyles?.boticon}
-                          priority
-                        />
+                        <div className={homestyles?.libby}>
+                          <Libby/>
+                          </div>
                       );
                       className = homestyles?.apimessage;
                     } else {
                       icon = (
-                        <Image
-                          key={index}
-                          src="/usericon.png"
-                          alt="Me"
-                          width="30"
-                          height="30"
-                          className={homestyles?.usericon}
-                          priority
-                        />
+                          <div className={homestyles?.libby}>
+                          <You/>
+                          </div>
                       );
                       // The latest message sent by the user will be animated while waiting for a response
                       className =
@@ -214,8 +206,15 @@ const Signup = () => {
                         <div key={`chatMessage-${index}`} className={className}>
                           {icon}
                           <div style={{ display: "flex", flexDirection: "column" }}>
+                            {message?.type=="apiMessage"?<span>Libby</span>
+                            :<span>
+                              You
+                              </span>}
                             <div className={homestyles?.markdownanswer}>
+                              <span className={homestyles?.markdownanswerspan}>
                               {message.message}
+                              </span>
+                              <div className={homestyles?.extraContainer}>
                               {
                                 currentJSModule?.inputType === "radioButton" && (index === activeIndex) ?
                                   <RadioGroup
@@ -224,6 +223,7 @@ const Signup = () => {
                                     onChange={() => console.log("selected output")}
                                   /> : null
                               }
+                              </div>
                             </div>
 
                           </div>
