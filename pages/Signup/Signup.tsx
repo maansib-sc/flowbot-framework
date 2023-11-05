@@ -12,6 +12,7 @@ import { generateRandomString } from '@/utils/generateRandomeString';
 import RadioGroup from '@/components/ui/Radio/RadioGroup';
 import Libby from '@/assets/svgs/Libby';
 import You from '@/assets/svgs/You';
+import Pencil from '@/assets/svgs/Pencil';
 
 const Signup = () => {
   const [step, setStep] = useState(1);
@@ -204,6 +205,7 @@ const Signup = () => {
                     return (
                       <>
                         <div key={`chatMessage-${index}`} className={className}>
+                          <div className={homestyles?.container}>
                           {icon}
                           <div style={{ display: "flex", flexDirection: "column" }}>
                             {message?.type=="apiMessage"?<span>Libby</span>
@@ -225,7 +227,13 @@ const Signup = () => {
                               }
                               </div>
                             </div>
-
+                          </div>
+                            </div>
+                            <div className={homestyles?.editbtn}>
+                              {message?.type!=="apiMessage"?<Button variant='link'>
+                               <Pencil/> Edit
+                              </Button>
+                              :<></>}
                           </div>
                         </div>
                       </>
