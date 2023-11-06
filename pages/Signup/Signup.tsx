@@ -17,6 +17,7 @@ import PasswordInput from '@/components/ui/Input/PasswordInput';
 import Address from '@/components/ui/Address/Address';
 import CardRadioGroup from '@/components/ui/Radio/CardRadioGroup';
 import Generate from '@/assets/svgs/icons/Generate';
+import CheckboxGroup from '@/components/ui/Checkbox/CheckboxGroup';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -42,6 +43,12 @@ const Signup = () => {
   const [registrationMessage, setRegistrationMessage] = useState<any>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [currentSession, setCurrentSession] = useState<string>("")
+  const [selectedValues, setSelectedValues] = useState([]); // Initial empty array
+
+  const handleCheckboxChange = (values:any) => {
+    setSelectedValues(values);
+  };
+
 
   const [messageState, setMessageState] = useState<{
     messages: Message[];
@@ -275,6 +282,14 @@ const Signup = () => {
                                   }]}
                                   selectedValue={"value"}
                                   onChange={() => console.log("selected output")}
+                                  /> : null
+                              }
+                              {
+                                currentJSModule?.inputType === "checkboxButton" ?
+                                  <CheckboxGroup
+                                  selectedValues={selectedValues}
+                                    options={currentJSModule?.options}
+                                    onChange={handleCheckboxChange}
                                   /> : null
                               }
                               </div>

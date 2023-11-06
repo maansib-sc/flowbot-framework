@@ -104,6 +104,41 @@
   /* Add any additional input styles here */
 }
 
+/* Radio */
+
+.checkboxGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.checkboxLabel {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+  border-radius: 10px;
+  display: flex;
+  width: 246px;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 8px;
+  /* Add smooth transitions for visual effects */
+}
+
+.checkboxLabel.selected {
+  border-radius: 10px;
+  border: 1px solid var(--orange-100, #FF6900);
+  background: var(--orange-20, linear-gradient(0deg, #FDF0E7 0%, #FDF0E7 100%), #FFF);
+}
+
+.checkboxInput {
+  margin-right: 5px;
+  cursor: pointer;
+  /* Add any additional input styles here */
+}
+
 /* Accordion.css */
 
 .accordion {
