@@ -13,6 +13,7 @@ import RadioGroup from '@/components/ui/Radio/RadioGroup';
 import Libby from '@/assets/svgs/Libby';
 import You from '@/assets/svgs/You';
 import Pencil from '@/assets/svgs/Pencil';
+import PasswordInput from '@/components/ui/Input/PasswordInput';
 
 const Signup = () => {
   const [step, setStep] = useState(1);
@@ -89,7 +90,8 @@ const Signup = () => {
           {
             type: 'userMessage',
             message: question,
-            src: "test"
+            src: "test",
+            id:Math.random()
           },
         ],
       }));
@@ -122,6 +124,7 @@ const Signup = () => {
               message: data.text,
               src: data.src,
               sourceDocs: data.sourceDocuments,
+              id:Math.random()
             },
           ],
           history: [...state.history, [question, data.text]],
@@ -148,7 +151,7 @@ const Signup = () => {
     }
   };
 
-  console.log(messages,"messagez")
+  console.log(messages,"messagez",activeIndex)
 
 
   return (
@@ -223,6 +226,11 @@ const Signup = () => {
                                     options={currentJSModule?.options}
                                     selectedValue={"Yes"}
                                     onChange={() => console.log("selected output")}
+                                  /> : null
+                              }
+                              {
+                                currentJSModule?.inputType === "password" && (index === activeIndex) ?
+                                  <PasswordInput
                                   /> : null
                               }
                               </div>

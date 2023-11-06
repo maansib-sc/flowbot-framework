@@ -11,16 +11,14 @@ export const ChatBotStep = [
         "description": "Libby will guide you through the registration process and willanswer any questions that you have. If you experience anyplatform issues during the registration process, click the “Chatwith Platform Support” button on the top right of the channelduring the sign-up process."
     },
     {
-        "question": "What is your first Name and last Name",
         "id": 1,
+        "question": "What is your first Name and last Name",
+        "inputType": "text",
+        "options":[]
     },
     {
-        "question": "What is your email address",
-        "id": 2,
-    },
-    {
+        "id": 2, 
         "question": "So, would you like to register using using your Google log-in ?",
-        "id": 3,
         "inputType": "radioButton",
         "options": [
             { label: 'Yes', value: 'Yes' },
@@ -28,8 +26,22 @@ export const ChatBotStep = [
         ]
     },
     {
+        "id": 3,
+        "question": "What is your email address",
+        "inputType": "text",
+        "options":[]
+    },
+    {
+        "id": 4,
         "question": "Please enter your mobile number",
-        "id": 4
+        "inputType": "text",
+        "options":[]
+    },
+    {
+        "id": 5,
+        "question": "Please enter your preferred password. It must contain letters, numbers and symbols. It is required to have at least one letter, one number and one symbol.",
+        "inputType": "password",
+        "options":[]
     }
 ];
 export const finalMessage = "Thanks for the provided information"
