@@ -19,6 +19,9 @@ import { useRouter } from 'next/router';
 import ChatbotInfo from '@/components/ui/ChatbotInfo';
 import { getDefaultPromptTemplate, resetPromptTemplate, submitPromptTemplate } from '@/apiRequests';
 import { PromptModal } from '@/components/customPromptModal';
+import CardRadioGroup from '@/components/ui/Radio/CardRadioGroup';
+import Generate from '@/assets/svgs/icons/Generate';
+import CheckboxGroup from '@/components/ui/Checkbox/CheckboxGroup';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -51,6 +54,12 @@ const Signup = () => {
   const [currentUrl, setCurrentUrl] = useState<string>("");
   const [promptModal, setPromptModal] = useState<boolean>(false);
   const [promptTemplate, setPromptTemplate] = useState<string | any>('');
+  const [selectedValues, setSelectedValues] = useState([]); // Initial empty array
+
+  const handleCheckboxChange = (values: any) => {
+    setSelectedValues(values);
+  };
+
 
   const [messageState, setMessageState] = useState<{
     messages: Message[];
