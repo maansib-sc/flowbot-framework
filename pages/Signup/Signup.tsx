@@ -15,6 +15,10 @@ import You from '@/assets/svgs/You';
 import Pencil from '@/assets/svgs/Pencil';
 import PasswordInput from '@/components/ui/Input/PasswordInput';
 import Address from '@/components/ui/Address/Address';
+import { useRouter } from 'next/router';
+import ChatbotInfo from '@/components/ui/ChatbotInfo';
+import { getDefaultPromptTemplate, resetPromptTemplate, submitPromptTemplate } from '@/apiRequests';
+import { PromptModal } from '@/components/customPromptModal';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -40,6 +44,13 @@ const Signup = () => {
   const [registrationMessage, setRegistrationMessage] = useState<any>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [currentSession, setCurrentSession] = useState<string>("")
+  const router = useRouter();
+  const { query: { 'chat-id': chatId } } = router
+  const [newChatRoom, setNewChatRoom] = useState<string>('');
+  const [isPublishUrl, setIsPublishUrl] = useState<boolean>(false);
+  const [currentUrl, setCurrentUrl] = useState<string>("");
+  const [promptModal, setPromptModal] = useState<boolean>(false);
+  const [promptTemplate, setPromptTemplate] = useState<string | any>('');
 
   const [messageState, setMessageState] = useState<{
     messages: Message[];
@@ -49,7 +60,7 @@ const Signup = () => {
   }>({
     messages: [
       {
-        message: JSModule?.ChatBotStep[activeIndex]?.question,
+        message: JSModule?.conversational ? JSModule?.ChatBotStep[activeIndex]?.question : JSModule?.getWelcomeMessage,
         type: 'apiMessage',
         src: ''
       },
@@ -63,6 +74,61 @@ const Signup = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    // Get the URL search parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const chatId = urlParams.get("chat-id");
+    const url = new URL(window.location.href);
+
+    // Remove the "chat-id" parameter if it exists
+    url.searchParams.delete('chat-id');
+    const updatedURL = url.toString();
+    setCurrentUrl(updatedURL)
+
+    // Check if the chatId contains "publish"
+    if (chatId && !chatId.includes("admin")) {
+      setIsPublishUrl(true)
+    } else {
+      setIsPublishUrl(false)
+    }
+    // Check if the 'chat-id' query parameter is present
+    if (!urlParams.has('chat-id')) {
+      // Query parameter is not present, redirect to a new URL
+      window.location.href = `${updatedURL}?chat-id=document-admin`
+    }
+
+    const createNewChatRoom = () => {
+      let chatroom = generateRandomString("document-", 8)
+      if (chatId && chatId.includes("cover")) {
+        chatroom = generateRandomString("cover-", 8)
+      }
+      if (!newChatRoom && chatId) {
+        if (chatId.includes("admin")) {
+          setNewChatRoom(chatroom)
+        } else {
+          setNewChatRoom(chatId)
+        }
+        setCurrentSession(generateRandomString("session_", 9))
+      }
+    }
+
+    createNewChatRoom()
+  }, []);
+
+  useEffect(() => {
+    if (chatId) {
+      import(`@/configuration/JS/${chatId}`).then(module => {
+        setJSModule(module)
+      }).catch((error) => {
+        import(`@/configuration/JS/default`).then(module => {
+          setJSModule(module)
+        });
+      });
+    }
+  }, [chatId]);
+
+
+
+  useEffect(() => {
     setCurrentSession(generateRandomString("session_", 9))
     import(`@/configuration/JS/default`).then(module => {
       setJSModule(module)
@@ -73,9 +139,20 @@ const Signup = () => {
   }, [])
 
   useEffect(() => {
-    if (JSModule && JSModule?.ChatBotStep[activeIndex]?.fullWidth) {
+    if (JSModule && JSModule?.conversational && JSModule?.ChatBotStep[activeIndex]?.fullWidth) {
       setRegistrationMessage(JSModule?.ChatBotStep[activeIndex])
       setIsSignupPage(true)
+    } else {
+      setMessageState({
+        messages: [
+          {
+            message: JSModule?.conversational ? JSModule?.ChatBotStep[0]?.question : JSModule?.getWelcomeMessage,
+            type: 'apiMessage',
+            src: ''
+          },
+        ],
+        history: [],
+      })
     }
   }, [JSModule])
 
@@ -94,6 +171,10 @@ const Signup = () => {
     }
   }, [activeIndex])
 
+  useEffect(() => {
+    console.log("getWelcomeMessage  ==>", messageState)
+  }, [messageState])
+
   //handle form submission
   async function handleSubmit() {
 
@@ -107,7 +188,7 @@ const Signup = () => {
             type: 'userMessage',
             message: question,
             src: "test",
-            id:Math.random()
+            id: Math.random()
           },
         ],
       }));
@@ -116,7 +197,7 @@ const Signup = () => {
     setQuery('');
 
     try {
-      const response = await fetch(`/api/chat?pinecone_name_space=${"test"}`, {
+      const response = await fetch(`/api/chat?pinecone_name_space=${newChatRoom}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,13 +220,14 @@ const Signup = () => {
               type: 'apiMessage',
               message: data.text,
               src: data.src,
+              step: data.currentStep || {},
               sourceDocs: data.sourceDocuments,
-              id:Math.random()
+              id: Math.random()
             },
           ],
           history: [...state.history, [question, data.text]],
         }));
-        setActiveIndex(activeIndex + 1)
+        setActiveIndex(data.currentStep.id)
       }
 
       setLoading(false);
@@ -167,19 +249,69 @@ const Signup = () => {
     }
   };
 
-  console.log(messages,"messagez",activeIndex)
+
+  async function resetdefaultPromptTemplate() {
+    await resetPromptTemplate(newChatRoom)
+    const temp = await getDefaultPromptTemplate(newChatRoom)
+    if (temp) {
+      setPromptTemplate(temp.data)
+    }
+  }
+
+  const onPromptChange = (value: string) => {
+    setPromptTemplate(value)
+  }
+
+  const updatePrompt = async () => {
+    await submitPromptTemplate(newChatRoom, { "template_instructions": promptTemplate })
+    const temp = await getDefaultPromptTemplate(newChatRoom)
+    if (temp) {
+      setPromptTemplate(temp.data)
+    }
+  }
+
+  useEffect(() => {
+    if (newChatRoom) {
+      const getDefaultPrompt = async () => {
+        const temp = await getDefaultPromptTemplate(newChatRoom)
+        if (temp) {
+          setPromptTemplate(temp.data)
+        }
+      }
+      getDefaultPrompt()
+    }
+
+  }, [newChatRoom])
 
 
   return (
     <div className={styles['signup']}>
-      <div className={styles['sidebar']}>sidebar</div>
+      <div className={styles['sidebar']}>
+        {!JSModule?.testProject &&
+          <ChatbotInfo chatBotId={newChatRoom} />
+        }
+      </div>
       <div className={styles['main-content']}>
         <div className={styles['main-header']}>
           <span>{JSModule?.getTitle}</span>
-          <Button variant="link">
+          {JSModule?.testProject ? <Button variant="link">
             <ChatIcon />
             Chat with Platform Support
-          </Button>
+          </Button> :
+            <div className='flex items-center '>
+              <button className={`${styles.buttonWrapper} bg-white mr-4`} onClick={() => setPromptModal(true)}>Custom Prompt</button>
+              {promptModal && <PromptModal onChangeHandler={onPromptChange} onClose={(val: string | undefined) => { val === "submit" ? updatePrompt() : null; setPromptModal(false) }} resetTemplate={resetdefaultPromptTemplate} data={promptTemplate} onSubmit={() => updatePrompt()} />}
+
+              {!isPublishUrl &&
+                <div className='flex'>
+                  <button className={`${styles.buttonWrapper}`} onClick={() => {
+                    window.alert(`Copy the Url for chatbot - ${currentUrl}?chat-id=${newChatRoom}`);
+                  }
+                  }>Publish & Share</button>
+                </div>
+              }
+            </div>
+          }
         </div>
         <div className={styles['main']}>
           {isSignupPage ? (
@@ -188,9 +320,7 @@ const Signup = () => {
               <h3>{registrationMessage?.title}</h3>
               <span>{registrationMessage?.description}
               </span>
-              {/* <Button> */}
               <Button onClick={() => nextStep()}>{`Get Started →`} </Button>
-              {/* </Button> */}
             </div>
           ) : (
             // <Signupform />
@@ -198,22 +328,20 @@ const Signup = () => {
               <div className={homestyles?.cloud}>
                 <div ref={messageListRef} className={homestyles?.messagelist}>
                   {messages.map((message, index) => {
-                    let currentJSModule = JSModule?.ChatBotStep[activeIndex - 1]
-                    console.log("==>", activeIndex, index, message.message, currentJSModule)
                     let icon;
                     let className;
                     if (message.type === 'apiMessage') {
                       icon = (
                         <div className={homestyles?.libby}>
-                          <Libby/>
-                          </div>
+                          <Libby />
+                        </div>
                       );
                       className = homestyles?.apimessage;
                     } else {
                       icon = (
-                          <div className={homestyles?.libby}>
-                          <You/>
-                          </div>
+                        <div className={homestyles?.libby}>
+                          <You />
+                        </div>
                       );
                       // The latest message sent by the user will be animated while waiting for a response
                       className =
@@ -225,48 +353,54 @@ const Signup = () => {
                       <>
                         <div key={`chatMessage-${index}`} className={className}>
                           <div className={homestyles?.container}>
-                          {icon}
-                          <div style={{ display: "flex", flexDirection: "column" ,width:"100%"}}>
-                            {message?.type=="apiMessage"?<span>Libby</span>
-                            :<span>
-                              You
-                              </span>}
-                            <div className={homestyles?.markdownanswer}>
-                              <span className={homestyles?.markdownanswerspan}>
-                              {message.message}
-                              </span>
-                              <div className={homestyles?.extraContainer}>
-                              {
-                                currentJSModule?.inputType === "radioButton" && (index === activeIndex) ?
-                                  <RadioGroup
-                                    options={currentJSModule?.options}
-                                    selectedValue={"Yes"}
-                                    onChange={() => console.log("selected output")}
-                                  /> : null
-                              }
-                              {
-                                currentJSModule?.inputType === "password" && (index === activeIndex) ?
-                                  <PasswordInput
-                                  /> : null
-                              }
-                              {
-                                currentJSModule?.inputType === "address"  ?
-                                  <Address
-                                  cities={cityOptions}
-                                  states={stateOptions}
-                                  zip={""}
-                                  street={""}
-                                  /> : null
-                              }
+                            {icon}
+                            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+                              {message?.type == "apiMessage" ? <span>{JSModule?.botName}</span>
+                                : <span>
+                                  You
+                                </span>}
+                              <div className={homestyles?.markdownanswer}>
+                                <span className={homestyles?.markdownanswerspan}>
+                                  {message.message}
+                                </span>
+                                {
+                                  JSModule?.conversational &&
+                                  <div className={homestyles?.extraContainer}>
+                                    {
+                                      message.type === 'apiMessage' && message?.step?.inputType === "radioButton" ?
+                                        <RadioGroup
+                                          options={message?.step?.options}
+                                          selectedValue={message?.step?.default}
+                                          onChange={() => {
+                                            console.log("selected output");
+                                            handleSubmit()
+                                          }}
+                                        /> : null
+                                    }
+                                    {
+                                      message?.step?.inputType === "password" ?
+                                        <PasswordInput
+                                        /> : null
+                                    }
+                                    {
+                                      message?.step?.inputType === "address" ?
+                                        <Address
+                                          cities={cityOptions}
+                                          states={stateOptions}
+                                          zip={""}
+                                          street={""}
+                                        /> : null
+                                    }
+                                  </div>
+                                }
                               </div>
                             </div>
                           </div>
-                            </div>
-                            <div className={homestyles?.editbtn}>
-                              {message?.type!=="apiMessage"?<Button variant='link'>
-                               <Pencil/> Edit
-                              </Button>
-                              :<></>}
+                          <div className={homestyles?.editbtn}>
+                            {message?.type !== "apiMessage" ? <Button variant='link'>
+                              <Pencil /> Edit
+                            </Button>
+                              : <></>}
                           </div>
                         </div>
                       </>

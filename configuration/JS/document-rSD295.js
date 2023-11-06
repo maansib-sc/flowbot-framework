@@ -1,9 +1,8 @@
-export const getTitle = "Document chatbot";
+export const getTitle = "Professional Sign-up Channel";
 export const getWelcomeMessage = "I am a Assistant. I'll assist you with any queries related to documents";
 export const getInputPlaceholder = "Write Message";
-export const Navbar = false;
-export const botName = "Alex";
-export const testProject = false;
+export const Navbar = true;
+export const botName = "Libby";
 export const ChatBotStep = [
     {
 
@@ -80,7 +79,7 @@ export const ChatBotStep = [
 
 ];
 export const finalMessage = "Thanks for the provided information"
-export const conversational = false
+export const conversational = true
 export const start = async (handler, question) => {
     if (conversational) {
         const answ = ChatBotStep[handler.user.lastStep]
