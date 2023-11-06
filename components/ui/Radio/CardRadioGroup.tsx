@@ -6,7 +6,7 @@ const CardRadioGroup = ({
   selectedValue,
   onChange,
 }: {
-  options: { label: string; value: string }[];
+  options: { label: string; value: string,icon?: React.FC;}[];
   selectedValue: string;
   onChange: (value: string) => void;
 }) => {
@@ -18,8 +18,10 @@ const CardRadioGroup = ({
           className={`${styles.cardradioLabel} ${selectedValue === option.value ? styles.selected : ''}`}
         >
           <div className={styles.cardradioiconcontainer}>
-
+            {option?.icon && <option.icon />}
+            <span>
             {option.label}
+            </span>
           </div>
           <input
             type="radio"

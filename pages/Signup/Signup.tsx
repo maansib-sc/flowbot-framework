@@ -15,6 +15,8 @@ import You from '@/assets/svgs/You';
 import Pencil from '@/assets/svgs/Pencil';
 import PasswordInput from '@/components/ui/Input/PasswordInput';
 import Address from '@/components/ui/Address/Address';
+import CardRadioGroup from '@/components/ui/Radio/CardRadioGroup';
+import Generate from '@/assets/svgs/icons/Generate';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -256,6 +258,23 @@ const Signup = () => {
                                   states={stateOptions}
                                   zip={""}
                                   street={""}
+                                  /> : null
+                              }
+                              {
+                                currentJSModule?.inputType === "cardRadio"  ?
+                                  <CardRadioGroup
+                                  options={[{
+                                    label:"label",
+                                    value:"value",
+                                    icon:Generate,
+                                  },
+                                  {
+                                    label:"label",
+                                    value:"value",
+                                    icon:Generate,
+                                  }]}
+                                  selectedValue={"value"}
+                                  onChange={() => console.log("selected output")}
                                   /> : null
                               }
                               </div>

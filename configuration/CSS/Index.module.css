@@ -182,7 +182,7 @@ background: var(--grey-20-bg, #F1F4F9);
 
   .cardradioGroup {
     display: flex;
-    gap: 8px;
+    gap: 12px;
   }
   
   .cardradioLabel {
@@ -216,6 +216,10 @@ background: var(--grey-20-bg, #F1F4F9);
   .cardradioiconcontainer{
     display: flex;
     flex-direction: column;
+  }
+
+  .cardradioiconcontainer span{
+    margin-top: 8px;
   }
 
   /* passwordinput.module.css */
