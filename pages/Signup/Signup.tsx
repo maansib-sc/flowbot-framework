@@ -400,6 +400,31 @@ const Signup = () => {
                                           street={""}
                                         /> : null
                                     }
+                                    {
+                                      message?.step?.inputType === "cardRadio" ?
+                                        <CardRadioGroup
+                                          options={[{
+                                            label: "label",
+                                            value: "value",
+                                            icon: Generate,
+                                          },
+                                          {
+                                            label: "label",
+                                            value: "value",
+                                            icon: Generate,
+                                          }]}
+                                          selectedValue={"value"}
+                                          onChange={() => console.log("selected output")}
+                                        /> : null
+                                    }
+                                    {
+                                      message?.step?.inputType === "checkboxButton" ?
+                                        <CheckboxGroup
+                                          selectedValues={selectedValues}
+                                          options={message?.step?.options}
+                                          onChange={handleCheckboxChange}
+                                        /> : null
+                                    }
                                   </div>
                                 }
                               </div>
