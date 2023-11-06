@@ -1,0 +1,328 @@
+/* button.module.css */
+
+.primaryButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  border-radius: 6px;
+  background: var(--orange-100, #ff6900);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.secondaryButton {
+  display: inline-flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  background: var(
+    --orange-20,
+    linear-gradient(0deg, #fdf0e7 0%, #fdf0e7 100%),
+    #fff
+  );
+  color: var(--orange-100, #ff6900);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.ghostButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  border: 1px solid #dfe2e9;
+  color: var(--orange-100, #ff6900);
+
+  /* 15px/medium */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.linkButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  color: var(--orange-100, #ff6900);
+
+  /* 15px/medium */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+/* Radio */
+
+.radioGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.radioLabel {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+  border-radius: 10px;
+  display: flex;
+  width: 246px;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 8px;
+  /* Add smooth transitions for visual effects */
+}
+
+.radioLabel.selected {
+  border-radius: 10px;
+  border: 1px solid var(--orange-100, #FF6900);
+  background: var(--orange-20, linear-gradient(0deg, #FDF0E7 0%, #FDF0E7 100%), #FFF);
+}
+
+.radioInput {
+  margin-right: 5px;
+  cursor: pointer;
+  /* Add any additional input styles here */
+}
+
+/* Radio */
+
+.checkboxGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.checkboxLabel {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+  border-radius: 10px;
+  display: flex;
+  width: 246px;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 8px;
+  /* Add smooth transitions for visual effects */
+}
+
+.checkboxLabel.selected {
+  border-radius: 10px;
+  border: 1px solid var(--orange-100, #FF6900);
+  background: var(--orange-20, linear-gradient(0deg, #FDF0E7 0%, #FDF0E7 100%), #FFF);
+}
+
+.checkboxInput {
+  margin-right: 5px;
+  cursor: pointer;
+  /* Add any additional input styles here */
+}
+
+/* Accordion.css */
+
+.accordion {
+  border: 1px solid #ccc;
+  margin: 10px 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.accordion.open {
+  border: none; /* Border color when accordion is open */
+}
+
+.accordion-header {
+  display: flex;
+  background-color: #f5f5f5;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 1000px;
+background: var(--grey-20-bg, #F1F4F9);
+}
+
+.accordion-title {
+  font-weight: bold;
+}
+
+.accordion-icon {
+  font-size: 20px;
+  transform: rotate(0deg);
+  display: none;
+  transition: transform 0.3s ease-in-out;
+}
+
+.accordion.open .accordion-icon {
+  transform: rotate(180deg); /* Rotate icon when accordion is open */
+}
+
+.accordion-content {
+  background-color: #ffffff;
+  padding: 10px;
+  display: none;
+}
+
+.accordion.open .accordion-content {
+  display: block;
+}
+
+/* styles.css */
+
+.circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 100px;
+  background: var(--orange-100, #FF6900);  border-radius: 50%; /* Makes it a circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+.circle-text {
+  color: var(--white, #FFF);
+
+  /* 11px/semibold */
+  font-family: Aspekta;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;}
+
+  /* card radio */
+
+  .cardradioGroup {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .cardradioLabel {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+    border-radius: 10px;
+    display: flex;
+    width: 246px;
+    justify-content: space-between;
+    padding: 16px;
+    gap: 8px;
+    /* Add smooth transitions for visual effects */
+  }
+  
+  .cardradioLabel.selected {
+    border-radius: 10px;
+    border: 1px solid var(--orange-100, #FF6900);
+    background: var(--orange-20, linear-gradient(0deg, #FDF0E7 0%, #FDF0E7 100%), #FFF);
+  }
+  
+  .cardradioInput {
+    margin-right: 5px;
+    cursor: pointer;
+    /* Add any additional input styles here */
+  }
+
+  .cardradioiconcontainer{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cardradioiconcontainer span{
+    margin-top: 8px;
+  }
+
+  /* passwordinput.module.css */
+.input_container {
+  position: relative;
+  width: 200px;
+}
+
+.password_input {
+  padding-right: 40px; /* Increase right padding to accommodate the button */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+  padding: 12px 14px;
+}
+
+.show_hide_button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background: white;
+  width: 40px; /* Width of the button */
+  /* background: #f5f5f5; */
+  border: 1px solid #ccc;
+  border-left: 0px;
+  border-radius: 4px;
+  cursor: pointer;
+  padding-left: 4px;
+}
+
+  /* selectinput.module.css */
+.select_container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.select_input {
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+  background: white;
+  height: 54px;
+}
+
+.select_icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 30px;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.Address{
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+.Address_topcontainer{
+  display: flex;
+  gap: 12px;
+}

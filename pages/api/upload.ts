@@ -26,12 +26,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (data) {
             /* Create directory for uploads */
-            const { chatId } = data?.fields
+            const { chatBotId } = data?.fields
+            console.log("Data Fields ==>", chatBotId)
             const fileType = data?.files.file[0].mimetype
-            let targetPath = path.join(process.cwd(), `/custom/JSFile/`);
+            console.log("fileType ==>", fileType)
+            let targetPath = path.join(process.cwd(), `/configuration/JS/`);
             if (fileType === "text/css") {
-                targetPath = path.join(process.cwd(), `/custom/CSSFile/${chatId}/`);
+                targetPath = path.join(process.cwd(), `/configuration/CSSFile/${chatBotId}/`);
             }
+            console.log("target Path ==>", targetPath)
 
             try {
                 await fs.promises.access(targetPath);
@@ -42,7 +45,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             // read file from the temporary path
             const tempPath = data?.files?.file[0].filepath;
             if (fileType === "text/javascript") {
-                await fs.promises.rename(tempPath, path.join(targetPath, `${chatId[0]}.js`));
+
+                await fs.promises.rename(tempPath, path.join(targetPath, `${chatBotId[0]}.js`));
             }
 
             if (fileType === "text/css") {

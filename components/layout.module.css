@@ -1,0 +1,59 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    height: 65px;
+    border-bottom: 1px solid var(--grey-40-stroke, #E1E4EA);
+    background: var(--white, #FFF);    color: b;
+    padding: 12px 27px;
+    justify-content: space-between;
+    color: var(--black, #112041);
+text-align: center;
+
+/* 15px/regular */
+font-family: Aspekta;
+font-size: 15px;
+font-style: normal;
+font-weight: 400;
+line-height: 20px; /* 133.333% */
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .main-content {
+    flex: 1; /* Takes the remaining height */
+    padding: 20px;
+    background: var(--grey-20-bg, #F1F4F9);  }
+
+  
+  .nav-links {
+    margin-right: auto; /* Pushes the navigation links to the right of the logo */
+    margin-left: 60px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: white;
+    margin: 0 10px;
+    color: var(--black, #112041);
+    text-align: center;
+    
+    /* 15px/regular */
+    font-family: Aspekta;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 133.333% */
+  }
+  
+  .buttons {
+    display: flex;
+  }
+  
+  .buttons button {
+    margin-left: 12px;
+  }
+  

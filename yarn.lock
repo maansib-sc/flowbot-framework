@@ -288,11 +288,6 @@
     "@esbuild-kit/core-utils" "^3.0.0"
     get-tsconfig "^4.4.0"
 
-"@esbuild/win32-x64@0.17.16":
-  version "0.17.16"
-  resolved "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.17.16.tgz"
-  integrity sha512-xJ7OH/nanouJO9pf03YsL9NAFQBHd8AqfrQd7Pf5laGyyTt/gToul6QYOA/i5i/q8y9iaM5DQFNTgpi995VkOg==
-
 "@eslint/eslintrc@^2.0.0":
   version "2.0.2"
   resolved "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-2.0.2.tgz"
@@ -417,10 +412,15 @@
   dependencies:
     glob "7.1.7"
 
-"@next/swc-win32-x64-msvc@13.2.3":
+"@next/swc-linux-x64-gnu@13.2.3":
   version "13.2.3"
-  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-13.2.3.tgz"
-  integrity sha512-aLG2MaFs4y7IwaMTosz2r4mVbqRyCnMoFqOcmfTi7/mAS+G4IMH0vJp4oLdbshqiVoiVuKrAfqtXj55/m7Qu1Q==
+  resolved "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-13.2.3.tgz"
+  integrity sha512-w5MyxPknVvC9LVnMenAYMXMx4KxPwXuJRMQFvY71uXg68n7cvcas85U5zkdrbmuZ+JvsO5SIG8k36/6X3nUhmQ==
+
+"@next/swc-linux-x64-musl@13.2.3":
+  version "13.2.3"
+  resolved "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-13.2.3.tgz"
+  integrity sha512-CTeelh8OzSOVqpzMFMFnVRJIFAFQoTsI9RmVJWW/92S4xfECGcOzgsX37CZ8K982WHRzKU7exeh7vYdG/Eh4CA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

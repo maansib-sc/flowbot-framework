@@ -1,5 +1,5 @@
 import { deletePDFList, getDefaultPromptTemplate, deleteConvList, getPDFList, getConvList, uploadPDF, uploadConv } from '@/apiRequests';
-import styles from '@/custom/CSSFile/default/Home.module.css';
+import styles from '@/styles/Home.module.css';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import FileList from '../fileList';

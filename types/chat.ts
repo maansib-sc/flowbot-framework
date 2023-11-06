@@ -6,6 +6,7 @@ export type Message = {
   src: 'test' | 'gpt4' | 'talkingDb' | ''
   isStreaming?: boolean;
   sourceDocs?: Document[];
+  step?: {};
 };
 
 export type contextItem = {
@@ -17,5 +18,5 @@ export type contextItemArray = contextItem[];
 
 export type Page = {
   page_number: string;
-  page_body:string
+  page_body: string
 };
