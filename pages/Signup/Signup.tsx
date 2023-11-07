@@ -379,8 +379,8 @@ const Signup = () => {
                       <>
                         {message?.step?.header && (
                           <div className={homestyles?.headerContainer}>
-                              <div className={homestyles?.stepCircle}>{message?.step?.header?.step}</div>
-                              <div className={homestyles?.stepText}>{message?.step?.header?.text}</div>
+                            <div className={homestyles?.stepCircle}>{message?.step?.header?.step}</div>
+                            <div className={homestyles?.stepText}>{message?.step?.header?.text}</div>
                           </div>
                         )}
                         <div key={`chatMessage-${index}`} className={className}>
@@ -407,14 +407,14 @@ const Signup = () => {
                                 {JSModule?.conversational && (
                                   <div className={homestyles?.extraContainer}>
                                     {message.type === 'apiMessage' &&
-                                    message?.step?.inputType ===
+                                      message?.step?.inputType ===
                                       'radioButton' ? (
                                       <RadioGroup
                                         options={message?.step?.options}
-                                        selectedValue={message?.step?.default}
                                         onChange={() => {
-                                          console.log('selected output');
-                                          handleSubmit();
+                                          if (index === messages.length - 1) {
+                                            handleSubmit();
+                                          }
                                         }}
                                       />
                                     ) : null}
@@ -430,7 +430,7 @@ const Signup = () => {
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===
-                                    'cardRadio' ? (
+                                      'cardRadio' ? (
                                       <CardRadioGroup
                                         options={[
                                           {
@@ -451,7 +451,7 @@ const Signup = () => {
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===
-                                    'checkboxButton' ? (
+                                      'checkboxButton' ? (
                                       <CheckboxGroup
                                         selectedValues={selectedValues}
                                         options={message?.step?.options}
