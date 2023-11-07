@@ -257,6 +257,28 @@ line-height: 20px; /* 133.333% */
     margin-left: auto;
 }
 
+.headerContainer{
+    border-radius: 1000px;
+  background: var(--grey-20-bg, #F1F4F9);
+  padding: 8px 10px;
+  display: flex;
+  margin-bottom: 20px;
+}
+.stepCircle{
+    background: var(--orange-100, #FF6900);
+  border: 1px solid var(--orange-100, #FF6900);
+  color: white;
+  border-radius: 50%;
+  height: 26px;
+  width: 26px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+.stepText{
+    
+}
+
 @keyframes fadein {
     from {
         opacity: 0;

@@ -299,9 +299,9 @@ const Signup = () => {
         {!JSModule?.testProject &&
           <ChatbotInfo chatBotId={newChatRoom} />
         }
-        {JSModule?.testProject &&
+        {/* {JSModule?.testProject &&
                 <div dangerouslySetInnerHTML={{ __html: require('../../components/ui/Sidebar/Sidebar.html') }}></div>
-        }
+        } */}
       </div>
       <div className={styles['main-content']}>
         <div className={styles['main-header']}>
@@ -377,81 +377,100 @@ const Signup = () => {
                     }
                     return (
                       <>
+                        {message?.step?.header && (
+                          <div className={homestyles?.headerContainer}>
+                              <div className={homestyles?.stepCircle}>{message?.step?.header?.step}</div>
+                              <div className={homestyles?.stepText}>{message?.step?.header?.text}</div>
+                          </div>
+                        )}
                         <div key={`chatMessage-${index}`} className={className}>
                           <div className={homestyles?.container}>
                             {icon}
-                            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                              {message?.type == "apiMessage" ? <span>{JSModule?.botName}</span>
-                                : <span>
-                                  You
-                                </span>}
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                width: '100%',
+                              }}
+                            >
+                              {message?.type == 'apiMessage' ? (
+                                <span>{JSModule?.botName}</span>
+                              ) : (
+                                <span>You</span>
+                              )}
                               <div className={homestyles?.markdownanswer}>
-                                <span className={homestyles?.markdownanswerspan}>
+                                <span
+                                  className={homestyles?.markdownanswerspan}
+                                >
                                   {message.message}
                                 </span>
-                                {
-                                  JSModule?.conversational &&
+                                {JSModule?.conversational && (
                                   <div className={homestyles?.extraContainer}>
-                                    {
-                                      message.type === 'apiMessage' && message?.step?.inputType === "radioButton" ?
-                                        <RadioGroup
-                                          options={message?.step?.options}
-                                          selectedValue={message?.step?.default}
-                                          onChange={() => {
-                                            console.log("selected output");
-                                            handleSubmit()
-                                          }}
-                                        /> : null
-                                    }
-                                    {
-                                      message?.step?.inputType === "password" ?
-                                        <PasswordInput
-                                        /> : null
-                                    }
-                                    {
-                                      message?.step?.inputType === "address" ?
-                                        <Address
-                                          cities={cityOptions}
-                                          states={stateOptions}
-                                          zip={""}
-                                          street={""}
-                                        /> : null
-                                    }
-                                    {
-                                      message?.step?.inputType === "cardRadio" ?
-                                        <CardRadioGroup
-                                          options={[{
-                                            label: "label",
-                                            value: "value",
+                                    {message.type === 'apiMessage' &&
+                                    message?.step?.inputType ===
+                                      'radioButton' ? (
+                                      <RadioGroup
+                                        options={message?.step?.options}
+                                        selectedValue={message?.step?.default}
+                                        onChange={() => {
+                                          console.log('selected output');
+                                          handleSubmit();
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType === 'password' ? (
+                                      <PasswordInput />
+                                    ) : null}
+                                    {message?.step?.inputType === 'address' ? (
+                                      <Address
+                                        cities={cityOptions}
+                                        states={stateOptions}
+                                        zip={''}
+                                        street={''}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                    'cardRadio' ? (
+                                      <CardRadioGroup
+                                        options={[
+                                          {
+                                            label: 'label',
+                                            value: 'value',
                                             icon: Generate,
                                           },
                                           {
-                                            label: "label",
-                                            value: "value",
+                                            label: 'label',
+                                            value: 'value',
                                             icon: Generate,
-                                          }]}
-                                          selectedValue={"value"}
-                                          onChange={() => console.log("selected output")}
-                                        /> : null
-                                    }
-                                    {
-                                      message?.step?.inputType === "checkboxButton" ?
-                                        <CheckboxGroup
-                                          selectedValues={selectedValues}
-                                          options={message?.step?.options}
-                                          onChange={handleCheckboxChange}
-                                        /> : null
-                                    }
+                                          },
+                                        ]}
+                                        selectedValue={'value'}
+                                        onChange={() =>
+                                          console.log('selected output')
+                                        }
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                    'checkboxButton' ? (
+                                      <CheckboxGroup
+                                        selectedValues={selectedValues}
+                                        options={message?.step?.options}
+                                        onChange={handleCheckboxChange}
+                                      />
+                                    ) : null}
                                   </div>
-                                }
+                                )}
                               </div>
                             </div>
                           </div>
                           <div className={homestyles?.editbtn}>
-                            {message?.type !== "apiMessage" ? <Button variant='link'>
-                              <Pencil /> Edit
-                            </Button>
-                              : <></>}
+                            {message?.type !== 'apiMessage' ? (
+                              <Button variant="link">
+                                <Pencil /> Edit
+                              </Button>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                         </div>
                       </>
