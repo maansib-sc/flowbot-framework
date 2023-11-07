@@ -4,6 +4,7 @@ import dbConnect from '@/config/mongodb';
 import { upsertSubscription } from '@/models/subscriptionModel';
 import { upsertUser } from '@/models/userModel';
 import axios from 'axios';
+import { BigQuery } from '@google-cloud/bigquery';
 
 export default async function handler(
     req: NextApiRequest,
@@ -32,13 +33,13 @@ export default async function handler(
         const user = await upsertUser(pinecone_name_space, session)
 
         import(`@/configuration/JS/${pinecone_name_space}`).then(async (module) => {
-            const response = await module.start({ chain, axiosInstance: axios, user }, sanitizedQuestion)
+            const response = await module.start({ chain, axiosInstance: axios, user, BigQuery }, sanitizedQuestion)
             if (response) {
                 return res.status(200).json(response);
             }
         }).catch((error) => {
             import(`@/configuration/JS/default`).then(async (module) => {
-                const response = await module.start({ chain, axiosInstance: axios, user }, sanitizedQuestion)
+                const response = await module.start({ chain, axiosInstance: axios, user, BigQuery }, sanitizedQuestion)
                 if (response) {
                     return res.status(200).json(response);
                 }
