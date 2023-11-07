@@ -2,8 +2,8 @@ export const getTitle = "Document chatbot";
 export const getWelcomeMessage = "I am a Assistant. I'll assist you with any queries related to documents";
 export const getInputPlaceholder = "Write Message";
 export const Navbar = false;
-export const botName = "Alex";
-export const testProject = false;
+export const botName = "Libby";
+export const testProject = true;
 export const ChatBotStep = [
     {
 

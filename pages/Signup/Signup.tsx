@@ -299,6 +299,9 @@ const Signup = () => {
         {!JSModule?.testProject &&
           <ChatbotInfo chatBotId={newChatRoom} />
         }
+        {/* {JSModule?.testProject &&
+                <div dangerouslySetInnerHTML={{ __html: require('../../components/ui/Sidebar/Sidebar.html') }}></div>
+        } */}
       </div>
       <div className={styles['main-content']}>
         <div className={styles['main-header']}>
