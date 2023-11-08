@@ -26,7 +26,7 @@ import SelectInputField from '@/components/ui/SelectInputField/SelectInputField'
 import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
-import backgroundImage from '@/components/ui/Sidebar/background.svg';
+import backgroundImage from '../../components/ui/Sidebar/background.jpeg';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -485,7 +485,7 @@ const Signup = () => {
           <ChatbotInfo chatBotId={newChatRoom} />
         }
         {JSModule?.testProject &&
-          <div style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: "auto", backgroundRepeat: "no-repeat", width: "416px", height: "704px", padding: "20px", boxSizing: "border-box", paddingTop: "64px", fontFamily: 'Aspekta', position: "relative" }}>
+          <div style={{             backgroundImage: `url('./background.jpeg')`, backgroundSize: "contain", backgroundRepeat: "no-repeat", width: "416px", height: "704px", padding: "20px", boxSizing: "border-box", paddingTop: "64px", fontFamily: 'Aspekta', position: "relative" }}>
     <div dangerouslySetInnerHTML={{ __html: htmlFile }} />          </div>
         }
       </div>
