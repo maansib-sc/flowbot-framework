@@ -432,22 +432,13 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'cardRadio' ? (
                                       <CardRadioGroup
-                                        options={[
-                                          {
-                                            label: 'label',
-                                            value: 'value',
-                                            icon: Generate,
-                                          },
-                                          {
-                                            label: 'label',
-                                            value: 'value',
-                                            icon: Generate,
-                                          },
-                                        ]}
+                                      onChange={() => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit();
+                                          }
+                                        }}
+                                        options={message?.step?.options}
                                         selectedValue={'value'}
-                                        onChange={() =>
-                                          console.log('selected output')
-                                        }
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===

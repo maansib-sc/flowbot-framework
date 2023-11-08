@@ -218,6 +218,7 @@ background: var(--grey-20-bg, #F1F4F9);
   .cardradioGroup {
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
   }
   
   .cardradioLabel {
