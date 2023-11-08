@@ -26,7 +26,6 @@ import SelectInputField from '@/components/ui/SelectInputField/SelectInputField'
 import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
-import backgroundImage from '../../components/ui/Sidebar/background.jpeg';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -60,186 +59,7 @@ const Signup = () => {
   const [promptModal, setPromptModal] = useState<boolean>(false);
   const [promptTemplate, setPromptTemplate] = useState<string | any>('');
   const [selectedValues, setSelectedValues] = useState([]); // Initial empty array
-  const [htmlFile, setHtmlFile] = useState(`<!DOCTYPE html>
-  <html>
-    <head>
-      <title>Sandbox</title>
-      <meta charset="UTF-8" />
-      <link rel="stylesheet" href="./Sidebar.css" />
-      <style>
-              /* Apply the background SVG using CSS */
-              .container-body {
-          background-image: url(${backgroundImage});
-          background-size: auto;
-          background-repeat: no-repeat;
-          width: 416px;
-          height: 704px;
-          padding: 20px;
-          padding-top: 20px;
-          box-sizing: border-box;
-          padding-top: 64px;
-          font-family: 'Aspekta';
-          position: relative;
-        }
-        h3 {
-          color: var(--white, #fff);
-  
-          /* 24px/medium */
-          font-family: 'Aspekta';
-          font-size: 19px;
-          font-style: normal;
-          font-weight: 500;
-          line-height: normal;
-        }
-        span {
-          color: var(--grey-40-stroke, #e1e4ea);
-  
-          /* 15px/regular */
-          font-family: 'Aspekta';
-          font-size: 15px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 20px; /* 133.333% */
-        }
-  
-      
-  .stepper {
-      display: flex;
-    flex-direction: column;
-    margin-top: 17px;
-  }
-  
-  .step {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    position: relative; /* Add relative positioning for the line */
-    color: var(--white, #FFF);
-  
-  /* 18px/medium */
-  font-family: Aspekta;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 28px; /* 155.556% */
-  }
-  
-  .step-circle {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 1px solid var(--grey-80, #AAB1BA);   color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 16px;
-    margin-right: 10px;
-    color: var(--white, #FFF);
-  
-  /* 11px/semibold */
-  font-family: Aspekta;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  letter-spacing: 0.55px;
-  text-transform: uppercase;
-  }
-  
-  .step-text {
-    font-size: 14px;
-  }
-  
-  .active .step-circle {
-  border: 1px solid var(--orange-100, #FF6900); 
-  }
-  
-  .completed .step-circle {
-      background: var(--orange-100, #FF6900);   border: 1px solid var(--orange-100, #FF6900); ;
-    color: white;
-  }
-  
-  .upcoming .step-circle {
-    border: 2px solid #ccc;
-  }
-  
-  .upcoming .step-text{
-      color: var(--grey-80, #AAB1BA);
-  }
-  
-  .step:not(:last-child)::before {
-      content: '';
-    width: 2px;
-    height: 100%;
-    background: #ccc;
-    position: absolute;
-    left: 3%;
-    top: 24px;
-    transform: translateX(-50%);
-    z-index: -2;
-  }
-  
-  .sidebar-login{
-      position: absolute;
-      bottom: 10px;
-      text-align: center;
-      color: var(--white, #FFF);
-  
-  /* 14px/regular */
-  font-family: Aspekta;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  width: 100%;
-  }
-  
-  .sidebar-login .text{
-      text-align: center;
-  }
-  .sidebar-login .login{
-  
-      cursor: pointer;
-      color: var(--orange-100, #FF6900);
-   }
-      </style>
-    </head>
-  
-    <body class="container-body">
-      <h3>Welcome to the Professional Sign-up channel</h3>
-      <span
-        >We make it simple to walk through the registration process. Just click
-        the “Get started” button and Libby will walk you through every step.
-        Welcome aboard!</span
-      >
-      <div class="stepper">
-        <div class="step completed">
-          <div class="step-circle">1</div>
-          <div class="step-text">Contact Information</div>
-        </div>
-        <div class="step active">
-          <div class="step-circle">2</div>
-          <div class="step-text">Services Offered</div>
-        </div>
-        <div class="step upcoming">
-          <div class="step-circle">3</div>
-          <div class="step-text">Documents</div>
-        </div>
-        <div class="step upcoming">
-          <div class="step-circle">4</div>
-          <div class="step-text">Summary</div>
-        </div>
-      </div>
-      <div class="sidebar-login">
-          <span class="text">
-              Have an account? <span class="login">Log In</span>
-          </span>
-      </div>
-      <script src="src/index.js"></script>
-    </body>
-  </html>
-  `)
+  const [htmlFile, setHtmlFile] = useState('')
 
   const handleCheckboxChange = (values: any) => {
     setSelectedValues(values);
@@ -347,6 +167,9 @@ const Signup = () => {
         ],
         history: [],
       })
+    }
+    if (JSModule) {
+      setHtmlFile(JSModule?.leftPanelHtml)
     }
   }, [JSModule])
 
@@ -480,13 +303,14 @@ const Signup = () => {
 
   return (
     <div className={styles['signup']}>
-      <div className={styles['sidebar']}>
-        {!JSModule?.testProject &&
+      <div className={styles['sidebar']} style={{ width: isPublishUrl ? "initial" : "" }}>
+        {!JSModule?.testProject && !isPublishUrl &&
           <ChatbotInfo chatBotId={newChatRoom} />
         }
         {JSModule?.testProject &&
-          <div style={{             backgroundImage: `url('./background.jpeg')`, backgroundSize: "contain", backgroundRepeat: "no-repeat", width: "416px", height: "704px", padding: "20px", boxSizing: "border-box", paddingTop: "64px", fontFamily: 'Aspekta', position: "relative" }}>
-    <div dangerouslySetInnerHTML={{ __html: htmlFile }} />          </div>
+          <div style={{ backgroundImage: `url('./background.jpeg')`, backgroundSize: "contain", backgroundRepeat: "no-repeat", width: "416px", height: "704px", padding: "20px", boxSizing: "border-box", paddingTop: "64px", fontFamily: 'Aspekta', position: "relative" }}>
+            <div dangerouslySetInnerHTML={{ __html: htmlFile }} />
+          </div>
         }
       </div>
       <div className={styles['main-content']}>
@@ -580,9 +404,9 @@ const Signup = () => {
                               }}
                             >
                               {message?.type == 'apiMessage' ? (
-                                <span>{JSModule?.botName}</span>
+                                <span className={homestyles?.botName}>{JSModule?.botName}</span>
                               ) : (
-                                <span>You</span>
+                                <span className={homestyles?.botName}>You</span>
                               )}
                               <div className={homestyles?.markdownanswer}>
                                 <span
