@@ -438,7 +438,7 @@ const Signup = () => {
                                           }
                                         }}
                                         options={message?.step?.options}
-                                        selectedValue={'value'}
+                                        // selectedValue={'value'}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from '@/configuration/CSS/Index.module.css';
 import ApplianceProffesional from '@/assets/svgs/icons/ApplianceProffesional';
 import Carpenter from '@/assets/svgs/icons/Carpenter';
@@ -44,19 +44,25 @@ function getIconByLabel(label:any) {
 
 const CardRadioGroup = ({
   options,
-  selectedValue,
+  // selectedValue,
   onChange,
 }: {
   options: { label: string; value: string,icon?: React.FC;}[];
-  selectedValue: string;
-  onChange: (value: string) => void;
+  // selectedValue: string;
+  onChange: () => void;
 }) => {
+
+  const [selectedValue, setSelectedValue] = useState(0)
+
+  const changeSelectedValue = (index: number) => {
+    setSelectedValue(index)
+  }
   return (
     <div className={styles.cardradioGroup}> {/* Apply a class from the imported CSS module */}
-      {options.map((option) => (
+      {options.map((option,index) => (
         <label
           key={option.value}
-          className={`${styles.cardradioLabel} ${selectedValue === option.value ? styles.selected : ''}`}
+          className={`${styles.cardradioLabel} ${selectedValue === index ? styles.selected : ''}`}
         >
           <div className={styles.cardradioiconcontainer}>
             {option?.label && getIconByLabel(option.label) }
@@ -67,9 +73,11 @@ const CardRadioGroup = ({
           <input
             type="radio"
             value={option.value}
-            checked={selectedValue === option.value}
-            onChange={() => onChange(option.value)}
-            className={styles.cardradioInput}
+            checked={selectedValue === index}
+            onChange={() => {
+              onChange();
+              changeSelectedValue(index)
+            }}            className={styles.cardradioInput}
           />
         </label>
       ))}
