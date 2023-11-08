@@ -181,6 +181,51 @@ export const ChatBotStep = [
             { label: 'Exterior Awning Inst.', value: 'Exterior Awning Inst.' }
           ]
     },
+    {
+        "id": 21,
+        "question": "What services do you want to provide from the list below. Please select or deselect the services that apply or do not apply.",
+        "inputType": "checkboxButton",
+        "options": [
+            { label: 'Bard/Shed Repair', value: 'Bard/Shed Repair' },
+            { label: 'Brick, Stone, Block Wall Inst.', value: 'Brick, Stone, Block Wall Inst.' },
+            { label: 'Crown Molding Instalation', value: 'Crown Molding Instalation' },
+            { label: 'Decorative Wall Panel Inst.', value: 'Decorative Wall Panel Inst.' },
+            { label: 'Driveway Repair', value: 'Driveway Repair' },
+            { label: 'Exterior Awning Inst.', value: 'Exterior Awning Inst.' }
+          ]
+    },
+        {
+        "id": 22,
+        "question": "We are getting close to the end of the sign-up process.Provide a copy of your certificate of general liability insurance. Use the upload button below to upload it into the system.",
+        "header":{
+            "step":"3",
+            "text":"Documents"
+        },
+        "inputType": "fileUploader",
+        "options": []
+    },
+    {
+        "id": 23,
+        "question": "Do you have a rewards number with us?",
+        "inputType": "radioButton",
+        "options": [
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' }
+        ],
+        "default": "Yes"
+    },
+       {
+        "id": 24,
+        "question": "Please enter your rewards number",
+        "inputType": "text",
+        "options": []
+    },
+            {
+        "id": 25,
+        "question": "One final thing, please upload your driver’s license using the upload box below",
+        "inputType": "fileUploader",
+        "options": []
+    },
 
     
 ];
