@@ -25,6 +25,7 @@ import CheckboxGroup from '@/components/ui/Checkbox/CheckboxGroup';
 import SelectInputField from '@/components/ui/SelectInputField/SelectInputField';
 import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
+import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -476,6 +477,12 @@ const Signup = () => {
                                      {message?.step?.inputType ===
                                       'constructiondetails' ? (
                                         <ShowDetails/>
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'fileUploader' ? (
+                                      <FileUploadComponent
+                                      handleSubmit={handleSubmit}
+                                      />
                                     ) : null}
                                   </div>
                                 )}

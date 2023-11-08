@@ -328,3 +328,32 @@ background: var(--grey-20-bg, #F1F4F9);
   display: flex;
   gap: 12px;
 }
+
+
+.fileUploadComponent{
+  display: flex;
+  align-items: center;
+}
+
+.fileUploadComponent span{
+  color: var(--grey-100, #727A8B);
+
+  /* 14px/medium */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin-right: 2px;
+}
+.fileUploadComponent small{
+  color: var(--grey-80, #AAB1BA);
+
+  /* 14px/regular */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-right: 2px;
+}
