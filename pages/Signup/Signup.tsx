@@ -192,9 +192,23 @@ const Signup = () => {
     console.log("getWelcomeMessage  ==>", messageState)
   }, [messageState])
 
-  //handle form submission
-  async function handleSubmit() {
+  const checklastmessage = (value?: string) => {
+    if (messages.length > 0 && messages[messages.length - 1]?.step) {
+      let copy = { ...messages[messages.length - 1] }
+      copy.step ??= {}
+      copy.step["answer"] = query || value
+      setMessageState((state) => ({
+        ...state,
+        messages: [...messages],
+        history: [],
+      }));
+    }
+  }
 
+
+  //handle form submission
+  async function handleSubmit(value?: string) {
+    checklastmessage(value)
     const question = query.trim();
     if (query) {
       setMessageState((state) => ({
@@ -421,20 +435,23 @@ const Signup = () => {
                                       'radioButton' ? (
                                       <RadioGroup
                                         options={message?.step?.options}
-                                        onChange={() => {
+                                        onChange={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
                                         }}
                                       />
                                     ) : null}
                                     {message?.step?.inputType === 'password' ? (
-                                      <PasswordInput />
+                                      <PasswordInput
+                                        disabled={message?.step?.disabled || true}
+                                        value={message?.step?.answer}
+                                      />
                                     ) : null}
                                     {message?.step?.inputType === 'address' ? (
                                       <Address
-                                        cities={cityOptions}
                                         states={stateOptions}
+                                        cities={cityOptions}
                                         zip={''}
                                         street={''}
                                       />
@@ -512,7 +529,7 @@ const Signup = () => {
               </div >
               <div className={homestyles?.center}>
                 <div className={homestyles?.cloudform}>
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={() => handleSubmit()}>
                     <textarea
                       disabled={loading}
                       onKeyDown={handleEnter}

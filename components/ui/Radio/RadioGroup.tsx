@@ -6,13 +6,14 @@ const RadioGroup = ({
   onChange,
 }: {
   options: { label: string; value: string }[];
-  onChange: () => void;
+  onChange: (value: string) => void;
 }) => {
 
   const [selectedValue, setSelectedValue] = useState(0)
 
   const changeSelectedValue = (index: number) => {
     setSelectedValue(index)
+    onChange(options[index].value)
   }
   return (
     <div className={styles.radioGroup}> {/* Apply a class from the imported CSS module */}
@@ -27,7 +28,6 @@ const RadioGroup = ({
             value={option.value}
             checked={selectedValue === index}
             onChange={() => {
-              onChange();
               changeSelectedValue(index)
             }}
             className={styles.radioInput}

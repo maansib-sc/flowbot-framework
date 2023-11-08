@@ -6,7 +6,8 @@ export type Message = {
   src: 'test' | 'gpt4' | 'talkingDb' | ''
   isStreaming?: boolean;
   sourceDocs?: Document[];
-  step?: {};
+  step?: { [key: string]: any };
+  answer?: string;
 };
 
 export type contextItem = {
