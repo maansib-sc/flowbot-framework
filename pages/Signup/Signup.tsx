@@ -23,6 +23,8 @@ import CardRadioGroup from '@/components/ui/Radio/CardRadioGroup';
 import Generate from '@/assets/svgs/icons/Generate';
 import CheckboxGroup from '@/components/ui/Checkbox/CheckboxGroup';
 import SelectInputField from '@/components/ui/SelectInputField/SelectInputField';
+import NextFunction from '@/components/NextFunction';
+import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -461,6 +463,14 @@ const Signup = () => {
                                         options={message?.step?.options}
                                         onChange={handleCheckboxChange}
                                       />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'bottext' ? (
+                                      <NextFunction handleSubmit={handleSubmit}/>
+                                                                            ) : null}
+                                     {message?.step?.inputType ===
+                                      'constructiondetails' ? (
+                                        <ShowDetails/>
                                     ) : null}
                                   </div>
                                 )}
