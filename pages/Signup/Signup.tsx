@@ -26,6 +26,7 @@ import SelectInputField from '@/components/ui/SelectInputField/SelectInputField'
 import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
+import backgroundImage from '@/components/ui/Sidebar/background.svg';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -59,6 +60,72 @@ const Signup = () => {
   const [promptModal, setPromptModal] = useState<boolean>(false);
   const [promptTemplate, setPromptTemplate] = useState<string | any>('');
   const [selectedValues, setSelectedValues] = useState([]); // Initial empty array
+  const [htmlFile, setHtmlFile] = useState({
+    __html: `<h3
+    style="color: #fff; font-family: 'Aspekta'; font-size: 19px; font-style: normal; font-weight: 500; line-height: normal;">
+    Welcome to the Professional Sign-up channel </h3> <span
+    style="color: #e1e4ea; font-family: 'Aspekta'; font-size: 15px; font-style: normal; font-weight: 400; line-height: 20px;">
+    We make it simple to walk through the registration process... </span>
+  <div style="display: flex; flex-direction: column; margin-top: 17px;">
+    <div style="display: flex; align-items: center; margin-bottom: 20px; position: relative;">
+
+      <div
+        style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid #AAB1BA; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; margin-right: 10px; color: #fff; font-family: Aspekta; font-size: 11px; font-style: normal; font-weight: 600; line-height: normal; letter-spacing: 0.55px; text-transform: uppercase;">
+        1
+      </div>
+
+      <div style="font-size: 14px;">
+        Contact Information
+      </div>
+
+    </div>
+
+    <div style="display: flex; align-items: center; margin-bottom: 20px; position: relative;">
+
+      <div
+        style="width: 20px; height: 20px; border: 1px solid #FF6900; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; margin-right: 10px; color: #fff; font-family: Aspekta; font-size: 11px; font-style: normal; font-weight: 600; line-height: normal; letter-spacing: 0.55px; text-transform: uppercase;">
+        2
+      </div>
+
+      <div style="font-size: 14px;">
+        Services Offered
+      </div>
+
+    </div>
+
+    <div style="display: flex; align-items: center; margin-bottom: 20px; position: relative;">
+
+      <div
+        style="width: 20px; height: 20px; border: 2px solid #ccc; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; margin-right: 10px; color: #fff; font-family: Aspekta; font-size: 11px; font-style: normal; font-weight: 600; line-height: normal; letter-spacing: 0.55px; text-transform: uppercase;">
+        3
+      </div>
+
+      <div style="font-size: 14px; color: #AAB1BA;">
+        Documents
+      </div>
+
+    </div>
+
+    <div style="display: flex; align-items: center; margin-bottom: 20px; position: relative;">
+
+      <div
+        style="width: 20px; height: 20px; border: 2px solid #ccc; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; margin-right: 10px; color: #fff; font-family: Aspekta; font-size: 11px; font-style: normal; font-weight: 600; line-height: normal; letter-spacing: 0.55px; text-transform: uppercase;">
+        4
+      </div>
+
+      <div style="font-size: 14px; color: #AAB1BA;">
+        Summary
+      </div>
+
+    </div>
+  </div>
+  <div
+    style="position: absolute; bottom: 10px; text-align: center; color: #fff; font-family: Aspekta; font-size: 14px; font-style: normal; font-weight: 400; line-height: normal; width: 100%;">
+    <span style="text-align: center;">
+      Have an account?
+      <span style="cursor: pointer; color: #FF6900;">Log In</span>
+    </span>
+  </div>`})
 
   const handleCheckboxChange = (values: any) => {
     setSelectedValues(values);
@@ -303,9 +370,11 @@ const Signup = () => {
         {!JSModule?.testProject &&
           <ChatbotInfo chatBotId={newChatRoom} />
         }
-        {/* {JSModule?.testProject &&
-                <div dangerouslySetInnerHTML={{ __html: require('../../components/ui/Sidebar/Sidebar.html') }}></div>
-        } */}
+        {JSModule?.testProject &&
+          <div style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: "auto", backgroundRepeat: "no-repeat", width: "416px", height: "704px", padding: "20px", boxSizing: "border-box", paddingTop: "64px", fontFamily: 'Aspekta', position: "relative" }}>
+            <div dangerouslySetInnerHTML={htmlFile}></div>
+          </div>
+        }
       </div>
       <div className={styles['main-content']}>
         <div className={styles['main-header']}>
@@ -436,25 +505,25 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'cardRadio' ? (
                                       <CardRadioGroup
-                                      onChange={() => {
+                                        onChange={() => {
                                           if (index === messages.length - 1) {
                                             handleSubmit();
                                           }
                                         }}
                                         options={message?.step?.options}
-                                        // selectedValue={'value'}
+                                      // selectedValue={'value'}
                                       />
                                     ) : null}
-                                   {message?.step?.inputType ===
+                                    {message?.step?.inputType ===
                                       'select' ? (
                                       <SelectInputField
-                                      onChange={() => {
+                                        onChange={() => {
                                           if (index === messages.length - 1) {
                                             handleSubmit();
                                           }
                                         }}
                                         options={message?.step?.options}
-                                        // selectedValue={'value'}
+                                      // selectedValue={'value'}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===
@@ -462,26 +531,26 @@ const Signup = () => {
                                       <CheckboxGroup
                                         selectedValues={selectedValues}
                                         options={message?.step?.options}
-                                        onChange={(e)=>{
-                                            if (index === messages.length - 1) {
-                                              handleSubmit();
-                                            }
+                                        onChange={(e) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit();
+                                          }
                                           handleCheckboxChange(e)
                                         }}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'bottext' ? (
-                                      <NextFunction handleSubmit={handleSubmit}/>
-                                                                            ) : null}
-                                     {message?.step?.inputType ===
+                                      <NextFunction handleSubmit={handleSubmit} />
+                                    ) : null}
+                                    {message?.step?.inputType ===
                                       'constructiondetails' ? (
-                                        <ShowDetails/>
+                                      <ShowDetails />
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'fileUploader' ? (
                                       <FileUploadComponent
-                                      handleSubmit={handleSubmit}
+                                        handleSubmit={handleSubmit}
                                       />
                                     ) : null}
                                   </div>
@@ -551,7 +620,7 @@ const Signup = () => {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
