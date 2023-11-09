@@ -6,7 +6,7 @@ export const botName = "Libby";
 export const testProject = true;
 export const ChatBotStep = [
     {
-
+ 
         "question": "Welcome to beginAProject",
         "id": 0,
         "fullWidth": true,
@@ -16,9 +16,9 @@ export const ChatBotStep = [
     {
         "id": 1,
         "question": "What is your first Name and last Name",
-        "header":{
-            "step":"1",
-            "text":"Contact Information"
+        "header": {
+            "step": "1",
+            "text": "Contact Information"
         },
         "inputType": "text",
         "options": []
@@ -55,7 +55,8 @@ export const ChatBotStep = [
         "id": 6,
         "question": "Please enter your preferred password. It must contain letters, numbers and symbols. It is required to have at least one letter, one number and one symbol.",
         "inputType": "password",
-        "options": []
+        "options": [],
+        "disabled": true
     },
     {
         "id": 7,
@@ -84,9 +85,9 @@ export const ChatBotStep = [
     {
         "id": 11,
         "question": "What best describes your primary occupation from the list below your occupation from the list below?",
-        "header":{
-            "step":"2",
-            "text":"Services Offered"
+        "header": {
+            "step": "2",
+            "text": "Services Offered"
         },
         "inputType": "cardRadio",
         "options": [
@@ -101,8 +102,8 @@ export const ChatBotStep = [
             { label: 'Lawn and Landscape Pro', value: 'Lawn and Landscape Pro' },
             { label: 'Painter', value: 'Painter' },
             { label: 'Plumber', value: 'Plumber' }
-          ]
-          
+        ]
+ 
     },
     {
         "id": 12,
@@ -111,8 +112,8 @@ export const ChatBotStep = [
         "options": [
             { label: 'Florida', value: 'Florida' },
             { label: 'New York', value: 'New York' },
-          ]
-          
+        ]
+ 
     },
     {
         "id": 13,
@@ -122,17 +123,17 @@ export const ChatBotStep = [
             { label: 'Certified General Contractor', value: 'Certified General Contractor' },
             { label: 'Certified Residental Contractor', value: 'Certified Residental Contractor' },
             { label: 'Certified Building Contractor', value: 'Certified Building Contractor' },
-
+ 
         ],
         "default": "Certified Building Contractor"
-          
+ 
     },
     {
         "id": 14,
         "question": "The next step is for you to provide your Certified General Contractor license number from the state of Florida",
         "inputType": "text",
         "options": [],
-          
+ 
     },
     {
         "id": 15,
@@ -179,7 +180,7 @@ export const ChatBotStep = [
             { label: 'Decorative Wall Panel Inst.', value: 'Decorative Wall Panel Inst.' },
             { label: 'Driveway Repair', value: 'Driveway Repair' },
             { label: 'Exterior Awning Inst.', value: 'Exterior Awning Inst.' }
-          ]
+        ]
     },
     {
         "id": 21,
@@ -192,14 +193,14 @@ export const ChatBotStep = [
             { label: 'Decorative Wall Panel Inst.', value: 'Decorative Wall Panel Inst.' },
             { label: 'Driveway Repair', value: 'Driveway Repair' },
             { label: 'Exterior Awning Inst.', value: 'Exterior Awning Inst.' }
-          ]
+        ]
     },
-        {
+    {
         "id": 22,
         "question": "We are getting close to the end of the sign-up process.Provide a copy of your certificate of general liability insurance. Use the upload button below to upload it into the system.",
-        "header":{
-            "step":"3",
-            "text":"Documents"
+        "header": {
+            "step": "3",
+            "text": "Documents"
         },
         "inputType": "fileUploader",
         "options": []
@@ -214,21 +215,201 @@ export const ChatBotStep = [
         ],
         "default": "Yes"
     },
-       {
+    {
         "id": 24,
         "question": "Please enter your rewards number",
         "inputType": "text",
         "options": []
     },
-            {
+    {
         "id": 25,
         "question": "One final thing, please upload your driver’s license using the upload box below",
         "inputType": "fileUploader",
         "options": []
     },
-
-    
+ 
+ 
 ];
+export const leftPanelHtml = `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sandbox</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./Sidebar.css" />
+    <style>
+            /* Apply the background SVG using CSS */
+            .container-body {
+        background-size: auto;
+        background-repeat: no-repeat;
+        width: 416px;
+        height: 704px;
+        padding: 20px;
+        padding-top: 20px;
+        box-sizing: border-box;
+        padding-top: 64px;
+        font-family: 'Aspekta';
+        position: relative;
+      }
+      h3 {
+        color: var(--white, #fff);
+ 
+        /* 24px/medium */
+        font-family: 'Aspekta';
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 500;
+        margin-bottom: 20px;
+        line-height: normal;
+      }
+      span {
+        color: var(--grey-40-stroke, #e1e4ea);
+ 
+        /* 15px/regular */
+        font-family: 'Aspekta';
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px; /* 133.333% */
+      }
+ 
+   
+.stepper {
+    display: flex;
+  flex-direction: column;
+  margin-top: 17px;
+}
+ 
+.step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative; /* Add relative positioning for the line */
+  color: var(--white, #FFF);
+ 
+/* 18px/medium */
+font-family: Aspekta;
+font-size: 18px;
+font-style: normal;
+font-weight: 600;
+line-height: 35px; /* 155.556% */
+}
+ 
+.step-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--grey-80, #AAB1BA);   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  margin-right: 10px;
+  color: var(--white, #FFF);
+ 
+/* 11px/semibold */
+font-family: Aspekta;
+font-size: 11px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+letter-spacing: 0.55px;
+text-transform: uppercase;
+}
+ 
+.step-text {
+  font-size: 14px;
+}
+ 
+.active .step-circle {
+border: 1px solid var(--orange-100, #FF6900);
+}
+ 
+.completed .step-circle {
+    background: var(--orange-100, #FF6900);   border: 1px solid var(--orange-100, #FF6900); ;
+  color: white;
+}
+ 
+.upcoming .step-circle {
+  border: 2px solid #ccc;
+}
+ 
+.upcoming .step-text{
+    color: var(--grey-80, #AAB1BA);
+}
+ 
+.step:not(:last-child)::before {
+    content: '';
+  width: 2px;
+  height: 100%;
+  background: #ccc;
+  position: absolute;
+  left: 3%;
+  top: 24px;
+  transform: translateX(-50%);
+  z-index: -2;
+}
+ 
+.sidebar-login{
+    position: absolute;
+    bottom: 20px;
+    text-align: center;
+    color: var(--white, #FFF);
+ 
+/* 14px/regular */
+font-family: Aspekta;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+width: 100%;
+}
+ 
+.sidebar-login .text{
+    text-align: center;
+}
+.sidebar-login .login{
+ 
+    cursor: pointer;
+    color: var(--orange-100, #FF6900);
+ }
+    </style>
+  </head>
+ 
+  <body class="container-body">
+    <h3>Welcome to the Professional Sign-up channel</h3>
+    <span
+      >We make it simple to walk through the registration process. Just click
+      the “Get started” button and Libby will walk you through every step.
+      Welcome aboard!</span
+    >
+    <div class="stepper">
+      <div class="step completed">
+        <div class="step-circle">1</div>
+        <div class="step-text">Contact Information</div>
+      </div>
+      <div class="step active">
+        <div class="step-circle">2</div>
+        <div class="step-text">Services Offered</div>
+      </div>
+      <div class="step upcoming">
+        <div class="step-circle">3</div>
+        <div class="step-text">Documents</div>
+      </div>
+      <div class="step upcoming">
+        <div class="step-circle">4</div>
+        <div class="step-text">Summary</div>
+      </div>
+    </div>
+    <div class="sidebar-login">
+        <span class="text">
+            Have an account? <span class="login">Log In</span>
+        </span>
+    </div>
+    <script src="src/index.js"></script>
+  </body>
+</html>
+`
 export const finalMessage = "Thanks for the provided information"
 export const conversational = true
 export const start = async (handler, question) => {
@@ -249,4 +430,4 @@ export const start = async (handler, question) => {
         const response = await handler.chain.run(question)
         return response
     }
-} 
+}
