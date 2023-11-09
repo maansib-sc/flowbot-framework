@@ -26,6 +26,7 @@ import SelectInputField from '@/components/ui/SelectInputField/SelectInputField'
 import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
+import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -436,6 +437,19 @@ const Signup = () => {
                                       message?.step?.inputType ===
                                       'radioButton' ? (
                                       <RadioGroup
+                                        options={message?.step?.options}
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message.type === 'apiMessage' &&
+                                      message?.step?.inputType ===
+                                      'googleLogin' ? (
+                                      <GoogleLoginComponent
+                                      handleSubmit={handleSubmit}
                                         options={message?.step?.options}
                                         onChange={(value) => {
                                           if (index === messages.length - 1) {

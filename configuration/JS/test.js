@@ -26,7 +26,7 @@ export const ChatBotStep = [
     {
         "id": 2,
         "question": "So, would you like to register using using your Google log-in ?",
-        "inputType": "radioButton",
+        "inputType": "googleLogin",
         "options": [
             { label: 'Yes', value: 'Yes' },
             { label: 'No', value: 'No' }

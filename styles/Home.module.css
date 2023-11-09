@@ -439,6 +439,10 @@
     opacity: 0.8;
 }
 
+.customGoogle span{
+        color: black;
+}
+
 /* Mobile optimization */
 
 @media (max-width: 600px) {
