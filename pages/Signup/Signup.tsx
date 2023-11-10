@@ -60,6 +60,7 @@ const Signup = () => {
   const [promptTemplate, setPromptTemplate] = useState<string | any>('');
   const [selectedValues, setSelectedValues] = useState([]); // Initial empty array
   const [htmlFile, setHtmlFile] = useState('')
+  // const [disableInput, setDisableInput] = useState(false)
 
   const handleCheckboxChange = (values: any) => {
     setSelectedValues(values);
@@ -205,26 +206,27 @@ const Signup = () => {
     }
   }
 
+  // const disableUserInput = () => {
+  //   if (messages.length > 0 && messages[messages.length - 1]?.step) {
+  //     let message = messages[messages.length - 1]
+  //     console.log("check diasble or not", message?.step)
+  //     if (message?.step?.inputType && message?.step?.inputType === "text" || message?.step?.inputType === "password") {
+  //       console.log("dis", message?.step?.inputType)
+  //       setDisableInput(false)
+  //     } else {
+  //       setDisableInput(true)
+  //       console.log("else condition ==>", message?.step?.inputType)
+  //     }
+  //   }
+  // }
+
 
   //handle form submission
   async function handleSubmit(value?: string) {
     checklastmessage(value)
-    const question = query.trim();
-    if (query) {
-      if (messages[messages.length - 1]?.step?.inputType !== "password") {
-        setMessageState((state) => ({
-          ...state,
-          messages: [
-            ...state.messages,
-            {
-              type: 'userMessage',
-              message: question,
-              src: "test",
-              id: Math.random()
-            },
-          ],
-        }));
-      }
+    let question = query.trim();
+    if (!query) {
+      question = value?.trim() || ""
     }
     setLoading(true);
     setQuery('');
@@ -242,9 +244,36 @@ const Signup = () => {
         }),
       });
       const data = await response.json();
-
       if (data.error) {
+        setMessageState((state) => ({
+          ...state,
+          messages: [
+            ...state.messages,
+            {
+              type: 'userMessage',
+              message: question,
+              error: true,
+              errorMessage: data.errorMessage,
+              src: "test",
+              id: Math.random()
+            },
+          ],
+        }));
       } else {
+        if (!data.hideAnswer) {
+          setMessageState((state) => ({
+            ...state,
+            messages: [
+              ...state.messages,
+              {
+                type: 'userMessage',
+                message: question,
+                src: "test",
+                id: Math.random()
+              },
+            ],
+          }));
+        }
         setMessageState((state) => ({
           ...state,
           messages: [
@@ -264,9 +293,6 @@ const Signup = () => {
       }
 
       setLoading(false);
-
-      //scroll to bottom
-      messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
     } catch (error) {
       setLoading(false);
       console.log('error', error);
@@ -281,6 +307,11 @@ const Signup = () => {
       e.preventDefault();
     }
   };
+
+  useEffect(() => {
+    messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+    // disableUserInput()
+  }, [messages]);
 
 
   async function resetdefaultPromptTemplate() {
@@ -428,7 +459,12 @@ const Signup = () => {
                                 <span
                                   className={homestyles?.markdownanswerspan}
                                 >
-                                  {message.message}
+                                  <div style={{ display: "flex" }}>
+                                    {message.message}
+                                    {message?.error && <div style={{ color: "red", paddingLeft: "4px", fontWeight: "bold" }}>
+                                      ({message?.errorMessage})
+                                    </div>}
+                                  </div>
                                 </span>
                                 {JSModule?.conversational && (
                                   <div className={homestyles?.extraContainer}>
@@ -437,6 +473,7 @@ const Signup = () => {
                                       'radioButton' ? (
                                       <RadioGroup
                                         options={message?.step?.options}
+                                        value={message?.step?.default}
                                         onChange={(value) => {
                                           if (index === messages.length - 1) {
                                             handleSubmit(value);

@@ -8,6 +8,8 @@ export type Message = {
   sourceDocs?: Document[];
   step?: { [key: string]: any };
   answer?: string;
+  error?: boolean;
+  errorMessage?: string
 };
 
 export type contextItem = {
