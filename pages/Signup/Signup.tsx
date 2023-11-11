@@ -356,7 +356,7 @@ const Signup = () => {
           <ChatbotInfo chatBotId={newChatRoom} />
         }
         {JSModule?.testProject &&
-          <div style={{ backgroundImage: `url('./background.svg')`, backgroundSize: "contain", backgroundRepeat: "no-repeat", width: "518px", height: "100%", padding: "20px", boxSizing: "border-box", paddingTop: "102px", fontFamily: 'Aspekta', position: "relative" }}>
+          <div style={{ backgroundImage: `url('./background.svg')`, backgroundSize: "contain", backgroundRepeat: "no-repeat", width: "518px", height: "848px", padding: "20px", boxSizing: "border-box", paddingTop: "102px", fontFamily: 'Aspekta', position: "relative" }}>
             <div dangerouslySetInnerHTML={{ __html: htmlFile }} />
           </div>
         }

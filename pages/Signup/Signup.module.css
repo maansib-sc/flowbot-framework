@@ -5,6 +5,8 @@
 .sidebar {
   width: 578px;
   padding: 0px 20px;
+  display: flex;
+  align-items: center;
 }
 .main-content {
   display: flex;

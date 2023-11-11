@@ -260,23 +260,26 @@ export const leftPanelHtml = `<!DOCTYPE html>
         font-weight: 500;
         margin-bottom: 20px;
         line-height: normal;
+        padding-right:33px;
       }
       span {
         color: var(--grey-40-stroke, #e1e4ea);
  
         /* 15px/regular */
         font-family: 'Aspekta';
-        font-size: 15px;
+        font-size: 17px;
         font-style: normal;
         font-weight: 400;
         line-height: 20px; /* 133.333% */
+        padding-right:47px;
+
       }
  
    
 .stepper {
     display: flex;
   flex-direction: column;
-  margin-top: 17px;
+  margin-top: 7px;
 }
  
 .step {
@@ -295,8 +298,9 @@ line-height: 35px; /* 155.556% */
 }
  
 .step-circle {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  z-index:21212;
+  height: 24px;
   border-radius: 50%;
   border: 1px solid var(--grey-80, #AAB1BA);   color: white;
   display: flex;
@@ -318,7 +322,7 @@ text-transform: uppercase;
 }
  
 .step-text {
-  font-size: 14px;
+  font-size: 18px;
 }
  
 .active .step-circle {
@@ -344,10 +348,10 @@ border: 1px solid var(--orange-100, #FF6900);
   height: 100%;
   background: #ccc;
   position: absolute;
-  left: 3%;
-  top: 24px;
+  left: 2.33%;
+  top: 28px;
   transform: translateX(-50%);
-  z-index: -2;
+  z-index: 0;
 }
  
 .sidebar-login{
