@@ -6,18 +6,18 @@ const client_id =
   'GOOGLE_CLIENT_ID_REMOVED';
 
   interface GoogleSSOProps {
-    handleSubmit: () => void; // Adjust the function type based on your needs
+    handleSubmit: (value?:string) => void; // Adjust the function type based on your needs
   }
   
 
   const GoogleSSO: React.FC<GoogleSSOProps> = ({ handleSubmit }) => {  const onSuccess = (res:any) => {
     console.log('Logged in ', res?.profileObj);
-    handleSubmit()
+    handleSubmit("yes")
   };
 
   const onFailure = (res:any) => {
     console.log('Login failed', res);
-    handleSubmit()
+    handleSubmit("yes")
 
   };
   return (

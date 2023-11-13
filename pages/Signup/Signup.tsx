@@ -27,6 +27,7 @@ import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
 import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
+import Summary from '@/components/ui/Summary/Summary';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -221,14 +222,19 @@ const Signup = () => {
   //   }
   // }
 
-
+console.log(query,"qe",loading)
   //handle form submission
   async function handleSubmit(value?: string) {
+    console.log(loading,"Asdasd")
+    console.log(value)
     checklastmessage(value)
+    console.log(checklastmessage(value))
     let question = query.trim();
     if (!query) {
       question = value?.trim() || ""
     }
+    console.log(query)
+    console.log(question)
     setLoading(true);
     setQuery('');
 
@@ -488,11 +494,11 @@ const Signup = () => {
                                       <GoogleLoginComponent
                                       handleSubmit={handleSubmit}
                                         options={message?.step?.options}
-                                        onChange={(value) => {
-                                          if (index === messages.length - 1) {
-                                            handleSubmit(value);
-                                          }
-                                        }}
+                                        // onChange={(value) => {
+                                        //   if (index === messages.length - 1) {
+                                        //     handleSubmit(value);
+                                        //   }
+                                        // }}
                                       />
                                     ) : null}
                                     {message?.step?.inputType === 'password' ? (
@@ -563,6 +569,12 @@ const Signup = () => {
                                       'fileUploader' ? (
                                       <FileUploadComponent
                                         handleSubmit={handleSubmit}
+                                      />
+                                    ) : null}
+                                     {message?.step?.inputType ===
+                                      'summary' ? (
+                                      <Summary
+                                        // handleSubmit={handleSubmit}
                                       />
                                     ) : null}
                                   </div>

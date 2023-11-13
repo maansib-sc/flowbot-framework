@@ -5,23 +5,26 @@ import GoogleSSO from '../GoogleSSO';
 const GoogleLoginComponent = ({
   handleSubmit,
   options,
-  onChange,
+  // onChange,
 }: {
   options: { label: string; value: string }[];
-  onChange: (value: string) => void;
-  handleSubmit: ()=>void;
+  // onChange: (value: string) => void;
+  handleSubmit: (val?:string)=>void;
 }) => {
 
-  const [selectedValue, setSelectedValue] = useState(2)
+  const [selectedValue, setSelectedValue] = useState(0)
 
   const changeSelectedValue = (index: number) => {
     if(index == 1){
       setSelectedValue(index)
     }else{
       setSelectedValue(index)
-      onChange("no")
+      handleSubmit("no")
+      // onChange("no")
     }
   }
+
+  console.log(selectedValue)
   return (
     <div className={styles.radioGroup}> {/* Apply a class from the imported CSS module */}
       {/* {options.map((option, index) => ( */}
