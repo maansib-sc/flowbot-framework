@@ -57,18 +57,18 @@ export const ChatBotStep = [
     {
         "id": 2,
         "question": "So, would you like to register using using your Google log-in ?",
-        "inputType": "radioButton",
+        "inputType": "googleLogin",
         "options": [
-            { label: 'Yes', value: 'Yes' },
-            { label: 'No', value: 'No' }
+            // { label: 'Yes', value: 'Yes' },
+            // { label: 'No', value: 'No' }
         ],
         "callBack": (event, response) => {
             if (response === "No") {
                 return { "nextStep": 3, "toast": "", "error": false, "hideAnswer": true }
             }
-            return { "nextStep": 5, "toast": "", "error": false, "hideAnswer": true }
+            // return { "nextStep": 5, "toast": "", "error": false, "hideAnswer": true }
         },
-        "hideAnswer": true
+        "hideAnswer": false
     },
     {
         "id": 3,
@@ -394,12 +394,12 @@ export const ChatBotStep = [
         }
     },
     {
-        "id": 26,
+        "id": 26 ,
         "header": {
             "step": "4",
             "text": "Summary"
         },
-        "inputType": "text",
+        "inputType": "summary",
         "options": [],
         "callBack": (event, reponse) => {
 
@@ -427,7 +427,7 @@ export const leftPanelHtml = `<!DOCTYPE html>
         font-family: 'Aspekta';
         position: relative;
       }
-      h3 {
+      .h3 {
         color: var(--white, #fff);
  
         /* 24px/medium */
@@ -439,7 +439,7 @@ export const leftPanelHtml = `<!DOCTYPE html>
         line-height: normal;
         padding-right:33px;
       }
-      span {
+      .span {
         color: var(--grey-40-stroke, #e1e4ea);
  
         /* 15px/regular */
@@ -558,8 +558,9 @@ width: 100%;
   </head>
  
   <body class="container-body">
-    <h3>Welcome to the Professional Sign-up channel</h3>
+    <h3 class="h3">Welcome to the Professional Sign-up channel</h3>
     <span
+    class="span"
       >We make it simple to walk through the registration process. Just click
       the “Get started” button and Libby will walk you through every step.
       Welcome aboard!</span
