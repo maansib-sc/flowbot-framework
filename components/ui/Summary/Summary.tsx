@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Summary.module.css';
+import Button from '../Buttons/Button';
 
 interface IDataItem {
   label: string;
@@ -20,6 +21,7 @@ interface IProps {
       answer: string;
     }[];
   };
+  onChange: () => void;
 }
 
 interface InputItem {
@@ -98,6 +100,7 @@ const Summary = (props: IProps) => {
           </div>
         ))}
       </div>
+      <Button onClick={() => props.onChange()}>Confirm</Button>
     </div>
   );
 };

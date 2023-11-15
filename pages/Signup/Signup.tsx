@@ -232,16 +232,19 @@ const Signup = () => {
   //   }
   // }
 
-  console.log(query, "qe", loading)
   //handle form submission
-  async function handleSubmit(value?: string) {
-    console.log(loading, "Asdasd")
+  async function handleSubmit(value?: string, update?: boolean) {
+
+    console.log(value, query, "Asdasd")
     let question = query.trim();
     if (!query) {
       question = value?.trim() || ""
     }
     // console.log("Value handleSubmit question ==>", question)
-    checklastmessage(question)
+    if (update !== false) {
+      console.log("question found inside ==>", question)
+      checklastmessage(question)
+    }
     setLoading(true);
     setQuery('');
 
@@ -258,6 +261,11 @@ const Signup = () => {
         }),
       });
       const data = await response.json();
+      if (data.currentStep.await) {
+        setTimeout(() => {
+          handleSubmit("dummy", false)
+        }, data.currentStep.await)
+      }
       if (data.error) {
         setMessageState((state) => ({
           ...state,
@@ -530,9 +538,10 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'cardRadio' ? (
                                       <CardRadioGroup
-                                        onChange={() => {
+                                        value={message?.step?.default}
+                                        onChange={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
                                         }}
                                         options={message?.step?.options}
@@ -542,25 +551,24 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'select' ? (
                                       <SelectInputField
-                                        onChange={() => {
+                                        value={message?.step?.default}
+                                        onChange={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
                                         }}
                                         options={message?.step?.options}
-                                      // selectedValue={'value'}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'checkboxButton' ? (
                                       <CheckboxGroup
-                                        selectedValues={selectedValues}
+                                        values={""}
                                         options={message?.step?.options}
-                                        onChange={(e) => {
+                                        onChange={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
-                                          handleCheckboxChange(e)
                                         }}
                                       />
                                     ) : null}
@@ -570,12 +578,20 @@ const Signup = () => {
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'constructiondetails' ? (
-                                      <ShowDetails />
+                                      <ShowDetails onSave={() => {
+                                        if (index === messages.length - 1) {
+                                          handleSubmit();
+                                        }
+                                      }} />
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'fileUploader' ? (
                                       <FileUploadComponent
-                                        handleSubmit={handleSubmit}
+                                        handleSubmit={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
                                       />
                                     ) : null}
                                     {
@@ -583,7 +599,11 @@ const Signup = () => {
                                         ? (
                                           <>
                                             {console.log("tersfygui")}
-                                            <Summary data={message?.step?.data} />
+                                            <Summary data={message?.step?.data} onChange={() => {
+                                              if (index === messages.length - 1) {
+                                                handleSubmit();
+                                              }
+                                            }} />
                                           </>
                                         )
                                         : null

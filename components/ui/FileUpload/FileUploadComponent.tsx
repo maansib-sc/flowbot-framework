@@ -4,7 +4,7 @@ import styles from '@/configuration/CSS/Index.module.css';
 
 
 interface FileUploadComponentProps {
-  handleSubmit: () => void;
+  handleSubmit: (value: string) => void;
 }
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit }) => {
@@ -14,7 +14,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit 
     const files = e.target.files;
     if (files) {
       setSelectedFiles(files);
-      handleSubmit(); // Call the handleSubmit function when files are selected
+      handleSubmit(files[0].name); // Call the handleSubmit function when files are selected
     }
   };
 
@@ -24,8 +24,8 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return (Math.round(bytes / Math.pow(1024, i) * 100) / 100) + ' ' + sizes[i];
   };
-  
-  
+
+
   const renderFileList = () => {
     if (selectedFiles) {
       const fileArray = Array.from(selectedFiles);
@@ -33,12 +33,12 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit 
         <ul>
           {fileArray.map((file, index) => (
             <li key={index} className={styles.fileUploadComponent}>
-                <FileUploderIcon/>
-                <span>
-              {file.name}
-                </span>
+              <FileUploderIcon />
+              <span>
+                {file.name}
+              </span>
               <small>
-               {formatBytes(file.size)}
+                {formatBytes(file.size)}
               </small>
             </li>
           ))}
