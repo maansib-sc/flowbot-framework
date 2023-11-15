@@ -196,8 +196,18 @@ const Signup = () => {
   }, [messageState])
 
   const checklastmessage = (value?: string) => {
-    if (messages.length > 0 && messages[messages.length - 1]?.step) {
-      let copy = { ...messages[messages.length - 1] }
+
+    const getLastApiMessageIndex = (messages: Message[]): number => {
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].type === "apiMessage") {
+          return i;
+        }
+      }
+      return -1; // Return -1 if no apiMessage is found
+    };
+    let lastIndex = getLastApiMessageIndex(messages)
+    if (messages.length > 0 && messages[lastIndex]?.step) {
+      let copy = { ...messages[lastIndex] }
       copy.step ??= {}
       copy.step["answer"] = query || value
       setMessageState((state) => ({
@@ -226,15 +236,12 @@ const Signup = () => {
   //handle form submission
   async function handleSubmit(value?: string) {
     console.log(loading, "Asdasd")
-    console.log(value)
-    checklastmessage(value)
-    console.log(checklastmessage(value))
     let question = query.trim();
     if (!query) {
       question = value?.trim() || ""
     }
-    console.log(query)
-    console.log(question)
+    // console.log("Value handleSubmit question ==>", question)
+    checklastmessage(question)
     setLoading(true);
     setQuery('');
 
