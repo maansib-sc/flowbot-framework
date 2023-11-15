@@ -27,6 +27,7 @@ import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
 import LoginPasswordAsk from '@/components/ui/LoginPasswordAsk/LoginPasswordAsk';
+import ColumnCards from '@/components/ui/Radio/ColumnCards';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -490,6 +491,12 @@ const Signup = () => {
                                     ) : null}
                                     {message?.step?.inputType === 'loginPasswordAsk' ? (
                                       <LoginPasswordAsk
+                                      onSave={() => {
+                                        if (index === messages.length - 1) {
+                                          handleSubmit();
+                                        }
+                                      }}
+                                      options={message?.step?.options}
                                       />
                                     ) : null}
                                     {message?.step?.inputType === 'address' ? (
@@ -503,6 +510,18 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'cardRadio' ? (
                                       <CardRadioGroup
+                                        onChange={() => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit();
+                                          }
+                                        }}
+                                        options={message?.step?.options}
+                                      // selectedValue={'value'}
+                                      />
+                                    ) : null}
+                                                                        {message?.step?.inputType ===
+                                      'columnCards' ? (
+                                      <ColumnCards
                                         onChange={() => {
                                           if (index === messages.length - 1) {
                                             handleSubmit();

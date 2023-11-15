@@ -4,7 +4,12 @@ import PasswordInput from '../Input/PasswordInput'
 import styles from "./LoginPasswordAsk.module.css"
 import Button from '../Buttons/Button'
 
-const LoginPasswordAsk = () => {
+const LoginPasswordAsk = ({
+  onSave,
+}: {
+  options: { label: string; value: string,header?:string;}[];
+  onSave: () => void;
+}) => {
     const [pass,setPass] = useState("")
     
   return (
@@ -16,6 +21,7 @@ const LoginPasswordAsk = () => {
         <div className={styles.forgot}>
         <Button variant='link'>Forgot Password?</Button>
         </div>
+        <Button onClick={onSave}>Login</Button>
     </div>
   )
 }
