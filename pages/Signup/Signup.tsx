@@ -222,10 +222,10 @@ const Signup = () => {
   //   }
   // }
 
-console.log(query,"qe",loading)
+  console.log(query, "qe", loading)
   //handle form submission
   async function handleSubmit(value?: string) {
-    console.log(loading,"Asdasd")
+    console.log(loading, "Asdasd")
     console.log(value)
     checklastmessage(value)
     console.log(checklastmessage(value))
@@ -492,13 +492,13 @@ console.log(query,"qe",loading)
                                       message?.step?.inputType ===
                                       'googleLogin' ? (
                                       <GoogleLoginComponent
-                                      handleSubmit={handleSubmit}
+                                        handleSubmit={handleSubmit}
                                         options={message?.step?.options}
-                                        // onChange={(value) => {
-                                        //   if (index === messages.length - 1) {
-                                        //     handleSubmit(value);
-                                        //   }
-                                        // }}
+                                      // onChange={(value) => {
+                                      //   if (index === messages.length - 1) {
+                                      //     handleSubmit(value);
+                                      //   }
+                                      // }}
                                       />
                                     ) : null}
                                     {message?.step?.inputType === 'password' ? (
@@ -511,7 +511,7 @@ console.log(query,"qe",loading)
                                       <Address
                                         states={stateOptions}
                                         cities={cityOptions}
-                                        onSave={()=>{
+                                        onSave={() => {
                                           if (index === messages.length - 1) {
                                             handleSubmit();
                                           }
@@ -571,12 +571,16 @@ console.log(query,"qe",loading)
                                         handleSubmit={handleSubmit}
                                       />
                                     ) : null}
-                                     {message?.step?.inputType ===
-                                      'summary' ? (
-                                      <Summary
-                                        // handleSubmit={handleSubmit}
-                                      />
-                                    ) : null}
+                                    {
+                                      message?.step?.inputType === 'summary'
+                                        ? (
+                                          <>
+                                            {console.log("tersfygui")}
+                                            <Summary data={message?.step?.data} />
+                                          </>
+                                        )
+                                        : null
+                                    }
                                   </div>
                                 )}
                               </div>
