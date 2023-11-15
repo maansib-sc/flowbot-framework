@@ -1,68 +1,64 @@
-export const getTitle = "Project Posting Channel";
-export const getWelcomeMessage = "I am a Assistant. I'll assist you with any queries related to documents";
-export const getInputPlaceholder = "Write Message";
+export const getTitle = 'Project Posting Channel';
+export const getWelcomeMessage =
+  "I am a Assistant. I'll assist you with any queries related to documents";
+export const getInputPlaceholder = 'Write Message';
 export const Navbar = true;
-export const botName = "Libby";
+export const botName = 'Libby';
 export const testProject = true;
 export const ChatBotStep = [
-    {
-
-        "question": "Welcome to beginAProject",
-        "id": 0,
-        "fullWidth": true,
-        "title": "Hi! Welcome to the Project Posting Channel",
-        "description": "",
-        "callBack": (event, response) => {
-            return { "nextStep": 1, "toast": "", "error": false, "hideAnswer": true }
-        }
+  {
+    question: 'Welcome to beginAProject',
+    id: 0,
+    fullWidth: true,
+    title: 'Hi! Welcome to the Project Posting Channel',
+    description: '',
+    callBack: (event, response) => {
+      return { nextStep: 1, toast: '', error: false, hideAnswer: true };
     },
-    {
-        "id": 1,
-        "question": "Before we start on the project post, let me ask you a quick question. Are you already registered on the platform? If you are, then please type “yes” below and we will get you logged in. If the answer is no, then we will get you registered and help you get your project posted.",
-        "header": {
-            "step": "1",
-            "text": "Personal Information"
-        },
-        "inputType": "radioButton",
-        "options": [
-            {
-            label:"yes",
-            value:"yes"
-        },
-        {
-            label:"no",
-            value:"no"
-        }
+  },
+  {
+    id: 1,
+    question:
+      'Before we start on the project post, let me ask you a quick question. Are you already registered on the platform? If you are, then please type “yes” below and we will get you logged in. If the answer is no, then we will get you registered and help you get your project posted.',
+    header: {
+      step: '1',
+      text: 'Personal Information',
+    },
+    inputType: 'radioButton',
+    options: [
+      {
+        label: 'yes',
+        value: 'yes',
+      },
+      {
+        label: 'no',
+        value: 'no',
+      },
     ],
-        "callBack": (event, reponse) => {
-            let name = reponse
-            const validate = (name) => {
-                const nameRegex = /^[a-zA-Z ]+$/;
-                const minLength = 2;
-                const maxLength = 50;
-
-                if (!name || typeof name !== 'string') {
-                    return "Please enter a valid name.";
-                }
-
-                if (!nameRegex.test(name)) {
-                    return "Names can only contain letters.";
-                }
-
-                if (name.length < minLength || name.length > maxLength) {
-                    return `Name must be between ${minLength} and ${maxLength} characters long.`;
-                }
-
-                return null; // Indicates no validation errors
-            }
-            const validationResult = validate(name);
-            if (validationResult) {
-                return { "nextStep": 1, "toast": validationResult, "error": true }
-            } else {
-                return { "nextStep": 2, "toast": "", "error": false }
-            }
-        }
+    callBack: (event, reponse) => {
+      return { nextStep: 2, toast: '', error: false };
     },
+  },
+  {
+    id: 2,
+    question:
+      'Before we start on the project post, let me ask you a quick question. Are you already registered on the platform? If you are, then please type “yes” below and we will get you logged in. If the answer is no, then we will get you registered and help you get your project posted.',
+    header: {},
+    inputType: 'radioButton',
+    options: [
+      {
+        label: 'yes',
+        value: 'yes',
+      },
+      {
+        label: 'no',
+        value: 'no',
+      },
+    ],
+    callBack: (event, reponse) => {
+      return { nextStep: 2, toast: '', error: false };
+    },
+  },
 ];
 export const leftPanelHtml = `<!DOCTYPE html>
 <html>
@@ -248,27 +244,44 @@ width: 100%;
     <script src="src/index.js"></script>
   </body>
 </html>
-`
+`;
 
-export const showUserEnteredPasssword = false
-export const finalMessage = "Thanks for the provided information"
-export const conversational = true
+export const showUserEnteredPasssword = false;
+export const finalMessage = 'Thanks for the provided information';
+export const conversational = true;
 
 export const start = async (handler, question) => {
-    if (conversational) {
-        let currentStep = await handler.user.getlastStep()
-        let answ = ChatBotStep[currentStep]
-        if (answ === undefined) return { "text": finalMessage, "src": "talkingDb" };
-        if (answ.callBack) {
-            const { nextStep, toast, error, hideAnswer } = answ.callBack(handler, question)
-            handler.user.setlastStep(nextStep)
-            await handler.user.save()
-            answ = ChatBotStep[nextStep]
-            return { "text": answ.question, "src": "talkingDb", currentStep: answ, "error": error, "errorMessage": toast || "", hideAnswer: hideAnswer || false };
-        }
-        return { "text": answ.question, "src": "talkingDb", currentStep: answ, "error": error, "errorMessage": toast || "", hideAnswer: hideAnswer || false };
-    } else {
-        const response = await handler.chain.run(question)
-        return response
+  if (conversational) {
+    let currentStep = await handler.user.getlastStep();
+    let answ = ChatBotStep[currentStep];
+    if (answ === undefined) return { text: finalMessage, src: 'talkingDb' };
+    if (answ.callBack) {
+      const { nextStep, toast, error, hideAnswer } = answ.callBack(
+        handler,
+        question,
+      );
+      handler.user.setlastStep(nextStep);
+      await handler.user.save();
+      answ = ChatBotStep[nextStep];
+      return {
+        text: answ.question,
+        src: 'talkingDb',
+        currentStep: answ,
+        error: error,
+        errorMessage: toast || '',
+        hideAnswer: hideAnswer || false,
+      };
     }
-}
+    return {
+      text: answ.question,
+      src: 'talkingDb',
+      currentStep: answ,
+      error: error,
+      errorMessage: toast || '',
+      hideAnswer: hideAnswer || false,
+    };
+  } else {
+    const response = await handler.chain.run(question);
+    return response;
+  }
+};
