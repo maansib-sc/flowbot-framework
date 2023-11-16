@@ -42,21 +42,46 @@ export const ChatBotStep = [
   {
     id: 2,
     question:
-      'Before we start on the project post, let me ask you a quick question. Are you already registered on the platform? If you are, then please type “yes” below and we will get you logged in. If the answer is no, then we will get you registered and help you get your project posted.',
-    header: {},
-    inputType: 'radioButton',
+      'Please enter your login and password below and then type submit in the text box',
+    inputType: 'loginPasswordAsk',
+    options: [],
+    callBack: (event, reponse) => {
+      return { nextStep: 3, toast: '', error: false };
+    },
+  },
+  {
+    id: 3,
+    question:
+      'Which of the following options do you want to choose?',
+    inputType: 'columnCards',
+    header: {
+        step: '2',
+        text: 'Project Details',
+      },
     options: [
-      {
-        label: 'yes',
-        value: 'yes',
-      },
-      {
-        label: 'no',
-        value: 'no',
-      },
+        {
+            label:"If you have a project that you need done around your home or business, then you can use our Project Posting option to find professionals who can perform those services for you at a great price. Begin A Project can find you the right professional for the job and help you get your job done with the help of our Project Managers.",
+            header:"Create Your Own Project Posting",
+            value:1
+        },
+        {
+            label:"We have many projects that include pre-negotiated and competitive service rates with many of our qualified service professionals. See the list below to determine if your project includes the packaged price.",
+            header:"Packaged Projects",
+            value:2
+        },
+        {
+            label:"If you prefer, one of our Project Concierge team members can manage your entire project for you from project posting to professional selection to project payments all the way to project completion for you. This option makes your life easy and your project runs smoothly. We just add 15% on top of the project costs to cover our time.",
+            header:"Project Concierge",
+            value:3
+        },
+        {
+            label:"It is important to be proactive when it comes to maintaining the health of all of your appliances and systems. It is also time-consuming and requires some level of expertise. Our Service Concierge will come and perform a health evaluation on all of your appliances and systems. After the initial visit, they will come by your home two additional times during the year to perform any preventative maintenance and will provide you a complete health summary. After the Service Concierge has completed their health checks and preventative maintenance, then you will be provided a sim month warranty on your products in case anything goes wrong.  So three yearly visits and the warranty for only $500 a year plus the cost of preventative maintenance supplies.",
+            header:"Service Concierge",
+            value:4
+        }
     ],
     callBack: (event, reponse) => {
-      return { nextStep: 2, toast: '', error: false };
+      return { nextStep: 4, toast: '', error: false };
     },
   },
 ];
