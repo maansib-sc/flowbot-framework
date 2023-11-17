@@ -8,24 +8,26 @@ interface Option {
 
 interface SelectInputProps {
   options: Option[];
-  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (value: string) => void;
+  value: string;
 }
 
-const SelectInputField: React.FC<SelectInputProps> = ({ options, onChange }) => {
-  const [selectedValue, setSelectedValue] = useState<string>(''); // Initialize with an empty string
+const SelectInputField: React.FC<SelectInputProps> = ({ options, onChange, value }) => {
+  const [selectedValue, setSelectedValue] = useState<string>(value); // Initialize with an empty string
 
   const changeSelectedValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedValue(event.target.value); // Set the selected value to the value of the selected option
+    const value = String(event.target.value) || ""
+    setSelectedValue(value); // Set the selected value to the value of the selected option
+    onChange(value)
   };
 
   return (
     <div className={styles.select_container}>
       <select
         className={styles.select_input}
-        value={selectedValue}
+        value={value}
         onChange={(event) => {
-          changeSelectedValue(event); // Pass the event to changeSelectedValue
-          onChange(event); // Call the onChange function with the event
+          changeSelectedValue(event);
         }}
       >
         {options.map((option) => (

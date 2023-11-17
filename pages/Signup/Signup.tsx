@@ -28,6 +28,9 @@ import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
 import LoginPasswordAsk from '@/components/ui/LoginPasswordAsk/LoginPasswordAsk';
 import ColumnCards from '@/components/ui/Radio/ColumnCards';
+import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
+import Summary from '@/components/ui/Summary/Summary';
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -63,6 +66,9 @@ const Signup = () => {
   const [selectedValues, setSelectedValues] = useState([]); // Initial empty array
   const [htmlFile, setHtmlFile] = useState('')
   // const [disableInput, setDisableInput] = useState(false)
+
+  const { data: session, status } = useSession();
+  console.log("data session ==>", session, status)
 
   const handleCheckboxChange = (values: any) => {
     setSelectedValues(values);
@@ -196,8 +202,18 @@ const Signup = () => {
   }, [messageState])
 
   const checklastmessage = (value?: string) => {
-    if (messages.length > 0 && messages[messages.length - 1]?.step) {
-      let copy = { ...messages[messages.length - 1] }
+
+    const getLastApiMessageIndex = (messages: Message[]): number => {
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].type === "apiMessage") {
+          return i;
+        }
+      }
+      return -1; // Return -1 if no apiMessage is found
+    };
+    let lastIndex = getLastApiMessageIndex(messages)
+    if (messages.length > 0 && messages[lastIndex]?.step) {
+      let copy = { ...messages[lastIndex] }
       copy.step ??= {}
       copy.step["answer"] = query || value
       setMessageState((state) => ({
@@ -222,13 +238,18 @@ const Signup = () => {
   //   }
   // }
 
-
   //handle form submission
-  async function handleSubmit(value?: string) {
-    checklastmessage(value)
+  async function handleSubmit(value?: string, update?: boolean) {
+
+    console.log(value, query, "Asdasd")
     let question = query.trim();
     if (!query) {
       question = value?.trim() || ""
+    }
+    // console.log("Value handleSubmit question ==>", question)
+    if (update !== false) {
+      console.log("question found inside ==>", question)
+      checklastmessage(question)
     }
     setLoading(true);
     setQuery('');
@@ -246,6 +267,11 @@ const Signup = () => {
         }),
       });
       const data = await response.json();
+      if (data.currentStep.await) {
+        setTimeout(() => {
+          handleSubmit("dummy", false)
+        }, data.currentStep.await)
+      }
       if (data.error) {
         setMessageState((state) => ({
           ...state,
@@ -357,7 +383,7 @@ const Signup = () => {
           <ChatbotInfo chatBotId={newChatRoom} />
         }
         {JSModule?.testProject &&
-          <div style={{ backgroundImage: `url('./background.jpeg')`, backgroundSize: "contain", backgroundRepeat: "no-repeat", width: "416px", height: "704px", padding: "20px", boxSizing: "border-box", paddingTop: "64px", fontFamily: 'Aspekta', position: "relative" }}>
+          <div style={{ backgroundImage: `url('./background.svg')`, backgroundSize: "contain", backgroundRepeat: "no-repeat", width: "518px", height: "848px", padding: "20px", boxSizing: "border-box", paddingTop: "102px", fontFamily: 'Aspekta', position: "relative" }}>
             <div dangerouslySetInnerHTML={{ __html: htmlFile }} />
           </div>
         }
@@ -483,7 +509,20 @@ const Signup = () => {
                                         }}
                                       />
                                     ) : null}
-                                    {message?.step?.inputType === 'password' ? (
+                                    {message.type === 'apiMessage' &&
+                                      message?.step?.inputType ===
+                                      'googleLogin' ? (
+                                      <GoogleLoginComponent
+                                        handleSubmit={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value)
+                                          }
+                                        }}
+                                        options={message?.step?.options}
+                                        value={message?.step?.answer}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType === 'password' && index !== messages.length - 1 ? (
                                       <PasswordInput
                                         disabled={message?.step?.disabled || true}
                                         value={message?.step?.answer}
@@ -503,6 +542,11 @@ const Signup = () => {
                                       <Address
                                         states={stateOptions}
                                         cities={cityOptions}
+                                        onSave={() => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit();
+                                          }
+                                        }}
                                         zip={''}
                                         street={''}
                                       />
@@ -510,13 +554,13 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'cardRadio' ? (
                                       <CardRadioGroup
-                                        onChange={() => {
+                                        value={message?.step?.default}
+                                        onChange={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
                                         }}
                                         options={message?.step?.options}
-                                      // selectedValue={'value'}
                                       />
                                     ) : null}
                                                                         {message?.step?.inputType ===
@@ -534,25 +578,24 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'select' ? (
                                       <SelectInputField
-                                        onChange={() => {
+                                        value={message?.step?.default}
+                                        onChange={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
                                         }}
                                         options={message?.step?.options}
-                                      // selectedValue={'value'}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'checkboxButton' ? (
                                       <CheckboxGroup
-                                        selectedValues={selectedValues}
+                                        values={""}
                                         options={message?.step?.options}
-                                        onChange={(e) => {
+                                        onChange={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
-                                          handleCheckboxChange(e)
                                         }}
                                       />
                                     ) : null}
@@ -562,14 +605,36 @@ const Signup = () => {
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'constructiondetails' ? (
-                                      <ShowDetails />
+                                      <ShowDetails onSave={() => {
+                                        if (index === messages.length - 1) {
+                                          handleSubmit();
+                                        }
+                                      }} />
                                     ) : null}
                                     {message?.step?.inputType ===
                                       'fileUploader' ? (
                                       <FileUploadComponent
-                                        handleSubmit={handleSubmit}
+                                        handleSubmit={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
                                       />
                                     ) : null}
+                                    {
+                                      message?.step?.inputType === 'summary'
+                                        ? (
+                                          <>
+                                            {console.log("tersfygui")}
+                                            <Summary data={message?.step?.data} onChange={() => {
+                                              if (index === messages.length - 1) {
+                                                handleSubmit();
+                                              }
+                                            }} />
+                                          </>
+                                        )
+                                        : null
+                                    }
                                   </div>
                                 )}
                               </div>

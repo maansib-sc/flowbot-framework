@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from '@/styles/Home.module.css';
+import Button from '../Buttons/Button';
 
-const ShowDetails = () => {
+const ShowDetails = ({ onSave }: { onSave: () => void }) => {
+  const [showButton, setShowButton] = useState<Boolean>(true)
   return (
     <div className={styles.detailsContainer}>
       <h3>PERRONE CONSTRUCTION INCORPORATED</h3>
@@ -23,6 +25,9 @@ const ShowDetails = () => {
         <h6>Main Address</h6>
         <span>7045 S TAMIAMI TRAIL SARASOTA, FL 34231</span>
       </div>
+      {showButton && <div>
+        <Button onClick={() => { onSave(); setShowButton(false) }}>Confirm</Button>
+      </div>}
     </div>
   );
 };

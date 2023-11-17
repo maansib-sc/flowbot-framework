@@ -2,6 +2,7 @@ import React from 'react';
 import SelectInput from '../SelectInput/SelectInput'; // Import the SelectInput component
 import TextInput from '../Input/TextInput';
 import styles from "../../../configuration/CSS/Index.module.css"
+import Button from '../Buttons/Button';
 
 interface Option {
   label: string;
@@ -13,9 +14,10 @@ interface AddressProps {
   states: Option[]; // An array of state options
   zip: String;
   street: String;
+  onSave: ()=>void;
 }
 
-const Address: React.FC<AddressProps> = ({ cities, states, zip, street }) => {
+const Address: React.FC<AddressProps> = ({ cities, states, zip, street,onSave }) => {
   return (
     <div className={styles.Address}>
       <div className={styles.Address_topcontainer}>
@@ -24,7 +26,9 @@ const Address: React.FC<AddressProps> = ({ cities, states, zip, street }) => {
         <TextInput label='Zip Code' />
       </div>
       <TextInput label='Street Address' width="100%" containerwidth='100%' />
-
+      <div>
+      <Button onClick={onSave}>Save</Button>
+      </div>
     </div>
   );
 };

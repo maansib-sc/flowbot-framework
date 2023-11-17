@@ -403,7 +403,7 @@
 }
 
 .cloud {
-    width: 73vw;
+    /* width: 73vw; */
     height: 70vh;
     background: #ffffff;
     border-radius: 0.5rem;
@@ -437,6 +437,10 @@
 
 .footer a:hover {
     opacity: 0.8;
+}
+
+.customGoogle span{
+        color: black;
 }
 
 /* Mobile optimization */

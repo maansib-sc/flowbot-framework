@@ -1,41 +1,36 @@
-      /* Apply the background SVG using CSS */
-      .container-body {
-        background-image: url('background.svg');
-        background-size: auto;
-        background-repeat: no-repeat;
-        width: 416px;
-        height: 704px;
-        padding: 20px;
-        padding-top: 20px;
-        box-sizing: border-box;
-        padding-top: 64px;
-        font-family: 'Aspekta';
-        position: relative;
-      }
-      h3 {
-        color: var(--white, #fff);
+/* Apply the background SVG using CSS */
+.container-body {
+  background-image: url('background.svg');
+  background-size: auto;
+  background-repeat: no-repeat;
+  width: 416px;
+  height: 704px;
+  padding: 20px;
+  padding-top: 20px;
+  box-sizing: border-box;
+  padding-top: 64px;
+  font-family: 'Aspekta';
+  position: relative;
+}
+.h3 {
+  color: var(--white, #fff);
+  font-family: 'Aspekta';
+  font-size: 19px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.span {
+  color: var(--grey-40-stroke, #e1e4ea);
+  font-family: 'Aspekta';
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
 
-        /* 24px/medium */
-        font-family: 'Aspekta';
-        font-size: 19px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: normal;
-      }
-      span {
-        color: var(--grey-40-stroke, #e1e4ea);
-
-        /* 15px/regular */
-        font-family: 'Aspekta';
-        font-size: 15px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 20px; /* 133.333% */
-      }
-
-    
 .stepper {
-    display: flex;
+  display: flex;
   flex-direction: column;
   margin-top: 17px;
 }
@@ -45,37 +40,38 @@
   align-items: center;
   margin-bottom: 20px;
   position: relative; /* Add relative positioning for the line */
-  color: var(--white, #FFF);
+  color: var(--white, #fff);
 
-/* 18px/medium */
-font-family: Aspekta;
-font-size: 18px;
-font-style: normal;
-font-weight: 600;
-line-height: 28px; /* 155.556% */
+  /* 18px/medium */
+  font-family: Aspekta;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px; /* 155.556% */
 }
 
 .step-circle {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1px solid var(--grey-80, #AAB1BA);   color: white;
+  border: 1px solid var(--grey-80, #aab1ba);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 16px;
   margin-right: 10px;
-  color: var(--white, #FFF);
+  color: var(--white, #fff);
 
-/* 11px/semibold */
-font-family: Aspekta;
-font-size: 11px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
-letter-spacing: 0.55px;
-text-transform: uppercase;
+  /* 11px/semibold */
+  font-family: Aspekta;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
 }
 
 .step-text {
@@ -83,11 +79,12 @@ text-transform: uppercase;
 }
 
 .active .step-circle {
-border: 1px solid var(--orange-100, #FF6900); 
+  border: 1px solid var(--orange-100, #ff6900);
 }
 
 .completed .step-circle {
-    background: var(--orange-100, #FF6900);   border: 1px solid var(--orange-100, #FF6900); ;
+  background: var(--orange-100, #ff6900);
+  border: 1px solid var(--orange-100, #ff6900);
   color: white;
 }
 
@@ -95,12 +92,12 @@ border: 1px solid var(--orange-100, #FF6900);
   border: 2px solid #ccc;
 }
 
-.upcoming .step-text{
-    color: var(--grey-80, #AAB1BA);
+.upcoming .step-text {
+  color: var(--grey-80, #aab1ba);
 }
 
 .step:not(:last-child)::before {
-    content: '';
+  content: '';
   width: 2px;
   height: 100%;
   background: #ccc;
@@ -111,26 +108,25 @@ border: 1px solid var(--orange-100, #FF6900);
   z-index: -2;
 }
 
-.sidebar-login{
-    position: absolute;
-    bottom: 10px;
-    text-align: center;
-    color: var(--white, #FFF);
+.sidebar-login {
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  color: var(--white, #fff);
 
-/* 14px/regular */
-font-family: Aspekta;
-font-size: 14px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-width: 100%;
+  /* 14px/regular */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 100%;
 }
 
-.sidebar-login .text{
-    text-align: center;
+.sidebar-login .text {
+  text-align: center;
 }
-.sidebar-login .login{
-
-    cursor: pointer;
-    color: var(--orange-100, #FF6900);
- }
+.sidebar-login .login {
+  cursor: pointer;
+  color: var(--orange-100, #ff6900);
+}

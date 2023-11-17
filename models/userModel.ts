@@ -5,6 +5,7 @@ export interface IUser extends Document {
     chatbotId: string;
     sessionId: string;
     subscriptionType: string;
+    userData: any[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -12,30 +13,34 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema({
     subscriptionType: {
         type: String,
-        default: 'FREE'
+        default: 'FREE',
     },
     sessionId: {
         type: String,
-        required: true
+        required: true,
     },
     chatbotId: {
         type: String,
-        required: true
+        required: true,
     },
     lastStep: {
         type: Number,
-        default: 0
+        default: 0,
+    },
+    userData: {
+        type: Array,
+        default: [],
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     updatedAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 }, {
-    versionKey: false // This will disable the __v field
+    versionKey: false,
 });
 
 UserSchema.methods.getlastStep = function () {
@@ -44,6 +49,14 @@ UserSchema.methods.getlastStep = function () {
 
 UserSchema.method('setlastStep', function (value: number) {
     this.lastStep = value;
+});
+
+UserSchema.method("setUserData", function (data: {}) {
+    this.userData.push(data)
+});
+
+UserSchema.method("getUserData", function () {
+    return this.userData
 });
 
 export let UserModel = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

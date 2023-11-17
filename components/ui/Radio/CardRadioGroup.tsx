@@ -12,72 +12,74 @@ import Lawn from '@/assets/svgs/icons/Lawn';
 import Painter from '@/assets/svgs/icons/Painter';
 import Plumber from '@/assets/svgs/icons/Plumber';
 
-function getIconByLabel(label:any) {
+function getIconByLabel(label: any) {
   switch (label) {
     case "Appliance Professional":
-      return <ApplianceProffesional/>;
+      return <ApplianceProffesional />;
     case "Carpenter":
-      return <Carpenter/>;
+      return <Carpenter />;
     case "Concrete/Masonry Pro":
-      return <Concrete/>;
+      return <Concrete />;
     case "Deck Builder":
-      return <Deck/>;
+      return <Deck />;
     case "Electrician":
-      return <Electrician/>;
+      return <Electrician />;
     case "General Contractor":
-      return <Generate/>;
+      return <Generate />;
     case "Handyman":
-      return <Handyman/>;
+      return <Handyman />;
     case "House Cleaner":
-      return <Cleaner/>;
+      return <Cleaner />;
     case "Lawn and Landscape Pro":
-      return <Lawn/>;
+      return <Lawn />;
     case "Painter":
-      return <Painter/>;
+      return <Painter />;
     case "Plumber":
-      return <Plumber/>;
+      return <Plumber />;
     default:
-      return <Plumber/>; // Unknown label
+      return <Plumber />; // Unknown label
   }
 }
 
 
 const CardRadioGroup = ({
   options,
-  // selectedValue,
+  value,
   onChange,
 }: {
-  options: { label: string; value: string,icon?: React.FC;}[];
-  // selectedValue: string;
-  onChange: () => void;
+  options: { label: string; value: string, icon?: React.FC; }[];
+  value: string;
+  onChange: (value: string) => void;
 }) => {
 
-  const [selectedValue, setSelectedValue] = useState(0)
+  const [selectedValue, setSelectedValue] = useState<string | null>(value || null)
 
-  const changeSelectedValue = (index: number) => {
-    setSelectedValue(index)
+  const changeSelectedValue = (value: string) => {
+    setSelectedValue(value)
+    onChange(value)
   }
+
   return (
     <div className={styles.cardradioGroup}> {/* Apply a class from the imported CSS module */}
-      {options.map((option,index) => (
+      {options.map((option, index) => (
         <label
           key={option.value}
-          className={`${styles.cardradioLabel} ${selectedValue === index ? styles.selected : ''}`}
+          className={`${styles.radioLabel} ${selectedValue === option.value ? styles.selected : ''}`}
         >
           <div className={styles.cardradioiconcontainer}>
-            {option?.label && getIconByLabel(option.label) }
+            {option?.label && getIconByLabel(option.label)}
             <span>
-            {option.label}
+              {option.label}
             </span>
           </div>
           <input
             type="radio"
             value={option.value}
-            checked={selectedValue === index}
+            checked={selectedValue === option.value}
             onChange={() => {
-              onChange();
-              changeSelectedValue(index)
-            }}            className={styles.cardradioInput}
+              changeSelectedValue(option.value)
+            }}
+            className={styles.cardradioInput}
           />
         </label>
       ))}
