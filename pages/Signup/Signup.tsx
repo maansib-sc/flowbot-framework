@@ -511,17 +511,16 @@ const Signup = () => {
                                       message?.step?.inputType ===
                                       'googleLogin' ? (
                                       <GoogleLoginComponent
-                                        handleSubmit={(value) => handleSubmit(value)}
+                                        handleSubmit={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value)
+                                          }
+                                        }}
                                         options={message?.step?.options}
                                         value={message?.step?.answer}
-                                      // onChange={(value) => {
-                                      //   if (index === messages.length - 1) {
-                                      //     handleSubmit(value);
-                                      //   }
-                                      // }}
                                       />
                                     ) : null}
-                                    {message?.step?.inputType === 'password' ? (
+                                    {message?.step?.inputType === 'password' && index !== messages.length - 1 ? (
                                       <PasswordInput
                                         disabled={message?.step?.disabled || true}
                                         value={message?.step?.answer}
@@ -550,7 +549,6 @@ const Signup = () => {
                                           }
                                         }}
                                         options={message?.step?.options}
-                                      // selectedValue={'value'}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '@/configuration/CSS/Index.module.css';
 import { useSession, signIn, signOut } from "next-auth/react";
 
@@ -15,16 +15,45 @@ const GoogleLoginComponent = ({
 }) => {
 
   const [selectedValue, setSelectedValue] = useState(value);
+  const [openPopup, setOpenPopup] = useState(false);
 
   const { data: session, status } = useSession();
 
+  const popupCenter = (url: string, title: string) => {
+    const dualScreenLeft = window.screenLeft ?? window.screenX;
+    const dualScreenTop = window.screenTop ?? window.screenY;
+
+    const width =
+      window.innerWidth ?? document.documentElement.clientWidth ?? screen.width;
+
+    const height =
+      window.innerHeight ??
+      document.documentElement.clientHeight ??
+      screen.height;
+
+    const systemZoom = width / window.screen.availWidth;
+
+    const left = (width - 500) / 2 / systemZoom + dualScreenLeft;
+    const top = (height - 550) / 2 / systemZoom + dualScreenTop;
+
+    const newWindow = window.open(
+      url,
+      title,
+      `width=${500 / systemZoom},height=${550 / systemZoom
+      },top=${top},left=${left}`
+    );
+
+    newWindow?.focus();
+  };
+
   const changeSelectedValue = (item: string) => {
     if (item === "Yes") {
-      // popupCenter("/google-signin", "Sample Sign In")
       if (status === "authenticated") {
         handleSubmit(session.user.email || "")
       } else {
-        signIn("google")
+        setOpenPopup(true)
+        popupCenter("/google-signin", "Sample Sign In")
+        // signIn("google")
       }
       setSelectedValue(item)
     } else {
@@ -33,6 +62,12 @@ const GoogleLoginComponent = ({
       // onChange("no")
     }
   }
+
+  useEffect(() => {
+    if (status === "authenticated" && openPopup) {
+      handleSubmit(session.user.email || "")
+    }
+  }, [status])
 
   console.log(status)
 
