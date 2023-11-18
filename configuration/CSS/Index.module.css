@@ -74,6 +74,7 @@
 .radioGroup {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .radioLabel {
@@ -401,6 +402,14 @@ background: var(--grey-20-bg, #F1F4F9);
 
 .colCardsiconcontainer span{
   margin-top: 8px;
+  color: var(--grey-100, #727A8B);
+
+/* 14px/regular */
+font-family: Aspekta;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
 }
 
 .colCardsHeader{

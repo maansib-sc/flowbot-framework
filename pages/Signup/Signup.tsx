@@ -31,6 +31,7 @@ import ColumnCards from '@/components/ui/Radio/ColumnCards';
 import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
 import Summary from '@/components/ui/Summary/Summary';
 import { useSession, signIn, signOut } from "next-auth/react";
+import Table from '@/components/ui/Table/Table';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -635,6 +636,12 @@ const Signup = () => {
                                         )
                                         : null
                                     }
+                                    {message?.step?.inputType ===
+                                      'tableComponent' ? (
+                                      <Table
+                                        products={message.step.options}
+                                      />
+                                    ) : null}
                                   </div>
                                 )}
                               </div>
