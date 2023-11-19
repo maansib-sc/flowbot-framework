@@ -32,6 +32,7 @@ import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
 import Summary from '@/components/ui/Summary/Summary';
 import { useSession, signIn, signOut } from "next-auth/react";
 import Table from '@/components/ui/Table/Table';
+import CostCards from '@/components/ui/CostCards/CostCards';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -640,6 +641,17 @@ const Signup = () => {
                                       'tableComponent' ? (
                                       <Table
                                         products={message.step.options}
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'costCards' ? (
+                                      <CostCards
+                                        options={message.step.options}
                                         onChange={(value) => {
                                           if (index === messages.length - 1) {
                                             handleSubmit(value);

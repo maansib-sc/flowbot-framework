@@ -1,0 +1,37 @@
+.CostCards {
+  display: flex;
+  gap: 0px;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.Card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+background: #F1F4F9;
+width: 100%;
+border-right: 0.2px solid var(--grey-40-stroke, #E1E4EA);
+}
+
+.text {
+  color: var(--black, #112041);
+  text-align: center;
+
+  /* 15px/regular */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 133.333% */
+}
+
+.price {
+  color: var(--black, #112041);
+  text-align: center;
+  font-family: Aspekta;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}

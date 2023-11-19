@@ -148,6 +148,22 @@ export const ChatBotStep = [
       return { nextStep: 7, toast: '', error: false };
     },
   },
+  {
+    id: 7,
+    question:
+      'Thanks for the selection!The cost of this packaged project will be',
+    inputType: 'costCards',
+    options: [
+        { id: 1, text: "Cost of the dishwasher:",price:"$428.00" },
+        { id: 2, text: "Installation:",price:"$175.00" },
+        { id: 3, text: "Tax:",price:"$36.18" },
+        { id: 4, text: "Total:",price:"$639.18" },
+      ]
+      ,
+    callBack: (event, reponse) => {
+      return { nextStep: 8, toast: '', error: false };
+    },
+  },
 
 ];
 export const leftPanelHtml = `<!DOCTYPE html>
