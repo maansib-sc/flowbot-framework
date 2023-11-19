@@ -33,6 +33,7 @@ import Summary from '@/components/ui/Summary/Summary';
 import { useSession, signIn, signOut } from "next-auth/react";
 import Table from '@/components/ui/Table/Table';
 import CostCards from '@/components/ui/CostCards/CostCards';
+import InstallationInfo from '@/components/ui/InstallationInfo/InstallationInfo';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -652,6 +653,16 @@ const Signup = () => {
                                       'costCards' ? (
                                       <CostCards
                                         options={message.step.options}
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'InstallationInfo' ? (
+                                      <InstallationInfo
                                         onChange={(value) => {
                                           if (index === messages.length - 1) {
                                             handleSubmit(value);

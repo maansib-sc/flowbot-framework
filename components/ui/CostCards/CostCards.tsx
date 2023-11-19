@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './CostCards.module.css'; // Import CSS module
 
 interface CostCardsProps {
@@ -6,7 +6,14 @@ interface CostCardsProps {
     onChange : (val:any)=>void;
 }
 
-const CostCards: React.FC<CostCardsProps> = ({ options }) => {
+const CostCards: React.FC<CostCardsProps> = ({ options,onChange }) => {
+    useEffect(()=>{
+        setTimeout(()=>{
+            onChange("")
+        },1000)
+
+    },[])
+
 
   return (
     <div className={styles.CostCards}>

@@ -164,6 +164,33 @@ export const ChatBotStep = [
       return { nextStep: 8, toast: '', error: false };
     },
   },
+  {
+    id: 8,
+    question:
+      '',
+    inputType: 'InstallationInfo',
+    options: [],
+    callBack: (event, reponse) => {
+      return { nextStep: 9, toast: '', error: false };
+    },
+  },
+  {
+    id: 9,
+    question:
+      'Will you be using a credit card or ACH?',
+    inputType: 'radioButton',
+    header: {
+        step: '3',
+        text: 'Payment',
+      },
+    options: [
+        {label:"Credit Card",value:"Credit Card"},
+        {label:"ACH",value:"ACH"},
+    ],
+    callBack: (event, reponse) => {
+      return { nextStep: 10, toast: '', error: false };
+    },
+  },
 
 ];
 export const leftPanelHtml = `<!DOCTYPE html>
