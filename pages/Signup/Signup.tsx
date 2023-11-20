@@ -26,9 +26,14 @@ import SelectInputField from '@/components/ui/SelectInputField/SelectInputField'
 import NextFunction from '@/components/NextFunction';
 import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
 import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
+import LoginPasswordAsk from '@/components/ui/LoginPasswordAsk/LoginPasswordAsk';
+import ColumnCards from '@/components/ui/Radio/ColumnCards';
 import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
 import Summary from '@/components/ui/Summary/Summary';
 import { useSession, signIn, signOut } from "next-auth/react";
+import Table from '@/components/ui/Table/Table';
+import CostCards from '@/components/ui/CostCards/CostCards';
+import InstallationInfo from '@/components/ui/InstallationInfo/InstallationInfo';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -526,6 +531,16 @@ const Signup = () => {
                                         value={message?.step?.answer}
                                       />
                                     ) : null}
+                                    {message?.step?.inputType === 'loginPasswordAsk' ? (
+                                      <LoginPasswordAsk
+                                      onSave={() => {
+                                        if (index === messages.length - 1) {
+                                          handleSubmit();
+                                        }
+                                      }}
+                                      options={message?.step?.options}
+                                      />
+                                    ) : null}
                                     {message?.step?.inputType === 'address' ? (
                                       <Address
                                         states={stateOptions}
@@ -549,6 +564,18 @@ const Signup = () => {
                                           }
                                         }}
                                         options={message?.step?.options}
+                                      />
+                                    ) : null}
+                                                                        {message?.step?.inputType ===
+                                      'columnCards' ? (
+                                      <ColumnCards
+                                        onChange={() => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit();
+                                          }
+                                        }}
+                                        options={message?.step?.options}
+                                      // selectedValue={'value'}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===
@@ -611,6 +638,38 @@ const Signup = () => {
                                         )
                                         : null
                                     }
+                                    {message?.step?.inputType ===
+                                      'tableComponent' ? (
+                                      <Table
+                                        products={message.step.options}
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'costCards' ? (
+                                      <CostCards
+                                        options={message.step.options}
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'InstallationInfo' ? (
+                                      <InstallationInfo
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
                                   </div>
                                 )}
                               </div>

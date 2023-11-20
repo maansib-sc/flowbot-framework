@@ -11,7 +11,7 @@ export const ChatBotStep = [
         "id": 0,
         "fullWidth": true,
         "title": "Registeration with Libby",
-        "description": "Libby will guide you through the registration process and willanswer any questions that you have. If you experience anyplatform issues during the registration process, click the “Chatwith Platform Support” button on the top right of the channelduring the sign-up process.",
+        "description": "Libby will guide you through the registration process and willanswer any questions that you have. If you experience anyplatform issues during the registration process, click the â€œChatwith Platform Supportâ€ button on the top right of the channelduring the sign-up process.",
         "callBack": (event, response) => {
             return { "nextStep": 1, "toast": "", "error": false, "hideAnswer": true }
         }
@@ -59,7 +59,7 @@ export const ChatBotStep = [
     {
         "id": 2,
         "question": "So, would you like to register using using your Google log-in ?",
-        "inputType": "googleLogin",
+        "inputType": "radioButton",
         "options": [
             { label: 'Yes', value: 'Yes' },
             { label: 'No', value: 'No' }
@@ -68,26 +68,10 @@ export const ChatBotStep = [
             if (response === "No") {
                 return { "nextStep": 3, "toast": "", "error": false, "hideAnswer": true }
             }
-            // return { "nextStep": 5, "toast": "", "error": false, "hideAnswer": true }
+            return { "nextStep": 5, "toast": "", "error": false, "hideAnswer": true }
         },
         "hideAnswer": true
     },
-  //   {
-  //     "id": 2,
-  //     "question": "So, would you like to register using using your Google log-in ?",
-  //     "inputType": "radioButton",
-  //     "options": [
-  //         { label: 'Yes', value: 'Yes' },
-  //         { label: 'No', value: 'No' }
-  //     ],
-  //     "callBack": (event, response) => {
-  //         if (response === "No") {
-  //             return { "nextStep": 3, "toast": "", "error": false, "hideAnswer": true }
-  //         }
-  //         return { "nextStep": 5, "toast": "", "error": false, "hideAnswer": true }
-  //     },
-  //     "hideAnswer": true
-  // },
     {
         "id": 3,
         "question": "What is your email address",
@@ -530,9 +514,9 @@ export const ChatBotStep = [
     },
     {
         "id": 28,
-        "question": "One final thing, please upload your driver’s license using the upload box below",
+        "question": "One final thing, please upload your driverâ€™s license using the upload box below",
         "inputType": "fileUploader",
-        "mongo_key": "Driver’s license",
+        "mongo_key": "Driverâ€™s license",
         "options": [],
         "callBack": (event, response) => {
             insertUserData(event, ChatBotStep[28], response)
@@ -722,7 +706,7 @@ width: 100%;
     <h3>Welcome to the Professional Sign-up channel</h3>
     <span
       >We make it simple to walk through the registration process. Just click
-      the “Get started” button and Libby will walk you through every step.
+      the â€œGet startedâ€ button and Libby will walk you through every step.
       Welcome aboard!</span
     >
     <div class="stepper">
