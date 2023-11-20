@@ -1,576 +1,323 @@
-export const getTitle = "Professional Sign-up Channel";
-export const getWelcomeMessage = "I am a Assistant. I'll assist you with any queries related to documents";
-export const getInputPlaceholder = "Write Message";
+export const getTitle = 'Project Posting Channel';
+export const getWelcomeMessage =
+  "I am a Assistant. I'll assist you with any queries related to documents";
+export const getInputPlaceholder = 'Write Message';
 export const Navbar = true;
-export const botName = "Libby";
+export const botName = 'Libby';
 export const testProject = true;
 export const ChatBotStep = [
-    {
-
-        "question": "Welcome to beginAProject",
-        "id": 0,
-        "fullWidth": true,
-        "title": "Registeration with Libby",
-        "description": "Libby will guide you through the registration process and willanswer any questions that you have. If you experience anyplatform issues during the registration process, click the “Chatwith Platform Support” button on the top right of the channelduring the sign-up process.",
-        "callBack": (event, response) => {
-            return { "nextStep": 1, "toast": "", "error": false, "hideAnswer": true }
-        }
+  {
+    question: 'Welcome to beginAProject',
+    id: 0,
+    fullWidth: true,
+    title: 'Hi! Welcome to the Project Posting Channel',
+    description: '',
+    callBack: (event, response) => {
+      return { nextStep: 1, toast: '', error: false, hideAnswer: true };
     },
-    {
-        "id": 1,
-        "question": "What is your first Name and last Name",
-        "header": {
-            "step": "1",
-            "text": "Contact Information"
+  },
+  {
+    id: 1,
+    question:
+      'Before we start on the project post, let me ask you a quick question. Are you already registered on the platform? If you are, then please type “yes” below and we will get you logged in. If the answer is no, then we will get you registered and help you get your project posted.',
+    header: {
+      step: '1',
+      text: 'Personal Information',
+    },
+    inputType: 'radioButton',
+    options: [
+      {
+        label: 'yes',
+        value: 'yes',
+      },
+      {
+        label: 'no',
+        value: 'no',
+      },
+    ],
+    callBack: (event, response) => {
+      return { nextStep: 2, toast: '', error: false };
+    },
+  },
+  {
+    id: 2,
+    question:
+      'Please enter your login and password below and then type submit in the text box',
+    inputType: 'loginPasswordAsk',
+    options: [],
+    callBack: (event, response) => {
+      return { nextStep: 3, toast: '', error: false };
+    },
+  },
+  {
+    id: 3,
+    question:
+      'Which of the following options do you want to choose?',
+    inputType: 'columnCards',
+    header: {
+        step: '2',
+        text: 'Project Details',
+      },
+    options: [
+        {
+            label:"If you have a project that you need done around your home or business, then you can use our Project Posting option to find professionals who can perform those services for you at a great price. Begin A Project can find you the right professional for the job and help you get your job done with the help of our Project Managers.",
+            header:"Create Your Own Project Posting",
+            value:1
         },
-        "mongo_key": "first and last name",
-        "inputType": "text",
-        "options": [],
-        "callBack": (event, response) => {
-            let name = response
-            const validate = (name) => {
-                const nameRegex = /^[a-zA-Z ]+$/;
-                const minLength = 2;
-                const maxLength = 50;
-
-                if (!name || typeof name !== 'string') {
-                    return "Please enter a valid name.";
-                }
-
-                if (!nameRegex.test(name)) {
-                    return "Names can only contain letters.";
-                }
-
-                if (name.length < minLength || name.length > maxLength) {
-                    return `Name must be between ${minLength} and ${maxLength} characters long.`;
-                }
-
-                return null; // Indicates no validation errors
-            }
-            const validationResult = validate(name);
-            if (validationResult) {
-                return { "nextStep": 1, "toast": validationResult, "error": true }
-            } else {
-                insertUserData(event, ChatBotStep[1], response)
-                return { "nextStep": 2, "toast": "", "error": false }
-            }
-        }
-    },
-    {
-        "id": 2,
-        "question": "So, would you like to register using using your Google log-in ?",
-        "inputType": "googleLogin",
-        "options": [
-            { label: 'Yes', value: 'Yes' },
-            { label: 'No', value: 'No' }
-        ],
-        "callBack": (event, response) => {
-            if (response === "No") {
-                return { "nextStep": 3, "toast": "", "error": false, "hideAnswer": true }
-            }
-            // return { "nextStep": 5, "toast": "", "error": false, "hideAnswer": true }
+        {
+            label:"We have many projects that include pre-negotiated and competitive service rates with many of our qualified service professionals. See the list below to determine if your project includes the packaged price.",
+            header:"Packaged Projects",
+            value:2
         },
-        "hideAnswer": true
-    },
-  //   {
-  //     "id": 2,
-  //     "question": "So, would you like to register using using your Google log-in ?",
-  //     "inputType": "radioButton",
-  //     "options": [
-  //         { label: 'Yes', value: 'Yes' },
-  //         { label: 'No', value: 'No' }
-  //     ],
-  //     "callBack": (event, response) => {
-  //         if (response === "No") {
-  //             return { "nextStep": 3, "toast": "", "error": false, "hideAnswer": true }
-  //         }
-  //         return { "nextStep": 5, "toast": "", "error": false, "hideAnswer": true }
-  //     },
-  //     "hideAnswer": true
-  // },
-    {
-        "id": 3,
-        "question": "What is your email address",
-        "mongo_key": "Email Address",
-        "inputType": "text",
-        "options": [],
-        "callBack": (event, response) => {
-            let email = response
-            function validateEmail(email) {
-                // Regular expression for a simple email validation
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                if (!email || typeof email !== 'string') {
-                    return "Please enter a valid email address.";
-                }
-
-                if (!emailRegex.test(email)) {
-                    return "Please enter a valid email address format.";
-                }
-
-                return null; // Indicates no validation errors
-            }
-            const emailValidationResult = validateEmail(email);
-            if (emailValidationResult) {
-                return { "nextStep": 3, "toast": emailValidationResult, "error": true }
-            } else {
-                insertUserData(event, ChatBotStep[3], response)
-                return { "nextStep": 4, "toast": "", "error": false }
-            }
-        }
-    },
-    {
-        "id": 4,
-        "question": "Please check your email inbox for the verification code. Once you receive it, please type it into the chat box. If you fail to receive it, please type in please resend into the chatbox.",
-        "inputType": "text",
-        "options": [],
-        "callBack": (event, response) => {
-            function validateNumber(input) {
-                input = Number(input)
-                const isNumeric = /^\d+$/;
-
-                if (!input || typeof input !== 'number') {
-                    return "Please enter a valid number.";
-                }
-
-                const inputString = input.toString();
-
-                if (inputString.length === 6 && isNumeric.test(inputString)) {
-                    return null; // Indicates no validation errors
-                }
-
-                return "Number must be exactly 6 digits long.";
-            }
-            const numberValidation = validateNumber(response);
-            if (numberValidation) {
-                return { "nextStep": 4, "toast": numberValidation, "error": true }
-            } else {
-                return { "nextStep": 5, "toast": "", "error": false }
-            }
-        }
-
-    },
-    {
-        "id": 5,
-        "question": "Please enter your mobile number",
-        "inputType": "number",
-        "mongo_key": "Mobile Number",
-        "options": [],
-        "callBack": (event, response) => {
-            function validateNumber(input) {
-                input = Number(input)
-                const isNumeric = /^\d+$/;
-
-                if (!input || typeof input !== 'number') {
-                    return "Please enter a valid number.";
-                }
-
-                const inputString = input.toString();
-
-                if (inputString.length === 10 && isNumeric.test(inputString)) {
-                    return null; // Indicates no validation errors
-                }
-
-                return "Number must be exactly 10 digits long.";
-            }
-            const numberValidation = validateNumber(response);
-            if (numberValidation) {
-                return { "nextStep": 5, "toast": numberValidation, "error": true }
-            } else {
-                insertUserData(event, ChatBotStep[5], response)
-                return { "nextStep": 6, "toast": "", "error": false }
-            }
-        }
-    },
-    {
-        "id": 6,
-        "question": "Please check your phone for the SMS verification code. Once you receive it, please type it into the chat box. If you fail to receive it, please type in please resend into the chatbox.",
-        "inputType": "number",
-        "options": [],
-        "callBack": (event, response) => {
-            function validateNumber(input) {
-                input = Number(input)
-                const isNumeric = /^\d+$/;
-
-                if (!input || typeof input !== 'number') {
-                    return "Please enter a valid number.";
-                }
-
-                const inputString = input.toString();
-
-                if (inputString.length === 6 && isNumeric.test(inputString)) {
-                    return null; // Indicates no validation errors
-                }
-
-                return "Number must be exactly 6 digits long.";
-            }
-            const numberValidation = validateNumber(response);
-            if (numberValidation) {
-                return { "nextStep": 6, "toast": numberValidation, "error": true }
-            } else {
-                return { "nextStep": 7, "toast": "", "error": false }
-            }
-        }
-    },
-    {
-        "id": 7,
-        "question": "Please enter your preferred password. It must contain letters, numbers and symbols. It is required to have at least one letter, one number and one symbol.",
-        "inputType": "password",
-        "options": [],
-        "disabled": true,
-        "mongo_key": "Password",
-        "callBack": (event, response) => {
-            function validatePassword(input) {
-                // Minimum 12 characters
-                if (input.length < 12) {
-                    return "Password must be at least 12 characters long.";
-                }
-                // Should have one letter, one number, one special symbol
-                const hasLetter = /[a-zA-Z]/.test(input);
-                const hasNumber = /\d/.test(input);
-                const hasSymbol = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(input);
-                if (!(hasLetter && hasNumber && hasSymbol)) {
-                    return "Password must contain at least one letter, one number, and one special symbol.";
-                }
-                return null; // Indicates no validation errors
-            }
-            const passwordValidation = validatePassword(response);
-            if (passwordValidation) {
-                return { "nextStep": 7, "toast": passwordValidation, "error": true };
-            } else {
-                insertUserData(event, ChatBotStep[7], response)
-                return { "nextStep": 8, "toast": "", "error": false, "hideAnswer": true };
-            }
-        }
-    },
-    {
-        "id": 8,
-        "question": "Please re-enter your password",
-        "inputType": "password",
-        "options": [],
-        "callBack": (event, response) => {
-            function validatePassword() {
-                let test = event.user.getUserData()
-                if (test[test.length - 1].answer === response) {
-                    return null
-                }
-                return "Passwords do not match. Please make sure both password fields are identical."
-            }
-            const passwordValidation = validatePassword()
-            if (passwordValidation) {
-                return { "nextStep": 8, "toast": passwordValidation, "error": true };
-            } else {
-                return { "nextStep": 9, "toast": "", "error": false, "hideAnswer": true };
-            }
-        }
-    },
-    {
-        "id": 9,
-        "question": "Okay, now please enter your company name",
-        "inputType": "text",
-        "mongo_key": "Company Name",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[9], response)
-            return { "nextStep": 10, "toast": "", "error": false }
-        }
-    },
-    {
-        "id": 10,
-        "question": "The next step is for you to enter the primary contact name for the business",
-        "inputType": "text",
-        "mongo_key": "Contact Name",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[10], response)
-            return { "nextStep": 11, "toast": "", "error": false }
-        }
-    },
-    {
-        "id": 11,
-        "question": "Alright, now select your state",
-        "inputType": "select",
-        "mongo_key": "State",
-        "options": [
-            { label: 'select the state', value: '' },
-            { label: 'Florida', value: 'Florida' },
-            { label: 'New York', value: 'New York' },
-        ],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[11], response)
-            return { "nextStep": 12, "toast": "", "error": false, "hideAnswer": true }
-        }
-    },
-    {
-        "id": 12,
-        "question": "Now select your city",
-        "inputType": "select",
-        "mongo_key": "City",
-        "options": [
-            { label: 'select the city', value: '' },
-            { label: 'Apopka', value: 'Apopka' },
-            { label: 'Anna Maria', value: 'Anna Maria' },
-        ],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[12], response)
-            return { "nextStep": 13, "toast": "", "error": false, "hideAnswer": true }
-        }
-    },
-    {
-        "id": 13,
-        "question": "Enter your zipcode",
-        "inputType": "text",
-        "mongo_key": "Zip Code",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[13], response)
-            return { "nextStep": 14, "toast": "", "error": false }
-        }
-    },
-    {
-        "id": 14,
-        "question": "Thank you, now can you please enter your primary address",
-        "inputType": "text",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[14], response)
-            return { "nextStep": 15, "toast": "", "error": false }
-        }
-    },
-    {
-        "id": 15,
-        "question": "What best describes your primary occupation from the list below your occupation from the list below?",
-        "header": {
-            "step": "2",
-            "text": "Services Offered"
+        {
+            label:"If you prefer, one of our Project Concierge team members can manage your entire project for you from project posting to professional selection to project payments all the way to project completion for you. This option makes your life easy and your project runs smoothly. We just add 15% on top of the project costs to cover our time.",
+            header:"Project Concierge",
+            value:3
         },
-        "mongo_key": "Primary Occupation",
-        "inputType": "cardRadio",
-        "options": [
-            { label: 'Appliance Professional', value: 'Appliance Professional' },
-            { label: 'Carpenter', value: 'Carpenter' },
-            { label: 'Concrete/Masonry Pro', value: 'Concrete/Masonry Pro' },
-            { label: 'Deck Builder', value: 'Deck Builder' },
-            { label: 'Electrician', value: 'Electrician' },
-            { label: 'General Contractor', value: 'General Contractor' },
-            { label: 'Handyman', value: 'Handyman' },
-            { label: 'House Cleaner', value: 'House Cleaner' },
-            { label: 'Lawn and Landscape Pro', value: 'Lawn and Landscape Pro' },
-            { label: 'Painter', value: 'Painter' },
-            { label: 'Plumber', value: 'Plumber' }
-        ],
-        "callBack": (event, response) => {
-            console.log("cardRadio response ==>", response)
-            insertUserData(event, ChatBotStep[15], response)
-            return { "nextStep": 16, "toast": "", "error": false, "hideAnswer": true }
+        {
+            label:"It is important to be proactive when it comes to maintaining the health of all of your appliances and systems. It is also time-consuming and requires some level of expertise. Our Service Concierge will come and perform a health evaluation on all of your appliances and systems. After the initial visit, they will come by your home two additional times during the year to perform any preventative maintenance and will provide you a complete health summary. After the Service Concierge has completed their health checks and preventative maintenance, then you will be provided a sim month warranty on your products in case anything goes wrong.  So three yearly visits and the warranty for only $500 a year plus the cost of preventative maintenance supplies.",
+            header:"Service Concierge",
+            value:4
         }
-
+    ],
+    callBack: (event, response) => {
+      return { nextStep: 4, toast: '', error: false };
     },
-    {
-        "id": 16,
-        "question": "Alright, now tell me what state you provide these services in?",
-        "inputType": "select",
-        "mongo_key": "State",
-        "options": [
-            { label: 'select the state', value: '' },
-            { label: 'Florida', value: 'Florida' },
-            { label: 'New York', value: 'New York' },
-        ],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[16], response)
-            return { "nextStep": 17, "toast": "", "error": false, "hideAnswer": true }
-        }
+  },
+  {
+    id: 4,
+    question:
+      'I am excited to help you with the Packaged Project option. Please select which project that you need help with.',
+    inputType: 'radioButton',
+    options: [
+      {
+        label: 'Garbage Disposal and Installation',
+        value: 'Garbage Disposal and Installation',
+      },
+      {
+        label: 'Dishwasher and Installation',
+        value: 'Dishwasher and Installation',
+      },
+      {
+        label: 'Fan and Installation',
+        value: 'Fan and Installation',
+      },
+      {
+        label: 'Oven and Installation',
+        value: 'Oven and Installation',
+      },
+    ],
+    callBack: (event, response) => {
+      return { nextStep: 5, toast: '', error: false };
     },
-    {
-        "id": 17,
-        "question": "Please select the license that applies to your business.",
-        "mongo_key": "License type",
-        "inputType": "radioButton",
-        "options": [
-            { label: 'Certified General Contractor', value: 'Certified General Contractor' },
-            { label: 'Certified Residental Contractor', value: 'Certified Residental Contractor' },
-            { label: 'Certified Building Contractor', value: 'Certified Building Contractor' },
-
-        ],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[17], response)
-            return { "nextStep": 18, "toast": "", "error": false, "hideAnswer": true }
-        }
-
+  },
+  {
+    id: 5,
+    question:
+      'Have you already purchased your new dishwasher?',
+    inputType: 'radioButton',
+    options: [
+      {
+        label: 'Yes',
+        value: 'Yes',
+      },
+      {
+        label: 'No',
+        value: 'No',
+      }
+    ],
+    callBack: (event, response) => {
+      return { nextStep: 6, toast: '', error: false };
     },
-    {
-        "id": 18,
-        "question": "The next step is for you to provide your Certified General Contractor license number from the state of Florida",
-        "inputType": "text",
-        "mongo_key": "License Number",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[18], response)
-            return { "nextStep": 19, "toast": "", "error": false }
-        }
-
+  },
+  {
+    id: 6,
+    question:
+      'Great, I am excited to get your dishwasher delivered and installed. The first thing to do is to select the dishwasher that you want installed. Please click the list of options below and select the dishwasher that meets your needs. Once you select it, the packaged price will update.',
+    inputType: 'tableComponent',
+    options: [
+        { id: 1, brand: 'General Electric', description: '24 in. Built-In Tall Tub Top Control Stainless Steel Dishwasher w/Sanitize, Dry Boost, 52 dBA', price: '$428.00',model:"GDT550PYRFS" },
+        { id: 2, brand: 'Samsung', description: '24 in. Top Control Tall Tub Dishwasher in Stainless Steel with Stainless Steel Interior Door, 55 dBA', price: '$578.00',model:"DW80R2031US" },
+        { id: 3, brand: 'Frigidaire', description: '24 In. in. Front Control Built-In Tall Tub Dishwasher in Stainless Steel with 3-Cycles, 55 dBA', price: '$398.00',model:"FFCD2413US" },
+        { id: 4, brand: 'Samsung', description: '2Fingerprint Resistant 53 dBA Dishwasher with Adjustable Rack in Stainless Steel', price: '$428.00',model:"DW80CG4021SR" },
+        { id: 5, brand: 'Whirlpool', description: '24 in. Fingerprint Resistant Stainless Steel Top Control Built-In Tall Tub Dishwasher with Third Level Rack, 47 dBA', price: '$548.00',model:"WDTA50SAKZ" },
+        { id: 6, brand: 'Samsung', description: '24 in. Fingerprint Resistant Stainless Steel Top Control Smart Built-In Tall Tub Dishwasher with AutoRelease, 42dBA', price: '$698.00',model:"DW80B7070US" },
+      ]
+      ,
+    callBack: (event, response) => {
+      return { nextStep: 7, toast: '', error: false };
     },
-    {
-        "id": 19,
-        "question": "Please hold on for a minute or two while we validate your license...",
-        "inputType": "await",
-        "options": [],
-        "callBack": (event, response) => {
-            return { "nextStep": 20, "toast": "", "error": false, "hideAnswer": true }
-        }
+  },
+  {
+    id: 7,
+    question:
+      'Thanks for the selection!The cost of this packaged project will be',
+    inputType: 'costCards',
+    options: [
+        { id: 1, text: "Cost of the dishwasher:",price:"$428.00" },
+        { id: 2, text: "Installation:",price:"$175.00" },
+        { id: 3, text: "Tax:",price:"$36.18" },
+        { id: 4, text: "Total:",price:"$639.18" },
+      ]
+      ,
+    callBack: (event, response) => {
+      return { nextStep: 8, toast: '', error: false };
     },
-    {
-        "id": 20,
-        "question": "Here is the listing that we found. Please review and validate..",
-        "inputType": "constructiondetails",
-        "options": [],
-        "callBack": (event, response) => {
-            return { "nextStep": 21, "toast": "", "error": false, "hideAnswer": true }
-        }
+  },
+  {
+    id: 8,
+    question:
+      '',
+    inputType: 'InstallationInfo',
+    options: [],
+    callBack: (event, response) => {
+      return { nextStep: 9, toast: '', error: false };
     },
-    {
-        "id": 21,
-        "question": "Is this your listing?",
-        "inputType": "radioButton",
-        "options": [
-            { label: 'Yes', value: 'Yes' },
-            { label: 'No', value: 'No' }
-        ],
-        "callBack": (event, response) => {
-            if (response === "No") {
-                return { "nextStep": 18, "toast": "", "error": false, "hideAnswer": true }
-            }
-            return { "nextStep": 22, "toast": "", "error": false, "hideAnswer": true }
-        }
+  },
+  {
+    id: 9,
+    question:
+      'Will you be using a credit card or ACH?',
+    inputType: 'radioButton',
+    default:null,
+    header: {
+        step: '3',
+        text: 'Payment',
+      },
+    options: [
+        {label:"Credit Card",value:"Credit Card"},
+        {label:"ACH",value:"ACH"},
+    ],
+    callBack: (event, response) => {
+      if(response !== "ACH"){
+        return { nextStep: 10, toast: '', error: false };
+      }else{
+        return { nextStep: 16, toast: '', error: false };
+      }
     },
-    {
-        "id": 22,
-        "question": "Now tell me which city will be your primary city?",
-        "inputType": "select",
-        "mongo_key": "City",
-        "options": [
-            { label: 'select the city', value: '' },
-            { label: 'Apopka', value: 'Apopka' },
-            { label: 'Anna Maria', value: 'Anna Maria' },
-        ],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[22], response)
-            return { "nextStep": 23, "toast": "", "error": false }
-        }
+  },
+  {
+    id: 10,
+    question:
+      'Enter card number:',
+    inputType: 'text',
+    options: [],
+    callBack: (event, response) => {
+      return { nextStep: 11, toast: '', error: false };
     },
-    {
-        "id": 23,
-        "question": "So, tell us how far you will go to perform your services in miles",
-        "inputType": "text",
-        "mongo_key": "Perform your services in miles",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[23], response)
-            return { "nextStep": 24, "toast": "", "error": false }
-        }
+  },
+  {
+    id: 11,
+    question:
+      'Alright, now enter the expiration date for the credit card',
+    inputType: 'text',
+    options: [],
+    callBack: (event, response) => {
+      return { nextStep: 12, toast: '', error: false };
     },
-    {
-        "id": 24,
-        "question": "What services do you want to provide from the list below. Please select or deselect the services that apply or do not apply.",
-        "inputType": "checkboxButton",
-        "mongo_key": "Services",
-        "options": [
-            { label: 'Bard/Shed Repair', value: 'Bard/Shed Repair' },
-            { label: 'Brick, Stone, Block Wall Inst.', value: 'Brick, Stone, Block Wall Inst.' },
-            { label: 'Crown Molding Instalation', value: 'Crown Molding Instalation' },
-            { label: 'Decorative Wall Panel Inst.', value: 'Decorative Wall Panel Inst.' },
-            { label: 'Driveway Repair', value: 'Driveway Repair' },
-            { label: 'Exterior Awning Inst.', value: 'Exterior Awning Inst.' }
-        ],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[24], response)
-            return { "nextStep": 25, "toast": "", "error": false, "hideAnswer": true }
-        }
+  },
+  {
+    id: 12,
+    question:
+      'Perfect! Now enter the three digit CVV from the back of the card',
+    inputType: 'text',
+    options: [],
+    callBack: (event, response) => {
+      return { nextStep: 13, toast: '', error: false };
     },
-    {
-        "id": 25,
-        "question": "We are getting close to the end of the sign-up process.Provide a copy of your certificate of general liability insurance. Use the upload button below to upload it into the system.",
-        "header": {
-            "step": "3",
-            "text": "Documents"
-        },
-        "inputType": "fileUploader",
-        "mongo_key": "Certificate of general liability insurance",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[25], response)
-            return { "nextStep": 26, "toast": "", "error": false, "hideAnswer": true }
-        }
+  },
+  {
+    id: 13,
+    question:
+      'Finally, please enter the zip code associated with this credit card',
+    inputType: 'text',
+    options: [],
+    callBack: (event, response) => {
+      return { nextStep: 14, toast: '', error: false };
     },
-    {
-        "id": 26,
-        "question": "Do you have a rewards number with us?",
-        "inputType": "radioButton",
-        "options": [
-            { label: 'Yes', value: 'Yes' },
-            { label: 'No', value: 'No' }
-        ],
-        "callBack": (event, response) => {
-            if (response === "No") {
-                return { "nextStep": 28, "toast": "", "error": false, "hideAnswer": true }
-            }
-            return { "nextStep": 27, "toast": "", "error": false, "hideAnswer": true }
-        }
+  },
+  {
+    id: 14,
+    question:
+      '',
+    inputType: 'text',
+    options: [],
+    callBack: (event, response) => {
+      return { nextStep: 15, toast: '', error: false };
     },
-    {
-        "id": 27,
-        "question": "Please enter your rewards number",
-        "inputType": "text",
-        "mongo_key": "Rewards Number",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[27], response)
-            return { "nextStep": 28, "toast": "", "error": false }
-        }
+  },
+  {
+    "id": 15,
+    "header": {
+        "step": "4",
+        "text": "Summary"
     },
-    {
-        "id": 28,
-        "question": "One final thing, please upload your driver’s license using the upload box below",
-        "inputType": "fileUploader",
-        "mongo_key": "Driver’s license",
-        "options": [],
-        "callBack": (event, response) => {
-            insertUserData(event, ChatBotStep[28], response)
-            return { "nextStep": 29, "toast": "", "error": false, "hideAnswer": true }
-        }
-    },
-    {
-        "id": 29,
-        "header": {
-            "step": "4",
-            "text": "Summary"
-        },
-        "question": "Here is a summary of the information that you provided, please review",
-        "inputType": "summary",
-        "options": [],
-        "callBack": (event, reponse) => {
-            return { "nextStep": 30, "toast": "", "error": false, "hideAnswer": true }
-        }
-    },
-    {
-        "id": 30,
-        "question": "If the information is good to go, then type submit below",
-        "inputType": "text",
-        "options": [],
-        "callBack": (event, reponse) => {
-            return { "nextStep": 31, "toast": "", "error": false, "hideAnswer": true }
-        }
-    },
-    {
-        "id": 31,
-        "question": "We are so excited to have you join the Begin A Project team. We will begin to work on finding you projects that fit your skillset. We will text you all the projects that we think that you may be interested in . Click the links on the text messages to view the projects and to start your bid. You can also login to your dashboard and begin to search projects as well. If you ever have any questions please feel free to call us or to chat with us. Let's get you to work!",
-        "inputType": "text",
-        "options": [],
-        "callBack": (event, reponse) => {
-            return { "nextStep": 32, "toast": "", "error": false, "hideAnswer": true }
-        }
-    },
-
+    "question": "Here is a summary of the information that you provided, please review",
+    "inputType": "summary",
+    "options": [],
+    "callBack": (event, response) => {
+        return { "nextStep": 20, "toast": "", "error": false, "hideAnswer": true }
+    }
+},  {
+  id: 16,
+  question:
+    'What is the name on the account?',
+  inputType: 'text',
+  options: [],
+  callBack: (event, response) => {
+    return { nextStep: 17, toast: '', error: false };
+  },
+},
+{
+  id: 17,
+  question:
+    'What is the name on the account?',
+  inputType: 'text',
+  options: [],
+  callBack: (event, response) => {
+    return { nextStep: 18, toast: '', error: false };
+  },
+},
+{
+  id: 18,
+  question:
+    'What is your routing number?',
+  inputType: 'text',
+  options: [],
+  callBack: (event, response) => {
+    return { nextStep: 19, toast: '', error: false };
+  },
+},
+{
+  id: 19,
+  question:
+    'What is your account number?',
+  inputType: 'text',
+  options: [],
+  callBack: (event, response) => {
+    return { nextStep: 15, toast: '', error: false };
+  },
+},
+{
+  id: 20,
+  question:
+    'If you are good with the information above, please type submit.',
+  inputType: 'text',
+  options: [],
+  callBack: (event, response) => {
+    return { nextStep: 21, toast: '', error: false };
+  },
+},
+{
+  id: 21,
+  question:
+    'Thank you so much for posting your project! We are assigning your project manager now and we look forward to getting this project done! You will be receiving updates via text or you can visit your dashboard to get updates. Feel free to reach out to us via chat if you have any additional questions. Thank you for using Begin A Project and remember us when you have any other project or service that you need around the house or at your business.',
+  inputType: 'text',
+  options: [],
+  callBack: (event, response) => {
+    return { nextStep: 21, toast: '', error: false };
+  },
+},
 
 ];
 export const leftPanelHtml = `<!DOCTYPE html>
@@ -593,52 +340,57 @@ export const leftPanelHtml = `<!DOCTYPE html>
         font-family: 'Aspekta';
         position: relative;
       }
-      h3 {
+      .h3 {
         color: var(--white, #fff);
-
+ 
         /* 24px/medium */
         font-family: 'Aspekta';
-        font-size: 19px;
+        font-size: 28px;
         font-style: normal;
         font-weight: 500;
+        margin-bottom: 20px;
         line-height: normal;
+        padding-right:33px;
       }
-      span {
+      .span {
         color: var(--grey-40-stroke, #e1e4ea);
-
+ 
         /* 15px/regular */
         font-family: 'Aspekta';
-        font-size: 15px;
+        font-size: 17px;
         font-style: normal;
         font-weight: 400;
         line-height: 20px; /* 133.333% */
-      }
+        padding-right:47px;
 
-    
+      }
+ 
+   
 .stepper {
     display: flex;
   flex-direction: column;
-  margin-top: 17px;
+  margin-top: 7px;
 }
-
+ 
 .step {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
   position: relative; /* Add relative positioning for the line */
   color: var(--white, #FFF);
-
+ 
 /* 18px/medium */
 font-family: Aspekta;
 font-size: 18px;
 font-style: normal;
 font-weight: 600;
-line-height: 28px; /* 155.556% */
+line-height: 35px; /* 155.556% */
 }
-
+ 
 .step-circle {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  z-index:21212;
+  height: 24px;
   border-radius: 50%;
   border: 1px solid var(--grey-80, #AAB1BA);   color: white;
   display: flex;
@@ -648,7 +400,7 @@ line-height: 28px; /* 155.556% */
   font-size: 16px;
   margin-right: 10px;
   color: var(--white, #FFF);
-
+ 
 /* 11px/semibold */
 font-family: Aspekta;
 font-size: 11px;
@@ -658,46 +410,46 @@ line-height: normal;
 letter-spacing: 0.55px;
 text-transform: uppercase;
 }
-
+ 
 .step-text {
-  font-size: 14px;
+  font-size: 18px;
 }
-
+ 
 .active .step-circle {
-border: 1px solid var(--orange-100, #FF6900); 
+border: 1px solid var(--orange-100, #FF6900);
 }
-
+ 
 .completed .step-circle {
     background: var(--orange-100, #FF6900);   border: 1px solid var(--orange-100, #FF6900); ;
   color: white;
 }
-
+ 
 .upcoming .step-circle {
   border: 2px solid #ccc;
 }
-
+ 
 .upcoming .step-text{
     color: var(--grey-80, #AAB1BA);
 }
-
+ 
 .step:not(:last-child)::before {
     content: '';
   width: 2px;
   height: 100%;
   background: #ccc;
   position: absolute;
-  left: 3%;
-  top: 24px;
+  left: 2.33%;
+  top: 28px;
   transform: translateX(-50%);
-  z-index: -2;
+  z-index: 0;
 }
-
+ 
 .sidebar-login{
     position: absolute;
-    bottom: 10px;
+    bottom: 20px;
     text-align: center;
     color: var(--white, #FFF);
-
+ 
 /* 14px/regular */
 font-family: Aspekta;
 font-size: 14px;
@@ -706,21 +458,22 @@ font-weight: 400;
 line-height: normal;
 width: 100%;
 }
-
+ 
 .sidebar-login .text{
     text-align: center;
 }
 .sidebar-login .login{
-
+ 
     cursor: pointer;
     color: var(--orange-100, #FF6900);
  }
     </style>
   </head>
-
+ 
   <body class="container-body">
-    <h3>Welcome to the Professional Sign-up channel</h3>
+    <h3 class="h3">Welcome to the Professional Sign-up channel</h3>
     <span
+    class="span"
       >We make it simple to walk through the registration process. Just click
       the “Get started” button and Libby will walk you through every step.
       Welcome aboard!</span
@@ -751,53 +504,44 @@ width: 100%;
     <script src="src/index.js"></script>
   </body>
 </html>
-`
+`;
 
-export const showUserEnteredPasssword = false
-export const finalMessage = "Thanks for the provided information"
-export const conversational = true
-
-export const insertUserData = (handler, currentStep, answer) => {
-    let obj = {}
-    if (currentStep.header) {
-        obj = {
-            key: currentStep.mongo_key,
-            category_id: currentStep.header.step,
-            category_description: currentStep.header.text,
-            answer: answer
-        }
-    } else {
-        obj = {
-            key: currentStep.mongo_key,
-            answer: answer
-        }
-    }
-    handler.user.setUserData(obj)
-}
-
-export const getlastHeaderStep = () => { }
+export const showUserEnteredPasssword = false;
+export const finalMessage = 'Thanks for the provided information';
+export const conversational = true;
 
 export const start = async (handler, question) => {
-    if (conversational) {
-        let currentStep = await handler.user.getlastStep()
-        let answ = ChatBotStep[currentStep]
-        if (answ === undefined) return { "text": finalMessage, "src": "talkingDb" };
-        if (answ.callBack) {
-            const { nextStep, toast, error, hideAnswer } = answ.callBack(handler, question)
-            handler.user.setlastStep(nextStep)
-            await handler.user.save()
-            answ = ChatBotStep[nextStep]
-            if (answ.inputType === "summary") {
-                answ["data"] = handler.user.getUserData()
-            }
-            if (answ.inputType === "await") {
-                answ["await"] = 4000
-            }
-            return { "text": answ.question, "src": "talkingDb", currentStep: answ, "error": error, "errorMessage": toast || "", hideAnswer: hideAnswer || false };
-        }
-        return { "text": answ.question, "src": "talkingDb", currentStep: answ, "error": error, "errorMessage": toast || "", hideAnswer: hideAnswer || false };
-    } else {
-        const response = await handler.chain.run(question)
-        return response
+  if (conversational) {
+    let currentStep = await handler.user.getlastStep();
+    let answ = ChatBotStep[currentStep];
+    if (answ === undefined) return { text: finalMessage, src: 'talkingDb' };
+    if (answ.callBack) {
+      const { nextStep, toast, error, hideAnswer } = answ.callBack(
+        handler,
+        question,
+      );
+      handler.user.setlastStep(nextStep);
+      await handler.user.save();
+      answ = ChatBotStep[nextStep];
+      return {
+        text: answ.question,
+        src: 'talkingDb',
+        currentStep: answ,
+        error: error,
+        errorMessage: toast || '',
+        hideAnswer: hideAnswer || false,
+      };
     }
-} 
+    return {
+      text: answ.question,
+      src: 'talkingDb',
+      currentStep: answ,
+      error: error,
+      errorMessage: toast || '',
+      hideAnswer: hideAnswer || false,
+    };
+  } else {
+    const response = await handler.chain.run(question);
+    return response;
+  }
+};

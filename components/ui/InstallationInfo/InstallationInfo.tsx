@@ -10,7 +10,7 @@ const InstallationInfo: React.FC<InstallationInfoProps> = ({ onChange }) => {
     useEffect(()=>{
         setTimeout(() => {
             onChange("")
-        }, 1000);
+        }, 3000);
     },[]);
 
   return (

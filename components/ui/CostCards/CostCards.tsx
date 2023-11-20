@@ -11,7 +11,6 @@ const CostCards: React.FC<CostCardsProps> = ({ options,onChange }) => {
         setTimeout(()=>{
             onChange("")
         },1000)
-
     },[])
 
 
