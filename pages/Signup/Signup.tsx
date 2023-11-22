@@ -519,6 +519,7 @@ const Signup = () => {
                                       <RadioGroup
                                         options={message?.step?.options}
                                         value={message?.step?.default}
+                                        disabled={index !== messages.length - 1 ? true : false}
                                         onChange={(value) => {
                                           if (index === messages.length - 1) {
                                             handleSubmit(value);
@@ -543,13 +544,15 @@ const Signup = () => {
                                       <PasswordInput
                                         disabled={message?.step?.disabled || true}
                                         value={message?.step?.answer}
+                                        onChange={() => null}
                                       />
                                     ) : null}
                                     {message?.step?.inputType === 'loginPasswordAsk' ? (
                                       <LoginPasswordAsk
-                                        onSave={() => {
+                                        disabled={index !== messages.length - 1 ? true : false}
+                                        onSave={(value) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit();
+                                            handleSubmit(value);
                                           }
                                         }}
                                         options={message?.step?.options}

@@ -6,9 +6,11 @@ const Button = ({
   variant = 'primary', // Default variant is 'primary',
   children, // This prop will hold the content to display inside the button
   onClick, // Add onClick prop,
+  disabled = false,
   ...props
 }: {
   variant: 'primary' | 'secondary' | 'ghost' | 'link';
+  disabled?: boolean;
   children: React.ReactNode;
   onClick?: () => void; // Define the onClick prop with the appropriate type
 }) => {
@@ -27,7 +29,7 @@ const Button = ({
 
 
   return (
-    <button className={buttonClasses} {...props} onClick={onClick}> 
+    <button className={buttonClasses} {...props} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );

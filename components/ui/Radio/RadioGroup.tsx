@@ -4,10 +4,12 @@ import styles from '@/configuration/CSS/Index.module.css';
 const RadioGroup = ({
   options,
   value,
+  disabled,
   onChange,
 }: {
   options: { label: string; value: string }[];
   value: string;
+  disabled: boolean;
   onChange: (value: string) => void;
 }) => {
 
@@ -28,6 +30,7 @@ const RadioGroup = ({
           <input
             type="radio"
             value={option.value}
+            disabled={disabled}
             checked={selectedValue === option.value}
             onChange={() => {
               changeSelectedValue(option.value)
