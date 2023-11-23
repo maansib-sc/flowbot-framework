@@ -9,7 +9,7 @@ const ColumnCards = ({
   onChange: (value: string) => void;
 }) => {
 
-  const [selectedValue, setSelectedValue] = useState(0)
+  const [selectedValue, setSelectedValue] = useState(-1)
 
   const changeSelectedValue = (index: number) => {
     setSelectedValue(index)
