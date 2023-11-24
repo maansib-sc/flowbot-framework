@@ -201,8 +201,8 @@ const Signup = () => {
       })
       handleSubmit()
     }
-    if (JSModule && JSModule?.conversational && JSModule?.ChatBotStep[activeIndex]?.fullWidth) {
-      setRegistrationMessage(JSModule?.ChatBotStep[activeIndex])
+    if (JSModule && JSModule?.conversational && JSModule?.ChatBotStep.find((item: any) => item.id == activeIndex)?.fullWidth) {
+      setRegistrationMessage(JSModule?.ChatBotStep.find((item: any) => item.id == activeIndex))
       setIsSignupPage(true)
       setMessageState({
         messages: [],
@@ -526,6 +526,13 @@ const Signup = () => {
                                           }
                                         }}
                                       />
+                                    ) : null}
+                                    {message.type === 'apiMessage' &&
+                                      message?.step?.inputType ===
+                                      'html' ? (
+                                      <>
+                                        <div dangerouslySetInnerHTML={{ __html: message?.step?.html }} />
+                                      </>
                                     ) : null}
                                     {message.type === 'apiMessage' &&
                                       message?.step?.inputType ===
