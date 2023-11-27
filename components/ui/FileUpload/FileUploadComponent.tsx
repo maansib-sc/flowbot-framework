@@ -14,10 +14,11 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit 
     const files = e.target.files;
     const file = e.target.files[0];
 
-    if (file) {
+    if (file && files) {
       getBase64(file, (result: any) => {
         result = result.substring(result.indexOf(',') + 1)
-        handleSubmit(result)
+        const uploadedFile = JSON.stringify({ 'fileName': files[0].name, "imageData": result })
+        handleSubmit(uploadedFile)
       });
     }
     if (files) {
