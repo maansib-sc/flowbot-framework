@@ -36,6 +36,7 @@ import AutoCompleteInput from '@/components/ui/AutoCompleteInput/AutoCompleteInp
 import Table from '@/components/ui/Table/Table';
 import CostCards from '@/components/ui/CostCards/CostCards';
 import InstallationInfo from '@/components/ui/InstallationInfo/InstallationInfo';
+import Invoice from '@/components/ui/Invoice/Invoice';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -641,6 +642,18 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'checkboxButton' ? (
                                       <CheckboxGroup
+                                        values={""}
+                                        options={message?.step?.options}
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'invoice' ? (
+                                      <Invoice
                                         values={""}
                                         options={message?.step?.options}
                                         onChange={(value) => {

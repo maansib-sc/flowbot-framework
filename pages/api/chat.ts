@@ -14,7 +14,7 @@ export default async function handler(
 ) {
     const { question, history, enablegptfallback, session } = req.body;
     const { pinecone_name_space } = req.query;
-    console.log('question', question, session);
+    // console.log('question', question, session);
 
     await dbConnect()
 
