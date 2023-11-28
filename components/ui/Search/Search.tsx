@@ -16,6 +16,7 @@ const SearchInput: React.FC<TextInputProps> = ({ width, disabled, containerwidth
     };
     const containerStyle = {
         width: containerwidth || 'auto', // Use the provided width or default to 100%
+        display: 'flex',
     };
     const [showButton, setShowButton] = useState<Boolean>(true)
     const [value, setValue] = useState("");
