@@ -2,6 +2,7 @@ import Button from '@/components/ui/Buttons/Button';
 import styles from './Signup.module.css';
 import ChatIcon from '@/assets/svgs/ChatIcon';
 import { useEffect, useState, useRef } from 'react';
+import rehypeRaw from 'rehype-raw';
 import Signupform from '@/subcomponents/SignupForm/Signupform';
 import RegisterationGuy from '@/assets/svgs/RegisterationGuy';
 import { Message } from '@/types/chat';
@@ -498,7 +499,9 @@ const Signup = () => {
                                 >
                                   <div style={{ display: "flex" }}>
                                     <div style={message?.type !== "apiMessage" && editableIndex === index ? { "border": "2px solid black", "padding": "2.5px" } : null} contentEditable={message?.type !== "apiMessage" && editableIndex === index ? true : false} >
-                                      {message.message}
+                                      <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                                        {message.message}
+                                      </ReactMarkdown>
 
                                     </div>
                                     {message?.error && <div style={{ color: "red", paddingLeft: "4px", fontWeight: "bold" }}>
