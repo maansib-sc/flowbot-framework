@@ -28,7 +28,7 @@ spec:
                 name: $APP-env
           volumeMounts:
             - name: configuration-volume
-              mountPath: /apps/configuration
+              mountPath: /app/configuration
       volumes:
         - name: configuration-volume
           hostPath:
