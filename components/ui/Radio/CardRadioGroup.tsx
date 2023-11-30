@@ -46,17 +46,20 @@ const CardRadioGroup = ({
   options,
   value,
   onChange,
+  disabled,
 }: {
   options: { label: string; value: string, icon?: React.FC; }[];
   value: string;
   onChange: (value: string) => void;
+  disabled: boolean
 }) => {
 
   const [selectedValue, setSelectedValue] = useState<string | null>(value || null)
 
-  const changeSelectedValue = (value: string) => {
+  const changeSelectedValue = (data: string) => {
+    const { label, value } = JSON.parse(data);
     setSelectedValue(value)
-    onChange(value)
+    onChange(data)
   }
 
   return (
@@ -75,9 +78,10 @@ const CardRadioGroup = ({
           <input
             type="radio"
             value={option.value}
+            disabled={disabled}
             checked={selectedValue === option.value}
             onChange={() => {
-              changeSelectedValue(option.value)
+              changeSelectedValue(JSON.stringify(option))
             }}
             className={styles.cardradioInput}
           />
