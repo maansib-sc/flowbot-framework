@@ -53,7 +53,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit 
           {fileArray.map((file, index) => (
             <li key={index} className={styles.fileUploadComponent}>
               <FileUploderIcon />
-              <span>
+              <span className='pl-2'>
                 {file.name}
               </span>
               <small>

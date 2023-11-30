@@ -18,7 +18,11 @@ const SelectInputField: React.FC<SelectInputProps> = ({ options, onChange, value
   const changeSelectedValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = String(event.target.value) || ""
     setSelectedValue(value); // Set the selected value to the value of the selected option
-    onChange(value)
+    const selectedOptionIndex: number = options.findIndex((option) => option.value === value);
+
+    if (selectedOptionIndex) {
+      onChange(JSON.stringify(options[selectedOptionIndex]))
+    }
   };
 
   return (

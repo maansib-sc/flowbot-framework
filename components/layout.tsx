@@ -39,7 +39,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className={styles.buttons}>
           <Button variant="secondary">+ Post a Project</Button>
           <Button variant="ghost">Login</Button>
-          <Button>+ Professional Registeration</Button>
+          <Button>Professional Registration</Button>
         </div>
       </header>}
       <div className={styles['main-content']}>{children}</div>

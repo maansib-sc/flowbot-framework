@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Summary.module.css';
 import Button from '../Buttons/Button';
+import FileUploderIcon from '@/assets/svgs/icons/FileUploderIcon';
 
 interface IDataItem {
   label: string;
   value: string;
+  inputType: string;
 }
 
 interface IItem {
@@ -19,6 +21,7 @@ interface IProps {
       category_id: string;
       key: string;
       answer: string;
+      inputType: string;
     }[];
   };
   onChange: () => void;
@@ -29,12 +32,13 @@ interface InputItem {
   category_id?: string;
   category_description?: string;
   answer: string;
+  inputType: string;
 }
 
 interface OutputItem {
   header: string;
   step: string;
-  data: { label: string; value: string }[];
+  data: { label: string; value: string, inputType: string; }[];
 }
 
 const Summary = (props: IProps) => {
@@ -53,12 +57,12 @@ const Summary = (props: IProps) => {
             const existingCategory = output.find((outputItem) => outputItem.header === item.category_description);
 
             if (existingCategory) {
-              existingCategory.data.push({ label: item.key, value: item.answer });
+              existingCategory.data.push({ label: item.key, value: item.answer, inputType: item.inputType });
             } else {
               const newCategory: OutputItem = {
                 header: item.category_description || 'Uncategorized',
                 step: item.category_id,
-                data: [{ label: item.key, value: item.answer }],
+                data: [{ label: item.key, value: item.answer, inputType: item.inputType }],
               };
               output.push(newCategory);
             }
@@ -67,7 +71,7 @@ const Summary = (props: IProps) => {
           } else {
             // If category_id is not present, push the item to the current step's data
             if (currentStep) {
-              currentStep.data.push({ label: item.key, value: item.answer });
+              currentStep.data.push({ label: item.key, value: item.answer, inputType: item.inputType });
             }
           }
         });
@@ -94,7 +98,29 @@ const Summary = (props: IProps) => {
               {item.data?.map((dataItem, ind) => (
                 <div className={styles.item} key={ind}>
                   <h3 className={styles.h3}>{dataItem.label}</h3>
-                  <span className={styles.span}>{dataItem.value}</span>
+                  {dataItem.inputType === "password" ?
+                    <span className={styles.span}>{"*".repeat(dataItem.value.length)}</span>
+                    :
+                    dataItem.inputType === "multiselect" || dataItem.inputType === "checkboxButton" ?
+                      (<div style={{ display: 'flex', columnGap: "8px", paddingTop: "4px" }}>
+                        {
+                          dataItem.value.split(",").map((item) =>
+                            <span className={styles.span} style={{ padding: "4px 8px", backgroundColor: "#F1F4F9", borderRadius: "6px", color: "#727A8B" }}>{item}</span>
+                          )
+                        }
+                      </div>)
+                      :
+                      dataItem.inputType === "select" ?
+                        <span className={styles.span}>{JSON.parse(dataItem.value).label}</span>
+                        :
+                        dataItem.inputType === "fileUploader" ?
+                          <div className='flex gap-x-1 pt-1'>
+                            <FileUploderIcon />
+                            <span className={styles.span}>{dataItem.value}</span>
+                          </div>
+                          :
+                          <span className={styles.span}>{dataItem.value}</span>
+                  }
                 </div>
               ))}
             </div>

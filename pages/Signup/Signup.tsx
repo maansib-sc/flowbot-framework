@@ -243,10 +243,10 @@ const Signup = () => {
   const disableUserInput = () => {
     if (messages.length > 0 && messages[messages.length - 1]?.step) {
       let message = messages[messages.length - 1]
-      if (message?.step?.inputType && message?.step?.inputType === "text" || message?.step?.inputType === "password" || message?.step?.inputType === "number") {
-        setDisableInput(false)
-      } else {
+      if (message?.step?.inputType && message?.step?.inputDisabled) {
         setDisableInput(true)
+      } else {
+        setDisableInput(false)
       }
     }
   }
@@ -787,7 +787,7 @@ const Signup = () => {
                 <div className={homestyles?.cloudform}>
                   <form onSubmit={(e) => {
                     e.preventDefault();
-                    handleSubmit()
+                    handleSubmit();
                   }}>
                     <textarea
                       disabled={disableInput || loading}
