@@ -17,7 +17,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit 
     if (file && files) {
       getBase64(file, (result: any) => {
         result = result.substring(result.indexOf(',') + 1)
-        const uploadedFile = JSON.stringify({ 'fileName': files[0].name, "imageData": result })
+        const uploadedFile = JSON.stringify({ 'fileName': files[0].name, "imageData": result, "fileType": files[0].type })
         handleSubmit(uploadedFile)
       });
     }
@@ -71,6 +71,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ handleSubmit 
     <div>
       {!selectedFiles && <input
         type="file"
+        accept=".pdf, .png, .jpeg, .jpg"
         multiple // Enable multi-select
         onChange={handleFileChange}
       />}
