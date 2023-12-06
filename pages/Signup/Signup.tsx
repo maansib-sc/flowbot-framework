@@ -614,6 +614,7 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'columnCards' ? (
                                       <ColumnCards
+                                        disabled={index !== messages.length - 1 ? true : false}
                                         onChange={(value) => {
                                           if (index === messages.length - 1) {
                                             handleSubmit(value);

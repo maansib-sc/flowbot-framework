@@ -4,9 +4,11 @@ import styles from '@/configuration/CSS/Index.module.css';
 const ColumnCards = ({
   options,
   onChange,
+  disabled
 }: {
   options: { label: string; value: string, header?: string; }[];
   onChange: (value: string) => void;
+  disabled: boolean;
 }) => {
 
   const [selectedValue, setSelectedValue] = useState(-1)
@@ -23,10 +25,11 @@ const ColumnCards = ({
         >
           <input
             type="radio"
+            disabled={disabled}
             value={option.value}
             checked={selectedValue === index}
             onChange={() => {
-              onChange(option.header);
+              onChange(JSON.stringify(option));
               changeSelectedValue(index)
             }} className={styles.colCardsInput}
           />
