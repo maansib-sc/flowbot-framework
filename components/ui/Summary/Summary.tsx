@@ -115,7 +115,7 @@ const Summary = (props: IProps) => {
                         }
                       </div>)
                       :
-                      dataItem.inputType === "select" || dataItem.inputType === "cardRadio" ?
+                      dataItem.inputType === "select" || dataItem.inputType === "cardRadio" || dataItem.inputType === "radioButton" ?
                         <span className={styles.span}>{JSON.parse(dataItem.value).label}</span>
                         :
                         dataItem.inputType === "fileUploader" ?

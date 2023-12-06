@@ -13,18 +13,18 @@ const RadioGroup = ({
   onChange: (value: string) => void;
 }) => {
 
-  const [selectedValue, setSelectedValue] = useState<string | null>(value || null)
+  const [selectedValue, setSelectedValue] = useState<{ label: string; value: string } | null>(null)
 
-  const changeSelectedValue = (value: string) => {
+  const changeSelectedValue = (value: { label: string; value: string }) => {
     setSelectedValue(value)
-    onChange(value)
+    onChange(JSON.stringify(value))
   }
   return (
     <div className={styles.radioGroup}> {/* Apply a class from the imported CSS module */}
       {options.map((option, index) => (
         <label
           key={option.value}
-          className={`${styles.radioLabel} ${selectedValue === option.value ? styles.selected : ''}`}
+          className={`${styles.radioLabel} ${selectedValue?.value === option.value ? styles.selected : ''}`}
         >
           <span style={{width: "180px"}}>
             {option.label}
@@ -33,9 +33,9 @@ const RadioGroup = ({
             type="radio"
             value={option.value}
             disabled={disabled}
-            checked={selectedValue === option.value}
+            checked={selectedValue?.value === option.value}
             onChange={() => {
-              changeSelectedValue(option.value)
+              changeSelectedValue(option)
             }}
             className={styles.radioInput}
           />
