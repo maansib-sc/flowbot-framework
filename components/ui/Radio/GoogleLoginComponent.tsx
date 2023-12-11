@@ -55,7 +55,7 @@ const GoogleLoginComponent = ({
       } else {
         setOpenPopup(true)
         setFirstRender(false)
-        popupCenter(`https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?prompt=select_account&access_type=offline&response_type=code&client_id=389664003125-h99no2v9bjfj9bfpq49nvtlagujm59nt.apps.googleusercontent.com&scope=profile%20email&redirect_uri=${process.env.NEXT_PUBLIC_NEXTAUTH_CALLBACK_URL}&service=lso&o2v=1&theme=glif&flowName=GeneralOAuthFlow`, "Sample Sign In")
+        popupCenter(`https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?prompt=select_account&access_type=offline&response_type=code&client_id=389664003125-h99no2v9bjfj9bfpq49nvtlagujm59nt.apps.googleusercontent.com&scope=profile%20email&redirect_uri=${process.env.NEXT_PUBLIC_NEXTAUTH_CALLBACK_ENCODED_URL}&service=lso&o2v=1&theme=glif&flowName=GeneralOAuthFlow`, "Sample Sign In")
       }
       setSelectedValue(item)
     } else {
