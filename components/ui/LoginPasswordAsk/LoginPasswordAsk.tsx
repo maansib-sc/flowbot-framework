@@ -52,7 +52,7 @@ const LoginPasswordAsk = ({
     <div className={styles.LoginPasswordAsk}>
       <div className={styles.container}>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <TextInput disabled={disabled} label='Login' value={email} onChange={(e) => { setEmail(e.target.value); setEmailError(validateEmail(e.target.value)) }} />
+          <TextInput disabled={disabled} label='Email' value={email} onChange={(e) => { setEmail(e.target.value); setEmailError(validateEmail(e.target.value)) }} />
           {emailError && <p style={{ color: "red", width: "200px" }}>{emailError}</p>}
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>

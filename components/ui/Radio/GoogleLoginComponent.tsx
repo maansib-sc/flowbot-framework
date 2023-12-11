@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styles from '@/configuration/CSS/Index.module.css';
-import { useSession, signIn, signOut } from "next-auth/react";
 
 const GoogleLoginComponent = ({
   handleSubmit,
@@ -20,7 +19,6 @@ const GoogleLoginComponent = ({
   const [openPopup, setOpenPopup] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { data: session, status } = useSession();
 
   const popupCenter = (url: string, title: string) => {
     const dualScreenLeft = window.screenLeft ?? window.screenX;
@@ -51,13 +49,13 @@ const GoogleLoginComponent = ({
 
   const changeSelectedValue = (item: string) => {
     if (item === "Yes") {
-      if (status === "authenticated" && !firstRender) {
+      if (!firstRender) {
         // console.log("already authenticated and not first render")
         // handleSubmit(session.user.email || "")
       } else {
         setOpenPopup(true)
         setFirstRender(false)
-        popupCenter("/google-signin", "Sample Sign In")
+        popupCenter("https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?prompt=select_account&access_type=offline&response_type=code&client_id=389664003125-h99no2v9bjfj9bfpq49nvtlagujm59nt.apps.googleusercontent.com&scope=profile%20email&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fcallback&service=lso&o2v=1&theme=glif&flowName=GeneralOAuthFlow", "Sample Sign In")
       }
       setSelectedValue(item)
     } else {
@@ -67,15 +65,29 @@ const GoogleLoginComponent = ({
   }
 
   useEffect(() => {
+    localStorage.removeItem('email');
+    const getDataFromLocalStorage = () => {
+      const email = localStorage.getItem('email');
+      if (email) {
+        handleSubmit(email)
+      }
+    };
 
-    if (status === "authenticated" && openPopup) {
-      handleSubmit(session.user.email || "")
-    }
-  }, [status, openPopup])
+    getDataFromLocalStorage();
 
-  console.log(status)
+    const handleStorageChange = (event) => {
+      if (event.key === 'email') {
+        getDataFromLocalStorage();
+      }
+    };
 
-  console.log(selectedValue)
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+
   return (
     <div className={styles.radioGroup}> {/* Apply a class from the imported CSS module */}
       {/* {options.map((option, index) => ( */}
@@ -95,9 +107,7 @@ const GoogleLoginComponent = ({
           className={styles.radioInput}
         />
       </label>
-      {/* {selectedValue == 1 && 
-        <GoogleSSO handleSubmit={handleSubmit}/>
-        } */}
+      
       {<label
         key={"no"}
         className={`${styles.radioLabel} ${selectedValue === "No" ? styles.selected : ''}`}
