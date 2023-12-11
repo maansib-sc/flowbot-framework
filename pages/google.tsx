@@ -7,8 +7,12 @@ const SignInPage = () => {
 
     useEffect(() => {
         if (code) {
-            localStorage.setItem('email', code);
-            window.close()
+            try {
+                localStorage.setItem('email', code);
+                window.close()
+              } catch (error) {
+                console.log('Error setting localStorage:', error);
+              }
         }
     }, [code]);
 
