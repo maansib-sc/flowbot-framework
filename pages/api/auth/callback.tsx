@@ -22,15 +22,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const response = await axios.post(tokenEndpoint, null, { params: requestData });
         // console.log("const ==>", response.data)
 
-        const userInfoResponse = await axios.get(userinfoEndpoint, {
-            headers: {
-              Authorization: `Bearer ${response.data.access_token}`,
-            },
-          });
+        // const userInfoResponse = await axios.get(userinfoEndpoint, {
+        //     headers: {
+        //       Authorization: `Bearer ${response.data.access_token}`,
+        //     },
+        //   });
         
-          const userEmail = userInfoResponse.data.email;
+        //   const userEmail = userInfoResponse.data.email;
         
-        return res.redirect(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/google?code=${userEmail}`);
+        return res.redirect(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/google?code=${response.data.access_token}`);
         
     } catch (error: any) {
         console.log("authentication Error ==>", error)

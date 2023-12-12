@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from '@/configuration/CSS/Index.module.css';
+import axios from 'axios';
 
 const GoogleLoginComponent = ({
   handleSubmit,
@@ -65,18 +66,28 @@ const GoogleLoginComponent = ({
   }
 
   useEffect(() => {
-    localStorage.removeItem('email');
-    const getDataFromLocalStorage = () => {
-      const email = localStorage.getItem('email');
-      if (email) {
-        handleSubmit(email)
+    localStorage.removeItem('token');
+    const getDataFromLocalStorage = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const userinfoEndpoint = 'https://www.googleapis.com/oauth2/v3/userinfo';
+        const userInfoResponse = await axios.get(userinfoEndpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+          
+        const userEmail = userInfoResponse.data.email;
+        if (userEmail) {
+          handleSubmit(JSON.stringify({"email": userEmail, "access_token": token}))
+        }
       }
     };
 
     getDataFromLocalStorage();
 
     const handleStorageChange = (event) => {
-      if (event.key === 'email') {
+      if (event.key === 'token') {
         getDataFromLocalStorage();
       }
     };

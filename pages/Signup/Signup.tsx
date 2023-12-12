@@ -323,7 +323,7 @@ const Signup = () => {
               ...state.messages,
               {
                 type: 'userMessage',
-                message: question,
+                message: data.currentStep.answer || question,
                 src: "test",
                 id: Math.random()
               },
