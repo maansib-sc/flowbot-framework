@@ -55,7 +55,7 @@ const Table: React.FC<TableProps> = ({ products, onChange }) => {
                 checked={selectedRow === product.id}
                 onChange={() => {
                   setSelectedRow(product.id)
-                  onChange(`${product.brand}/${product.model}`)
+                  onChange(JSON.stringify(product))
                 }}
               />
             </td>

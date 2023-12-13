@@ -7,15 +7,15 @@ const RadioGroup = ({
   disabled,
   onChange,
 }: {
-  options: { label: string; value: string }[];
+  options: { label: string; value: string, data?: any }[];
   value: string;
   disabled: boolean;
   onChange: (value: string) => void;
 }) => {
 
-  const [selectedValue, setSelectedValue] = useState<{ label: string; value: string } | null>(null)
+  const [selectedValue, setSelectedValue] = useState<{ label: string; value: string, data?: any } | null>(null)
 
-  const changeSelectedValue = (value: { label: string; value: string }) => {
+  const changeSelectedValue = (value: { label: string; value: string, data?: any }) => {
     setSelectedValue(value)
     onChange(JSON.stringify(value))
   }
