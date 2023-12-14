@@ -41,6 +41,7 @@ import Invoice from '@/components/ui/Invoice/Invoice';
 import TextInput from '@/components/ui/Input/TextInput';
 import SearchInput from '@/components/ui/Search/Search';
 import StripeComponent from '@/components/ui/StripeComponent/StripeComponent';
+import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
 
 const cityOptions = [
   { value: 'new-york', label: 'New York' },
@@ -792,6 +793,16 @@ const Signup = () => {
                                     {message?.step?.inputType ===
                                       'Stripe' ? (
                                       <StripeComponent
+                                        onClose={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                    {message?.step?.inputType ===
+                                      'dateTimePicker' ? (
+                                      <DateTimePicker
                                         onClose={(value) => {
                                           if (index === messages.length - 1) {
                                             handleSubmit(value);
