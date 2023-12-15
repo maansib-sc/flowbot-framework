@@ -101,6 +101,8 @@
     padding: 4px 8px;
     border: 1px solid #FDF0E7;
     border-radius: 4px;
+    text-align: center;
+    right: 20px;
 }
 
 .editContainer > span {
