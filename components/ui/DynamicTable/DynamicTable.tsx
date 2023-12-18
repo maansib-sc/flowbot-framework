@@ -6,6 +6,7 @@ interface TableProps<T> {
     onChange: (value: string) => void;
     editable?: boolean;
     editableTitle?: string;
+    total?: {label: string, value: number};
   }
   
   interface DataV<T> {
@@ -14,7 +15,7 @@ interface TableProps<T> {
     data: Array<T>;
   }
 
-const DynamicTable: React.FC<TableProps<string[]>> = ({ data, onChange, editable=false, editableTitle }) => {
+const DynamicTable: React.FC<TableProps<string[]>> = ({ data, onChange, editable=false, editableTitle, total }) => {
     const [selectedRow, setSelectedRow] = useState<number | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [sortedColumn, setSortedColumn] = useState<string>('brand');
@@ -124,26 +125,12 @@ const DynamicTable: React.FC<TableProps<string[]>> = ({ data, onChange, editable
                     </tr>
                 ))}
             </tbody>
-            {/* <tfoot>
-                <tr>
-                    {data?.name?.map((item, index) => {
-                        if (data?.name?.length - 1 == index) {
-                            return (<>
-                                <td style={{ width: item.width }} className={styles.price}>$1998.345</td>
-                            </>)
-                        } else if (data?.name?.length - 2 == index) {
-                            return <td style={{ width: item.width, textAlign: 'center' }} className={styles.total}>Total</td>
-                        }
-                        else {
-                            return <td style={{ width: item.width }}></td>
-                        }
-                    }
-                    )}
-                </tr>
-
-            </tfoot> */}
-
         </table>
+
+        {total && <div className={styles.tableFooter}>
+            <span className={styles.totalLabel}>{total.label}</span>
+            <span className={styles.price} style={{marginRight: "14px"}}>${total.value}</span>
+        </div>}
         {editable && <div className='flex gap-2 align-middle mt-4 cursor-pointer w-fit' onClick={addRow}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">
                 <path d="M9.16667 17.5885C9.16667 18.0488 9.53975 18.4219 10 18.4219C10.4602 18.4219 10.8333 18.0488 10.8333 17.5885V11.7552H16.6667C17.1269 11.7552 17.5 11.3821 17.5 10.9219C17.5 10.4616 17.1269 10.0885 16.6667 10.0885H10.8333V4.25521C10.8333 3.79497 10.4602 3.42188 10 3.42188C9.53975 3.42188 9.16667 3.79497 9.16667 4.25521V10.0885H3.33333C2.8731 10.0885 2.5 10.4616 2.5 10.9219C2.5 11.3821 2.8731 11.7552 3.33333 11.7552H9.16667V17.5885Z" fill="#FF6900"/>

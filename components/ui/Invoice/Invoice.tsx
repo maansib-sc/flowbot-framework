@@ -96,7 +96,7 @@ const Invoice = ({
                                             <>
                                                 <h6 className='pt-8' style={{ color: "var(--grey-100, #727A8B)" }}>{data?.name}</h6>
                                                 <div className='mt-4'>
-                                                    <DynamicTable data={data?.data} onChange={(value) => null} />
+                                                    <DynamicTable data={data?.data} total={data.total} onChange={(value) => null} />
                                                 </div>
                                             </>
                                         )
