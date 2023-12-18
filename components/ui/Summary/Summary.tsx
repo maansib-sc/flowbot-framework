@@ -127,10 +127,12 @@ const Summary = (props: IProps) => {
                             <span className={styles.span}>{dataItem.value}</span>
                           </div>
                           :
-                          <span className={styles.span}>{dataItem.value}</span>
+                          dataItem.inputType !== "markdown" ?
+                          <span className={styles.span}>{dataItem.value}</span>:
+                          null
                   }
                 </div>
-                  {dataItem.inputType === "summary" && <div>
+                  {dataItem.inputType === "markdown" && <div>
                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                       {dataItem.value}
                     </ReactMarkdown>

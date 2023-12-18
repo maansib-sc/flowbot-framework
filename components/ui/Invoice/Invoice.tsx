@@ -14,15 +14,16 @@ const Invoice = ({
     onChange: (value: string) => void;
 }) => {
 
-    const [selectedValues, setSelectedValue] = useState<string[]>([])
+    const [selectedValues, setSelectedValue] = useState<[{label: string; value: string; data: any, table: []}] | []>([])
     const [showButton, setShowButton] = useState(true)
     const [show, setShow] = useState<null | number>(null)
-    const handleCheckboxChange = (value: string) => {
-        if (selectedValues.includes(value)) {
-            setSelectedValue(selectedValues.filter((val) => val !== value));
-        } else {
-            setSelectedValue([...selectedValues, value]);
-        }
+    const handleCheckboxChange = (value: { label: string; value: string, data: any, table: [] }) => {
+        if (selectedValues.findIndex(item => item.value === value.value) >= 0) {
+                setSelectedValue(selectedValues.filter((val) => val.value !== value.value));
+            } else {
+                setSelectedValue([...selectedValues, value]);
+            }
+        
     };
 
     const opendetail = (index: number) => {
@@ -46,8 +47,8 @@ const Invoice = ({
                             <input
                                 type="checkbox"
                                 value={option.value}
-                                checked={selectedValues.includes(option.value)}
-                                onChange={() => handleCheckboxChange(option.value)}
+                                checked={selectedValues.some(item => item.value === option.value)}
+                                onChange={() => handleCheckboxChange(option)}
                                 className={styles.checkboxInput}
                             />
                             <span>{option.label}</span>
@@ -129,7 +130,9 @@ const Invoice = ({
                 ))}
             </div >
             {showButton && <div className='mt-4'>
-                <Button onClick={() => { onChange(selectedValues.toString()); setShowButton(false) }}>Confirm</Button>
+                <Button onClick={() => { onChange(JSON.stringify(selectedValues)); setShowButton(false) }}
+                    disabled={selectedValues.length === 0}
+                >Confirm</Button>
             </div >
             }
         </>
