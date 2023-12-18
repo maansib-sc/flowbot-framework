@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import styles from './Summary.module.css';
 import Button from '../Buttons/Button';
 import FileUploderIcon from '@/assets/svgs/icons/FileUploderIcon';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 
 interface IDataItem {
   label: string;
@@ -101,6 +103,7 @@ const Summary = (props: IProps) => {
 
             <div className={styles.mapContainer}>
               {item.data?.map((dataItem, ind) => (
+                <>
                 <div className={styles.item} key={ind}>
                   <h3 className={styles.h3}>{dataItem.label}</h3>
                   {dataItem.inputType === "password" ?
@@ -127,6 +130,13 @@ const Summary = (props: IProps) => {
                           <span className={styles.span}>{dataItem.value}</span>
                   }
                 </div>
+                  {dataItem.inputType === "summary" && <div>
+                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                      {dataItem.value}
+                    </ReactMarkdown>
+                  </div>
+                  }
+                </>
               ))}
             </div>
           </div>
