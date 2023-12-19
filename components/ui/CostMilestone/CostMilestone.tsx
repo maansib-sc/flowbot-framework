@@ -2,8 +2,7 @@ import CostCards from "../CostCards/CostCards";
 import DynamicTable from "../DynamicTable/DynamicTable";
 
 
-
-function CostMilestone ({onClose, options}: {onClose: () => void, options: any}) {
+function CostMilestone ({onClose, options, disabled = false}: {onClose: (value: string) => void, options: any, disabled?: boolean}) {
     return (
         <div>
             <CostCards
@@ -29,7 +28,9 @@ function CostMilestone ({onClose, options}: {onClose: () => void, options: any})
                                 <DynamicTable 
                                     data={data?.data} 
                                     options={data.options}
-                                    onChange={(value) => null} />
+                                    disabled={disabled}
+                                    showconfirmButton={true}
+                                    onChange={(value) => onClose(value)} />
                             </div>
                         </>
                     )

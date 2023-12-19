@@ -8,10 +8,12 @@ const Invoice = ({
     options,
     values,
     onChange,
+    disabled
 }: {
     options: { label: string; value: string, data: any, table: [] }[];
     values: any;
     onChange: (value: string) => void;
+    disabled?: boolean
 }) => {
 
     const [selectedValues, setSelectedValue] = useState<[{label: string; value: string; data: any, table: []}] | []>([])
@@ -94,7 +96,7 @@ const Invoice = ({
                                     }
                                 </div>
                                 {
-                                    option?.table?.map((data, index) => <DynamicTableContainer data={data}/>)
+                                    option?.table?.map((data, index) => <DynamicTableContainer data={data} disabled={disabled}/>)
                                         
                                         
                                 }
@@ -137,15 +139,17 @@ const Invoice = ({
 
 const DynamicTableContainer = ({
     data,
+    disabled
 }: {
-    data: []
+    data: [];
+    disabled?: boolean
 }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
         <>
             <h6 className='pt-8' style={{ color: "var(--grey-100, #727A8B)" }}>{data?.name}</h6>
-            {data?.options?.searchBar && <div className={styles.searchContainer}>
+            {data?.options?.searchBar && !disabled &&<div className={styles.searchContainer}>
                 <input
                 placeholder={data.options.searchPlaceHolder}
                     onChange={(event) => setSearchQuery(event.target.value)}
@@ -161,6 +165,7 @@ const DynamicTableContainer = ({
                     data={data?.data} 
                     total={data.total}
                     options={data.options}
+                    disabled={disabled}
                     onChange={(value) => null} />
             </div>
         </>

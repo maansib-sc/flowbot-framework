@@ -706,6 +706,7 @@ const Signup = () => {
                                       <Invoice
                                         options={message?.step?.options}
                                         values={message?.step?.options}
+                                        disabled={index !== messages.length - 1 ? true : false}
                                         onChange={(value) => {
                                           if (index === messages.length - 1) {
                                             handleSubmit(value);
@@ -820,9 +821,10 @@ const Signup = () => {
                                       'costMilestone' ? (
                                       <CostMilestone
                                         options={message.step.options}
-                                        onClose={() => {
+                                        disabled={index !== messages.length - 1 ? true : false}
+                                        onClose={(value: string) => {
                                           if (index === messages.length - 1) {
-                                            handleSubmit("");
+                                            handleSubmit(value);
                                           }
                                         }}
                                       />
