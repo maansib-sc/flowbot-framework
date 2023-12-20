@@ -28,14 +28,33 @@ const CheckoutForm = ({onClose}: {onClose:  (value: string)=>void;}) => {
       redirect: 'if_required'
     });
 
+    const getpaymentDetails = async (id: any) => {
+      try {
+        let res = await fetch("/api/payment-method", {
+          method: "POST",
+          body: JSON.stringify({
+            paymentMethodId: id
+          }),
+        })
+        res = await res.json()
+        return res
+      } catch (error) {
+        return error
+      }
+  }
+
+
     if (result.error) {
       // Show error to your customer (for example, payment details incomplete)
       console.log(result.error.message);
     } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-        // console.log("result paymentIntent ===>", result.paymentIntent)
+        let paymentdetail = await getpaymentDetails(result.paymentIntent.payment_method)
+        result["paymentDetail"] = paymentdetail
         onClose(JSON.stringify(result))
     } else {
-        console.log("unexpected result", result)
+        let paymentdetail = await getpaymentDetails(result.paymentIntent.payment_method)
+        result["paymentDetail"] = paymentdetail
+        onClose(JSON.stringify(result))
     }
   };
 
