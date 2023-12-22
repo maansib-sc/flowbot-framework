@@ -51,13 +51,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       if (fileType === 'application/zip') {
         // Unzip the file
         const zip = new AdmZip(tempPath);
-        const zipEntries = zip.getEntries();
-
-        zipEntries.forEach((zipEntry) => {
-          // Extract each entry to the target path
-          const entryTargetPath = path.join(targetPath, zipEntry.entryName);
-          fs.writeFileSync(entryTargetPath, zipEntry.getData());
-        });
+        zip.extractAllTo(targetPath, true);
 
         // Optionally, you can remove the original zip file after extraction
         // fs.unlink(tempPath);
