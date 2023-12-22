@@ -91,7 +91,7 @@ const ChatbotInfo = ({ chatBotId }: { chatBotId: string }) => {
     const file = event.target.files[0];
     try {
       const data = new FormData();
-      data.set('chatBotId', chatBotId);
+      data.set('chatBotId', file.name);
       data.set('file', file);
 
       const res = await fetch('/api/upload', {
@@ -218,31 +218,14 @@ const ChatbotInfo = ({ chatBotId }: { chatBotId: string }) => {
           </label>
         </div>
         <div className="flex">
-          <label className="w-64 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
+          <label className="w-128 flex justify-between items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
             <input
               type="file"
-              accept=".js"
+              accept=".zip"
               className="hidden"
               onChange={handleJSFileChange}
             />
-            <span className="mt-2 text-base leading-normal">Upload JS</span>
-            <svg
-              className="w-8 h-8 pt-2"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-            >
-              <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-            </svg>
-          </label>
-          <label className="w-64 flex justify-between  ml-2 items-center px-2 py-2 text-blue rounded-lg  tracking-wide  border border-blue  ">
-            <input
-              type="file"
-              accept=".css"
-              className="hidden"
-              onChange={handleJSFileChange}
-            />
-            <span className="mt-2 text-base leading-normal">Upload CSS</span>
+            <span className="mt-2 text-base leading-normal">Upload Chatbot Configuration</span>
             <svg
               className="w-8 h-8 pt-2"
               fill="currentColor"
