@@ -41,9 +41,9 @@ const Address: React.FC<AddressProps> = ({
           onChange={() => {}}
           label="City"
         />
-        <TextInput label="Zip Code" />
+        <TextInput label="Zip Code" value='' onChange={()=>{}} />
       </div>
-      <TextInput label="Street Address" width="100%" containerwidth="100%" />
+      <TextInput label="Street Address" width="100%" containerwidth="100%" value='' onChange={()=>{}} />
       <div>
         <Button onClick={onSave}>Save</Button>
       </div>

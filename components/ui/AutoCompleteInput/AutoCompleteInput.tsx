@@ -139,6 +139,7 @@ const AutoCompleteInput: React.FC<SelectInputProps> = ({
                 items?.map((val, index) => {
                   return (
                     <div
+                      key={index}
                       style={{
                         padding: '4px 10px 4px 10px',
                         cursor: 'pointer',

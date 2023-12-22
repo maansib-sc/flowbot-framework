@@ -14,7 +14,7 @@ export const config = {
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // parse form with a Promise wrapper
-    const data = await new Promise((resolve, reject) => {
+    const data = await new Promise<any>((resolve, reject) => {
       const form = new IncomingForm();
 
       form.parse(req, (err, fields, files) => {

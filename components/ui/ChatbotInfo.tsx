@@ -14,7 +14,7 @@ import { Oval } from 'react-loader-spinner';
 import ThemeContext from '@/contexts/ThemeContext';
 
 const ChatbotInfo = ({ chatBotId }: { chatBotId: string }) => {
-  const { styles } = useContext(ThemeContext);
+  const { styles } = useContext(ThemeContext) || { styles: {} };
   const [trainingInProgress, setTrainingInProgress] = useState(false);
   const [showLoader, setShowLoader] = useState<boolean>(false);
   const [selectedFileType, setSelectedFileType] = useState<string>('PDF');
@@ -225,7 +225,9 @@ const ChatbotInfo = ({ chatBotId }: { chatBotId: string }) => {
               className="hidden"
               onChange={handleJSFileChange}
             />
-            <span className="mt-2 text-base leading-normal">Upload Chatbot Configuration</span>
+            <span className="mt-2 text-base leading-normal">
+              Upload Chatbot Configuration
+            </span>
             <svg
               className="w-8 h-8 pt-2"
               fill="currentColor"
@@ -283,6 +285,7 @@ const ChatbotInfo = ({ chatBotId }: { chatBotId: string }) => {
               {pdfList.map((item, index) => {
                 return (
                   <FileList
+                    key={index}
                     selectedFileType={selectedFileType}
                     filename={item.name || item.training_id}
                     index={index}

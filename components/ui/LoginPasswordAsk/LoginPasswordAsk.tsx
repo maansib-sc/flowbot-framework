@@ -5,10 +5,11 @@ import styles from "./LoginPasswordAsk.module.css"
 import Button from '../Buttons/Button'
 
 const LoginPasswordAsk = ({
-
+  options,
   disabled,
   onSave,
 }: {
+  options: any,
   disabled: boolean;
   onSave: (value: string) => void;
 }) => {

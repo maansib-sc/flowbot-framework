@@ -3,7 +3,7 @@ import React, { useState, useContext } from 'react';
 import ThemeContext from '@/contexts/ThemeContext';
 
 interface FileUploadComponentProps {
-  handleSubmit: (value: string, files: File[]) => void;
+  handleSubmit: (value: string, files: FileList) => void;
 }
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
@@ -14,9 +14,9 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    const file = e.target.files[0];
 
-    if (file && files) {
+    if (files && files.length > 0) {
+      const file = files[0];
       getBase64(file, (result: any) => {
         result = result.substring(result.indexOf(',') + 1);
         const uploadedFile = JSON.stringify({

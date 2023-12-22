@@ -11,49 +11,76 @@ const fs = require('fs');
 const FormData = require('form-data');
 import path from 'path';
 
-export const config = { api: { bodyParser: { sizeLimit: '100mb' } } }
+export const config = { api: { bodyParser: { sizeLimit: '100mb' } } };
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse,
+  req: NextApiRequest,
+  res: NextApiResponse,
 ) {
-    const { question, history, enablegptfallback, session } = req.body;
-    const { pinecone_name_space } = req.query;
-    // console.log('question', question, session);
+  const { question, history, enablegptfallback, session } = req.body;
+  const { pinecone_name_space } = req.query;
+  const chatBotId = String(pinecone_name_space || 'default');
+  // console.log('question', question, session);
 
-    await dbConnect()
+  await dbConnect();
 
-    //only accept post requests
-    if (req.method !== 'POST') {
-        res.status(405).json({ error: 'Method not allowed' });
-        return;
-    }
-    // OpenAI recommends replacing newlines with spaces for best results
-    const sanitizedQuestion = question;
-    // const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
+  //only accept post requests
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+  // OpenAI recommends replacing newlines with spaces for best results
+  const sanitizedQuestion = question;
+  // const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
+  try {
+    //create chain
+    const chain = new makeChain(chatBotId);
 
-    try {
-        //create chain
-        const chain = new makeChain(pinecone_name_space);
+    const user = await upsertUser(chatBotId, session);
 
-        const user = await upsertUser(pinecone_name_space, session)
-
-        import(`@/configuration/${pinecone_name_space}/server`).then(async (module) => {
-            const response = await module.start({ chain, axiosInstance: axios, user, BigQuery, DocumentProcessorServiceClient, GoogleAuth, fs, path, FormData }, sanitizedQuestion)
-            if (response) {
-                return res.status(200).json(response);
-            }
-        }).catch((error) => {
-            import(`@/configuration/default/server`).then(async (module) => {
-                const response = await module.start({ chain, axiosInstance: axios, user, BigQuery, DocumentProcessorServiceClient, GoogleAuth, fs, path, FormData }, sanitizedQuestion)
-                if (response) {
-                    return res.status(200).json(response);
-                }
-            });
+    import(`@/configuration/${chatBotId}/server`)
+      .then(async (module) => {
+        const response = await module.start(
+          {
+            chain,
+            axiosInstance: axios,
+            user,
+            BigQuery,
+            DocumentProcessorServiceClient,
+            GoogleAuth,
+            fs,
+            path,
+            FormData,
+          },
+          sanitizedQuestion,
+        );
+        if (response) {
+          return res.status(200).json(response);
+        }
+      })
+      .catch((error) => {
+        import(`@/configuration/default/server`).then(async (module) => {
+          const response = await module.start(
+            {
+              chain,
+              axiosInstance: axios,
+              user,
+              BigQuery,
+              DocumentProcessorServiceClient,
+              GoogleAuth,
+              fs,
+              path,
+              FormData,
+            },
+            sanitizedQuestion,
+          );
+          if (response) {
+            return res.status(200).json(response);
+          }
         });
-
-    } catch (error: any) {
-        console.log('error', error);
-        res.status(500).json({ error: error.message || 'Something went wrong' });
-    }
+      });
+  } catch (error: any) {
+    console.log('error', error);
+    res.status(500).json({ error: error.message || 'Something went wrong' });
+  }
 }

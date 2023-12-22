@@ -395,7 +395,7 @@ const Chatbot = () => {
   }
 
   // File Handler Submission
-  const uploadFilehandler = async (files: File[]) => {
+  const uploadFilehandler = async (files: FileList) => {
     for (let item of files) {
       const formData = new FormData();
       formData.append('chatId', newChatRoom);
@@ -640,7 +640,7 @@ const Chatbot = () => {
                                               border: '2px solid black',
                                               padding: '2.5px',
                                             }
-                                          : null
+                                          : undefined
                                       }
                                       contentEditable={
                                         message?.type !== 'apiMessage' &&
@@ -650,6 +650,7 @@ const Chatbot = () => {
                                       }
                                     >
                                       <ReactMarkdown
+                                        // @ts-ignore
                                         rehypePlugins={[rehypeRaw]}
                                       >
                                         {message.message}
@@ -823,6 +824,7 @@ const Chatbot = () => {
                                           }
                                         }}
                                         options={message?.step?.options}
+                                        disabled={false}
                                       />
                                     ) : null}
                                     {message?.step?.inputType ===

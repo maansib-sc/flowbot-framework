@@ -40,7 +40,7 @@ function RatingCard({onClose, options}: {options: [{label: string, value: number
     return (
         <>
         {ratings.map((item, index) => 
-            <div className={styles.container}>
+            <div key={index} className={styles.container}>
                 <p>{item.label}</p>
                 <Rating
                     style={{ maxWidth: 120 }}
