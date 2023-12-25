@@ -1,6 +1,6 @@
 /* Apply the background SVG using CSS */
 .container-body {
-  background-image: url('background.svg');
+  background-image: url('background.webp');
   background-size: auto;
   background-repeat: no-repeat;
   width: 416px;

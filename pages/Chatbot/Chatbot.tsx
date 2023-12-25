@@ -481,7 +481,7 @@ const Chatbot = () => {
         {JSModule?.testProject && (
           <div
             style={{
-              backgroundImage: `url('./background.svg')`,
+              backgroundImage: `url('./background.webp')`,
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               width: '518px',
