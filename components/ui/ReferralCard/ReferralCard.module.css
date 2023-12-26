@@ -1,0 +1,10 @@
+.container {
+    color: var(--grey-120, #606878);
+    font-family: Aspekta;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    display: flex;
+    gap: 8px;
+}

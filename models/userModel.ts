@@ -5,49 +5,83 @@ export interface IUser extends Document {
     chatbotId: string;
     sessionId: string;
     subscriptionType: string;
+    userData: any[];
     createdAt: Date;
     updatedAt: Date;
+}
+
+interface stepData {
+    key: string;
+    category_id?: string;
+    category_description?: string;
+    answer?: string;
 }
 
 const UserSchema: Schema = new Schema({
     subscriptionType: {
         type: String,
-        default: 'FREE'
+        default: 'FREE',
     },
     sessionId: {
         type: String,
-        required: true
+        required: true,
     },
     chatbotId: {
         type: String,
-        required: true
+        required: true,
     },
     lastStep: {
         type: Number,
-        default: 0
+        default: 0,
+    },
+    userData: {
+        type: Array,
+        default: [],
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     updatedAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 }, {
-    versionKey: false // This will disable the __v field
+    versionKey: false,
 });
 
+UserSchema.methods.getlastStep = function () {
+    return this.lastStep;
+};
 
-let UserModel = mongoose.models.User || mongoose.model<IUser>('User', UserSchema)
+UserSchema.method('setlastStep', function (value: number) {
+    this.lastStep = value;
+});
 
+UserSchema.method("setUserData", function (data: stepData) {
+    const index = this.userData.findIndex((item: stepData) => item.key === data.key);
+    if (index !== -1) {
+        this.userData[index] = data;
+    } else {
+        this.userData.push(data);
+    }
+});
+
+UserSchema.method("getUserData", function () {
+    return this.userData
+});
+
+UserSchema.method("getData", function (value: string) {
+    return this.userData.find((item: stepData) => item.key == value)
+});
+
+export let UserModel = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
 export const upsertUser = async (chatbotId: string, sessionId: string) => {
     const result = await UserModel.findOneAndUpdate(
         { sessionId },
         {
             $setOnInsert: { sessionId, chatbotId },
-            $inc: { lastStep: 1 }, // Increment lastStep by 1
             $currentDate: { updatedAt: true }
         },
         {
@@ -55,7 +89,11 @@ export const upsertUser = async (chatbotId: string, sessionId: string) => {
             upsert: true, // insert the document if it does not exist
         }
     );
-    return result;
+    if (result instanceof UserModel) {
+        return result;
+    } else {
+        return new UserModel(result);
+    }
 }
 
 export default UserModel;

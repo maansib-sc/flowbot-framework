@@ -1,0 +1,124 @@
+.invoiceContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.descriptionContainer {
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 12px;
+    color: var(--grey-100, #727A8B);
+}
+
+.description {
+    color: #112041;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.viewDetails {
+    color: var(--orange-100, #FF6900);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkboxGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.checkboxLabel {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    gap: 8px;
+    /* Add smooth transitions for visual effects */
+}
+
+.checkboxLabel.selected {
+    border-radius: 10px;
+    border: 1px solid var(--orange-100, #FF6900);
+    background: var(--orange-20, linear-gradient(0deg, #FDF0E7 0%, #FDF0E7 100%), #FFF);
+}
+
+.checkboxInput {
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    /* Add any additional input styles here */
+}
+
+/* Checkbox Styling */
+.invoiceContainer input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    background-clip: content-box;
+    position: relative;
+    border: 1px solid #ccc;
+  }
+  
+  .invoiceContainer input[type="checkbox"]:checked {
+    content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="white" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>');
+    background-color: var(--orange-100, #FF6900);
+    border: 1px solid var(--orange-100, #FF6900);
+  }
+
+.total {
+    color: #112041 !important;
+    font-weight: 400;
+    font-size: 15px;
+}
+
+.price {
+    color: var(--orange-100, #FF6900) !important;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.price {
+    color: #112041 !important;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+
+.active {
+    color: var(--orange-100, #FF6900) !important;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+
+.searchContainer {
+    border-radius: 6px;
+    Padding: 14px 12px 14px 12px;
+    border: 1px solid #E1E4EA;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.searchContainer > input {
+    width: 100%;
+    height: auto;
+}
+
+.searchContainer > input:focus {
+    outline: none; /* Remove default focus outline */
+    border: none;  /* Your desired styles for the focused state */
+  }

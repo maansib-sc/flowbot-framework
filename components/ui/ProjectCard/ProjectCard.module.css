@@ -1,0 +1,26 @@
+.projectCardContainer {
+    display: flex;
+    padding: 24px;
+    gap: 20px;
+    flex-direction: column;
+    border-radius: 12px;
+    background: var(--grey-20-bg, #F1F4F9);
+}
+
+.projectCardContainer > div > p {
+    color: var(--grey-100, #727A8B);
+    font-family: Aspekta;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; 
+}
+
+.projectCardContainer > div > span {
+    color: var(--black, #112041);
+    font-family: Aspekta;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; 
+}

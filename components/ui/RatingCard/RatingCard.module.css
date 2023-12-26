@@ -1,0 +1,15 @@
+.container {
+    display: flex;
+    align-items: center;
+    width: 400px;
+    justify-content: space-between;
+}
+
+.container > p {
+    color: var(--grey-100, #727A8B);
+    font-family: Aspekta;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; 
+}

@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-$APP
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard-rwo
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,6 +24,15 @@ spec:
       labels:
         app: $APP
     spec:
+      initContainers:
+        - name: init-config
+          image: $IMAGE_TAG
+          command: ["/bin/sh", "-c"]
+          args:
+            - cp -r /app/configuration/* /data/
+          volumeMounts:
+            - name: app-config-volume
+              mountPath: "/data"
       containers:
         - name: container-$APP
           image: $IMAGE_TAG
@@ -26,7 +47,13 @@ spec:
           envFrom:
             - secretRef:
                 name: $APP-env
-
+          volumeMounts:
+            - name: app-config-volume
+              mountPath: "/app/configuration"
+      volumes:
+        - name: app-config-volume
+          persistentVolumeClaim:
+            claimName: pvc-$APP
 ---
 apiVersion: v1
 kind: Service
@@ -51,6 +78,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
 spec:
   tls:
     - hosts:

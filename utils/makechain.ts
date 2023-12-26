@@ -1,20 +1,23 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
-const textSimilarityBackendConnectorHost = process.env.NEXT_PUBLIC_BACKEND_TEXT_SIMILARITY
+const textSimilarityBackendConnectorHost =
+  process.env.NEXT_PUBLIC_BACKEND_TEXT_SIMILARITY;
 
 export class makeChain {
   chat_id: string;
 
-
   constructor(chat_id: string) {
-    this.chat_id = chat_id
+    this.chat_id = chat_id;
   }
-  run = async (inputQuestion: string, backendUrl: string = `${textSimilarityBackendConnectorHost}/generate/answer`) => {
+  run = async (
+    inputQuestion: string,
+    backendUrl: string = `${textSimilarityBackendConnectorHost}/generate/answer`,
+  ) => {
     let queryParams = {
-      'user_input': inputQuestion,
-      'chat_id': this.chat_id
+      user_input: inputQuestion,
+      chat_id: this.chat_id,
     };
-    const options = {
+    const options: AxiosRequestConfig = {
       method: 'POST',
       url: backendUrl,
       params: queryParams,
@@ -24,12 +27,10 @@ export class makeChain {
     };
     try {
       let documentSearchAPIResp = await axios.request(options);
-      let kbResponse = { "text": documentSearchAPIResp.data, "src": "talkingDb" };
+      let kbResponse = { text: documentSearchAPIResp.data, src: 'talkingDb' };
       return kbResponse;
-
     } catch (error) {
-      return { "text": "Please try again later", "src": "talkingDb" };
+      return { text: 'Please try again later', src: 'talkingDb' };
     }
-
-  }
-};
+  };
+}

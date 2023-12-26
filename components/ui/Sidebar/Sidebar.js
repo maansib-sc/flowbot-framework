@@ -1,0 +1,1 @@
+export const title = "Welcome to the Professional Sign-up channel"

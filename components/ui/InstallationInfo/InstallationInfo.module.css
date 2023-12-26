@@ -1,0 +1,21 @@
+.span{
+    color: var(--grey-100, #727A8B);
+
+    /* 15px/regular */
+    font-family: Aspekta;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 133.333% */
+}
+
+.p{
+    color: var(--orange-100, #FF6900);
+
+    /* 15px/regular */
+    font-family: Aspekta;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 133.333% */
+}

@@ -29,6 +29,8 @@ services:
         max-size: "50m"
         max-file: "3"
     command: [ "npm", "run", "dev" ]
+    volumes:
+      - ./configuration:/app/configuration
     labels:
       - "traefik.port=80"
       - "traefik.enable=true"
