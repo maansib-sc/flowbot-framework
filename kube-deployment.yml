@@ -24,6 +24,15 @@ spec:
       labels:
         app: $APP
     spec:
+      initContainers:
+        - name: init-config
+          image: $IMAGE_TAG
+          command: ["/bin/sh", "-c"]
+          args:
+            - cp -r /app/configuration/* /data/
+          volumeMounts:
+            - name: app-config-volume
+              mountPath: "/data"
       containers:
         - name: container-$APP
           image: $IMAGE_TAG
