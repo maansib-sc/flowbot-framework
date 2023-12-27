@@ -3,7 +3,7 @@ export const getWelcomeMessage = "I am a Assistant. I'll assist you with any que
 export const getInputPlaceholder = "Write Message";
 export const Navbar = false;
 export const botName = "Alex";
-export const testProject = false;
+export const enabled = false;
 export const ChatBotStep = [
     {
 
