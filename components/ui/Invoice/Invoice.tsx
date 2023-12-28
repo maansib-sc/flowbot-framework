@@ -9,18 +9,21 @@ const Invoice = ({
   values,
   onChange,
   disabled,
+  showList=true
 }: {
   options: { label: string; value: string; data: any; table: [] }[];
   values: any;
   onChange: (value: string) => void;
   disabled?: boolean;
+  showList?: boolean;
 }) => {
   const [selectedValues, setSelectedValue] = useState<
-    { label: string; value: string; data: any; table: [] }[] | []
+    { label: string; value: string; hideList: boolean; data: any; table: [] }[] | []
   >([]);
   const [showButton, setShowButton] = useState(true);
-  const [show, setShow] = useState<null | number>(null);
+  const [show, setShow] = useState<null | number>(!showList ? 0 : null);
 
+  console.log("options?.hideList ==>", showList)
   const handleCheckboxChange = (value: {
     label: string;
     value: string;
@@ -49,6 +52,7 @@ const Invoice = ({
       <div className={styles.invoiceContainer}>
         {options.map((option, index) => (
           <>
+          {showList &&
             <div key={index} className="flex justify-between">
               <label
                 key={option.value}
@@ -111,6 +115,7 @@ const Invoice = ({
                 )}
               </div>
             </div>
+          }
 
             {index === show && (
               <div className={styles.descriptionContainer}>
@@ -188,7 +193,7 @@ const Invoice = ({
           </>
         ))}
       </div>
-      {showButton && (
+      {showButton && showList && (
         <div className="mt-4">
           <Button
             onClick={() => {
@@ -197,6 +202,18 @@ const Invoice = ({
             }}
             disabled={selectedValues.length === 0}
             variant={selectedValues.length === 0 ? 'ghost' : 'primary'}
+          >
+            Confirm
+          </Button>
+        </div>
+      )}
+      {!showList && showButton && (
+        <div className="mt-4">
+          <Button
+            onClick={() => {
+              onChange(JSON.stringify(selectedValues));
+              setShowButton(false);
+            }}
           >
             Confirm
           </Button>

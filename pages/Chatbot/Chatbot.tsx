@@ -803,10 +803,11 @@ const Chatbot = () => {
                                         }}
                                       />
                                     ) : null}
-                                    {message?.step?.inputType === 'invoice' ? (
+                                    {message?.step?.inputType === 'invoice' || message?.step?.inputType === "invoiceSheet" ? (
                                       <Invoice
                                         options={message?.step?.options}
                                         values={message?.step?.options}
+                                        showList={message?.step?.inputType === 'invoice'}
                                         disabled={
                                           index !== messages.length - 1
                                             ? true
