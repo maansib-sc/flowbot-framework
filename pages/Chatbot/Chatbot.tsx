@@ -272,6 +272,10 @@ const Chatbot = () => {
         },
       );
       const data = await response.json();
+      if (data.redirect) {
+        window.location.href = data.redirect
+        return
+      }
       if (data.currentStep.await) {
         setTimeout(() => {
           handleSubmit('dummy', false);

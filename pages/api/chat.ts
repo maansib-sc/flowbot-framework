@@ -55,9 +55,6 @@ export default async function handler(
           },
           sanitizedQuestion,
         );
-        if (response?.redirect) {
-          return res.redirect(response.redirect);
-        }
         if (response) {
           return res.status(200).json(response);
         }
