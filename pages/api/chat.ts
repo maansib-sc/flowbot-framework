@@ -38,7 +38,7 @@ export default async function handler(
 
     const user = await upsertUser(chatBotId, session);
 
-    import(`@/configuration/${chatBotId}/server`)
+    await import(`@/configuration/${chatBotId}/server`)
       .then(async (module) => {
         const response = await module.start(
           {

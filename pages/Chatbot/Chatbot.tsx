@@ -276,6 +276,9 @@ const Chatbot = () => {
         window.location.href = data.redirect
         return
       }
+      if (data?.currentStep?.updateLeftPanel) {
+        setHtmlFile(data?.currentStep?.updateLeftPanel);
+      }
       if (data.currentStep.await) {
         setTimeout(() => {
           handleSubmit('dummy', false);
