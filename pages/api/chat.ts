@@ -7,9 +7,13 @@ import axios from 'axios';
 import { BigQuery } from '@google-cloud/bigquery';
 import { DocumentProcessorServiceClient } from '@google-cloud/documentai';
 import { GoogleAuth } from 'google-auth-library';
-const fs = require('fs');
+const parser = require('@babel/parser');
+const generator = require('@babel/generator');
+const fs = require('fs-extra');
 const FormData = require('form-data');
+const json5 = require('json5');
 import path from 'path';
+const { htmlToText } = require('html-to-text');
 
 export const config = { api: { bodyParser: { sizeLimit: '100mb' } } };
 export default async function handler(
@@ -38,47 +42,69 @@ export default async function handler(
 
     const user = await upsertUser(chatBotId, session);
 
-    import(`@/configuration/${chatBotId}/server`)
-      .then(async (module) => {
-        const response = await module.start(
-          {
-            chain,
-            axiosInstance: axios,
-            user,
-            BigQuery,
-            DocumentProcessorServiceClient,
-            GoogleAuth,
-            fs,
-            path,
-            FormData,
-          },
-          sanitizedQuestion,
-        );
-        if (response) {
-          return res.status(200).json(response);
-        }
-      })
-      .catch((error) => {
-        import(`@/configuration/default/server`).then(async (module) => {
-          const response = await module.start(
-            {
-              chain,
-              axiosInstance: axios,
-              user,
-              BigQuery,
-              DocumentProcessorServiceClient,
-              GoogleAuth,
-              fs,
-              path,
-              FormData,
-            },
-            sanitizedQuestion,
-          );
-          if (response) {
-            return res.status(200).json(response);
+    const headers = req.headers;
+
+    return new Promise((resolve, reject) => {
+      import(`@/configuration/${chatBotId}/server`)
+        .then(async (module) => {
+          try {
+            const response = await module.start(
+              {
+                chain,
+                axiosInstance: axios,
+                user,
+                BigQuery,
+                DocumentProcessorServiceClient,
+                GoogleAuth,
+                fs,
+                path,
+                FormData,
+                chatBotId,
+                headers,
+                parser,
+                generator,
+                json5,
+                htmlToText,
+              },
+              sanitizedQuestion,
+            );
+            res.status(200).json(response);
+            resolve(response);
+          } catch (error: any) {
+            res
+              .status(500)
+              .json({ error: error?.message || 'Something went wrong' });
+            console.log(error);
+            resolve(error);
           }
+        })
+        .catch((error) => {
+          import(`@/configuration/default/server`).then(async (module) => {
+            const response = await module.start(
+              {
+                chain,
+                axiosInstance: axios,
+                user,
+                BigQuery,
+                DocumentProcessorServiceClient,
+                GoogleAuth,
+                fs,
+                path,
+                FormData,
+                chatBotId,
+                headers,
+                parser,
+                generator,
+                json5,
+                htmlToText,
+              },
+              sanitizedQuestion,
+            );
+            res.status(200).json(response);
+            resolve(response);
+          });
         });
-      });
+    });
   } catch (error: any) {
     console.log('error', error);
     res.status(500).json({ error: error.message || 'Something went wrong' });

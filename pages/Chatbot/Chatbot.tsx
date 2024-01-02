@@ -46,6 +46,8 @@ import ProjectCard from '@/components/ui/ProjectCard/ProjectCard';
 import RatingCard from '@/components/ui/RatingCard/RatingCard';
 import ReferralCard from '@/components/ui/ReferralCard/ReferralCard';
 
+declare const window: any;
+
 const Chatbot = () => {
   const [botLoading, setBotLoading] = useState<Boolean>(true);
   const [isSignupPage, setIsSignupPage] = useState(false);
@@ -57,7 +59,7 @@ const Chatbot = () => {
   const [currentSession, setCurrentSession] = useState<string>('');
   const router = useRouter();
   const {
-    query: { 'chat-id': chatId },
+    query: { 'chat-id': chatId, code: openidCode },
   } = router;
   const [newChatRoom, setNewChatRoom] = useState<string>('');
   const [isPublishUrl, setIsPublishUrl] = useState<boolean>(false);
@@ -66,6 +68,7 @@ const Chatbot = () => {
   const [promptTemplate, setPromptTemplate] = useState<string | any>('');
   const [editableIndex, setEditableIndex] = useState<number | null>(null);
   const [disableInput, setDisableInput] = useState(false);
+  const [hiddenInput, setHiddenInput] = useState(false);
 
   const [leftPanelHtml, setLeftPanelHtml] = useState('');
   const [headerPaneHtml, setHeaderPaneHtml] = useState('');
@@ -161,26 +164,67 @@ const Chatbot = () => {
   }, [chatId]);
 
   useEffect(() => {
-    if (
-      JSModule &&
-      JSModule?.conversational
-    ) {
-      handleSubmit()
+    if (JSModule && JSModule?.conversational) {
+      handleSubmit();
     } else {
       setMessageState({
-        messages: [
-        ],
+        messages: [],
         history: [],
       });
     }
     if (JSModule) {
       setLeftPanelHtml(JSModule?.leftPanelHtml);
+      window.handleLeftPanel = JSModule?.handleLeftPanel;
+      setHeaderPaneHtml(JSModule?.headerPaneHtml);
+      window.handleHeaderPane = JSModule?.handleHeaderPane;
     }
   }, [JSModule]);
 
+  useEffect(() => {
+    let access_token = localStorage.getItem('access_token');
+    if (access_token && JSModule?.handleHeaderPane) {
+      JSModule?.handleHeaderPane('login');
+    }
+  }, [JSModule?.handleHeaderPane]);
+
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        if (openidCode && JSModule?.openid) {
+          const response = await fetch(JSModule?.openid?.token_endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              grant_type: 'authorization_code',
+              client_id: JSModule?.openid?.client_id,
+              code: openidCode as string,
+              redirect_uri: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}?chat-id=${chatId}`,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const { access_token } = data;
+
+            localStorage.setItem('access_token', access_token);
+            window.location.href = `/?chat-id=${chatId}`;
+          } else {
+            console.error('Token request failed:', response.statusText);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
+    };
+
+    getToken();
+  }, [openidCode, JSModule?.openid]);
+
   async function nextStep() {
     setActiveIndex(1);
-    handleSubmit()
+    handleSubmit();
   }
 
   useEffect(() => {
@@ -232,14 +276,15 @@ const Chatbot = () => {
     }
     setLoading(true);
     setQuery('');
-
     try {
+      let access_token = localStorage.getItem('access_token');
       const response = await fetch(
         `/api/chat?pinecone_name_space=${newChatRoom}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${access_token}`,
           },
           body: JSON.stringify({
             question,
@@ -287,13 +332,12 @@ const Chatbot = () => {
           }));
         }
       } else {
-
         if (data.currentStep.fullWidth) {
           setRegistrationMessage(data.currentStep);
           setIsSignupPage(true);
-          return 
+          return;
         }
-        if (!data.hideAnswer) {
+        if (!data.hideAnswer && (data.currentStep.answer || question)) {
           setMessageState((state) => ({
             ...state,
             messages: [
@@ -327,6 +371,12 @@ const Chatbot = () => {
           history: [...state.history, [question, data.text]],
         }));
         setActiveIndex(data.currentStep.id);
+      }
+
+      if (data.currentStep?.inputHidden) {
+        setHiddenInput(true);
+      } else {
+        setHiddenInput(false);
       }
 
       setLoading(false);
@@ -408,65 +458,66 @@ const Chatbot = () => {
 
   return (
     <div className={styles['container']}>
-      <div className={styles['sidebar']}>
-        {/* TODO: Move ChatbotInfo to conf */}
-        {!JSModule?.enabled && !isPublishUrl && (
-          <ChatbotInfo chatBotId={newChatRoom} />
-        )}
-        {JSModule?.enabled && (
-          <div dangerouslySetInnerHTML={{ __html: leftPanelHtml }} />
-        )}
-      </div>
+      {JSModule?.enabled && (
+        <div
+          className={styles['sidebar']}
+          dangerouslySetInnerHTML={{ __html: leftPanelHtml }}
+        />
+      )}
       <div className={styles['main-content']}>
-        {JSModule?.enabled && (
-          <div dangerouslySetInnerHTML={{ __html: headerPaneHtml }} />
-        )}
-        {/* TODO: Move main-header to conf */}
-        <div className={styles['main-header']}>
-          <span>{JSModule?.getTitle}</span>
-          {JSModule?.enabled ? (
-            <Button variant="link">
-              <ChatIcon />
-              Chat with Platform Support
-            </Button>
-          ) : (
-            <div className="flex items-center ">
-              <button
-                className={`${styles.buttonWrapper} bg-white mr-4`}
-                onClick={() => setPromptModal(true)}
-              >
-                Custom Prompt
-              </button>
-              {promptModal && (
-                <PromptModal
-                  onChangeHandler={onPromptChange}
-                  onClose={(val: string | undefined) => {
-                    val === 'submit' ? updatePrompt() : null;
-                    setPromptModal(false);
-                  }}
-                  resetTemplate={resetdefaultPromptTemplate}
-                  data={promptTemplate}
-                  onSubmit={() => updatePrompt()}
-                />
-              )}
-
-              {!isPublishUrl && (
-                <div className="flex">
-                  <button
-                    className={`${styles.buttonWrapper}`}
-                    onClick={() => {
-                      window.alert(
-                        `Copy the Url for chatbot - ${currentUrl}?chat-id=${newChatRoom}`,
-                      );
+        {headerPaneHtml ? (
+          <div
+            className={styles['main-header']}
+            dangerouslySetInnerHTML={{ __html: headerPaneHtml }}
+          />
+        ) : (
+          <div className={styles['main-header']}>
+            <span>{JSModule?.getTitle}</span>
+            {JSModule?.enabled ? (
+              <Button variant="link">
+                <ChatIcon />
+                Chat with Platform Support
+              </Button>
+            ) : (
+              <div className="flex items-center ">
+                <button
+                  className={`${styles.buttonWrapper} bg-white mr-4`}
+                  onClick={() => setPromptModal(true)}
+                >
+                  Custom Prompt
+                </button>
+                {promptModal && (
+                  <PromptModal
+                    onChangeHandler={onPromptChange}
+                    onClose={(val: string | undefined) => {
+                      val === 'submit' ? updatePrompt() : null;
+                      setPromptModal(false);
                     }}
-                  >
-                    Publish & Share
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+                    resetTemplate={resetdefaultPromptTemplate}
+                    data={promptTemplate}
+                    onSubmit={() => updatePrompt()}
+                  />
+                )}
+
+                {!isPublishUrl && (
+                  <div className="flex">
+                    <button
+                      className={`${styles.buttonWrapper}`}
+                      onClick={() => {
+                        window.alert(
+                          `Copy the Url for chatbot - ${currentUrl}?chat-id=${newChatRoom}`,
+                        );
+                      }}
+                    >
+                      Publish & Share
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className={styles['main']}>
           {/* TODO: Move RegisterationGuy to conf */}
           {isSignupPage ? (
@@ -971,61 +1022,65 @@ const Chatbot = () => {
               </div>
               <div className={styles?.center}>
                 <div className={styles?.cloudform}>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleSubmit();
-                    }}
-                  >
-                    <textarea
-                      disabled={disableInput || loading}
-                      onKeyDown={handleEnter}
-                      ref={textAreaRef}
-                      autoFocus={false}
-                      rows={1}
-                      maxLength={10000}
-                      id="userInput"
-                      name="userInput"
-                      placeholder={
-                        loading
-                          ? 'Waiting for response...'
-                          : JSModule?.getInputPlaceholder
-                      }
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      className={styles?.textarea}
-                    />
-                    <button
-                      type="submit"
-                      disabled={!query || loading}
-                      className={styles?.generatebutton}
-                      style={{
-                        background:
-                          JSModule?.sendIcon && !loading
-                            ? JSModule?.themeColor
-                            : '',
+                  {hiddenInput ? (
+                    <></>
+                  ) : (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSubmit();
                       }}
                     >
-                      {loading ? (
-                        <div className={styles?.loadingwheel}>
-                          <LoadingDots color="#000" />
-                        </div>
-                      ) : (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              JSModule?.sendIcon ??
-                              `
+                      <textarea
+                        disabled={disableInput || loading}
+                        onKeyDown={handleEnter}
+                        ref={textAreaRef}
+                        autoFocus={false}
+                        rows={1}
+                        maxLength={10000}
+                        id="userInput"
+                        name="userInput"
+                        placeholder={
+                          loading
+                            ? 'Waiting for response...'
+                            : JSModule?.getInputPlaceholder
+                        }
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className={styles?.textarea}
+                      />
+                      <button
+                        type="submit"
+                        disabled={!query || loading}
+                        className={styles?.generatebutton}
+                        style={{
+                          background:
+                            JSModule?.sendIcon && !loading
+                              ? JSModule?.themeColor
+                              : '',
+                        }}
+                      >
+                        {loading ? (
+                          <div className={styles?.loadingwheel}>
+                            <LoadingDots color="#000" />
+                          </div>
+                        ) : (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html:
+                                JSModule?.sendIcon ??
+                                `
                           <svg viewBox="0 0 20 20" class="Home_svgicon__PLaWz" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z">
                             </path>
                         </svg>
                           `,
-                          }}
-                        />
-                      )}
-                    </button>
-                  </form>
+                            }}
+                          />
+                        )}
+                      </button>
+                    </form>
+                  )}
                 </div>
               </div>
             </>

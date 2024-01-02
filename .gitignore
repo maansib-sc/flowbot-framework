@@ -50,5 +50,6 @@ build.sh
 
 configuration/*
 !configuration/default
+!configuration/bot-forger
 
 zipped_configuration
