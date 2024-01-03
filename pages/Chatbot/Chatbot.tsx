@@ -1118,7 +1118,7 @@ const Chatbot = () => {
                         }
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className={styles?.textarea}
+                        className={messages[messages.length - 1]?.step?.inputType === 'password' ? `${styles?.textarea} ${styles?.passwordTextarea}` : styles?.textarea}
                       />
                       <button
                         type="submit"
