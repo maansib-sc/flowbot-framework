@@ -45,6 +45,8 @@ import CostMilestone from '@/components/ui/CostMilestone/CostMilestone';
 import ProjectCard from '@/components/ui/ProjectCard/ProjectCard';
 import RatingCard from '@/components/ui/RatingCard/RatingCard';
 import ReferralCard from '@/components/ui/ReferralCard/ReferralCard';
+import io from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
 
 declare const window: any;
 
@@ -297,8 +299,64 @@ const Chatbot = () => {
     return
   }
 
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+    // useEffect(() => {
+    //   const socketInitializer = async () => {
+    //     await fetch('/api/chat-socket');
+    //     const newSocket = io('https://0eda-117-216-70-207.ngrok-free.app',{ path: '/socket.io' });
+
+    //     console.log("current session----",currentSession)
+  
+    //     newSocket.on('connect', () => {
+    //       console.log('connected');
+    //       newSocket.emit('join-room', currentSession);
+    //     });
+  
+    //     setSocket(newSocket);
+  
+    //     // Clean up the socket connection on component unmount
+    //     return () => newSocket.disconnect();
+    //   };
+  
+    //   socketInitializer();
+      
+    //   // Cleanup function
+    //   return () => {
+    //     if (socket) socket.disconnect();
+    //   };
+    // }, [currentSession]);
+
+    const initializeSocket = async () => {
+      await fetch('/api/chat-socket');
+      const newSocket = io('https://0eda-117-216-70-207.ngrok-free.app', { path: '/socket.io' });
+    
+      console.log("current session----", currentSession);
+    
+      newSocket.on('connect', () => {
+        console.log('connected');
+        newSocket.emit('join-room', currentSession);
+      });
+    
+      setSocket(newSocket);
+    
+      // Clean up the socket connection on component unmount
+      return () => newSocket.disconnect();
+    };
+
+    const sendChatbotMessage = (message: string, sessionId: string) => {
+      console.log("session Id",sessionId)
+      if (socket && socket.connected) {
+        socket.emit('chatbot-message', {message,sessionId});
+      } else {
+        console.error('Socket not initialized');
+      }
+    };
+
   //handle form submission
   async function handleSubmit(value?: string, update: boolean=false) {
+    console.log('query',query)
+    console.log("value",value)
     let question = query.trim();
     if (!query) {
       question = value?.trim() || '';
@@ -326,14 +384,22 @@ const Chatbot = () => {
         },
       );
       const data = await response.json();
-      if (data.redirect) {
+      console.log("data",data)
+      if (data?.redirect) {
         window.location.href = data.redirect;
         return;
+      }
+      if(data?.firstCall){
+        await initializeSocket()
       }
       if (data?.currentStep?.updateLeftPanel) {
         setLeftPanelHtml(data?.currentStep?.updateLeftPanel);
       }
-      if (data.currentStep.await) {
+      if (data?.currentStep?.inputType === 'socket' && data?.src === 'apiMessage'){
+        console.log('inside socket')
+        sendChatbotMessage(query,data?.sessionId)
+      }
+      if (data?.currentStep?.await) {
         setTimeout(() => {
           handleSubmit('dummy', false);
         }, data.currentStep.await);
