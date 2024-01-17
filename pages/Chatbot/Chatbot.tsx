@@ -301,8 +301,6 @@ const Chatbot = () => {
   }
 
   async function handleSubmit(value?: string, update: boolean=false) {
-    console.log('query',query)
-    console.log("value",value)
     let question = query.trim();
     if (!query) {
       question = value?.trim() || '';
