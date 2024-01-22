@@ -339,8 +339,11 @@ const Chatbot = () => {
     })
 
       newSocket.on('close-socket-connection',(data) =>{
-        console.log('socket closed success fully',data)
-        setSocketState(false)
+        if(socketState){
+          console.log('socket closed successfully',data)
+          setSocketState(false)
+          handleSubmit('dummy')
+        }
       })
 
     setSocket(newSocket);
