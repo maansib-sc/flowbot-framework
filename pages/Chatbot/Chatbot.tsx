@@ -762,7 +762,9 @@ const Chatbot = () => {
                       if (JSModule?.enabled) {
                         icon = (
                           <div className={styles?.libby}>
-                            <Libby />
+                            {
+                              JSModule.chatbotIcon ? <span dangerouslySetInnerHTML={{ __html: JSModule.chatbotIcon }} /> : <Libby/>
+                            }
                           </div>
                         );
                       }
@@ -770,7 +772,9 @@ const Chatbot = () => {
                     } else {
                       icon = (
                         <div className={styles?.libby}>
-                          <You />
+                          {
+                              JSModule.userIcon ? <span dangerouslySetInnerHTML={{ __html: JSModule.userIcon }} />: <You/>
+                            }
                         </div>
                       );
                       // The latest message sent by the user will be animated while waiting for a response
@@ -1229,7 +1233,7 @@ const Chatbot = () => {
                                   setContent(message.message)
                                 }}
                               >
-                                <Pencil /> Edit
+                                <Pencil color={JSModule.editButtonColor? JSModule.editButtonColor : '#FF6900'} /> Edit
                               </Button>
                             ) : message?.type !== 'apiMessage' &&
                               editableIndex === index &&
