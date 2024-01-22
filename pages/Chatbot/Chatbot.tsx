@@ -853,6 +853,13 @@ const Chatbot = () => {
                                       <ReactMarkdown
                                         // @ts-ignore
                                         rehypePlugins={[rehypeRaw]}
+                                        components={{
+                                          p: ({ node, children, ...props }) => (
+                                            <p className={styles?.userMessageFont} {...props}>
+                                              {children}
+                                            </p>
+                                          ),
+                                        }}
                                       >
                                         {message.message}
                                       </ReactMarkdown>
