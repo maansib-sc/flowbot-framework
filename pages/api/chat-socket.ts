@@ -14,22 +14,21 @@ const SocketHandler = (req: any, res: any) => {
                 socket.join(room);
                 console.log("joined room",room);
             });
-            // socket.on('chatbot-message', msg => {
-            //     console.log("chatbot-message",msg)
-            //     socket.emit('receive-chatbot-message',msg)
-            // })
+
             socket.on('chatbot-message', ({ message, sessionId }) => {
-                console.log('chatbot-message', message);
-                io.to(sessionId).emit('receive-chatbot-message', message);
+                console.log('chatbot- message---', message);
+                console.log('session Id in chatbot',sessionId);
+                io.to(sessionId).emit('received-chatbot-message', {message, sessionId});
             });
 
-            // socket.on('slack-message', msg => {
-            //     console.log("message",msg)
-            //     socket.emit('received-slack-message',msg)
-            // })
             socket.on('slack-message', ({ message, sessionId }) => {
                 console.log('message', message);
-                io.to(sessionId).emit('received-slack-message', message);
+                io.to(sessionId).emit('received-slack-message', { message, sessionId });
+            });
+
+            socket.on('close-socket', ({ sessionId }) => {
+                console.log('close socket', sessionId);
+                io.to(sessionId).emit('close-socket-connection', { sessionId });
             });
         })
     }

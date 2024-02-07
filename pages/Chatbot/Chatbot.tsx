@@ -136,6 +136,7 @@ const Chatbot = () => {
     if (chatId) {
       import(`@/configuration/${chatId}/webapp`)
         .then((module) => {
+          console.log("modeule",module)
           setJSModule(module);
         })
         .catch((error) => {
@@ -300,13 +301,114 @@ const Chatbot = () => {
     return
   }
 
-  async function handleSubmit(value?: string, update: boolean=false) {
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socketState, setSocketState] = useState(false);
+  const [socketInitstate,setSocketInitstate] = useState(false)
+
+  useEffect(()=>{
+
+  const initializeSocket = async () => {
+    console.log('socket base url____',JSModule?.socket_base_url)
+    await fetch('/api/chat-socket');
+    const newSocket = io(`${JSModule?.socket_base_url}`, { path: '/socket.io' });
+
+
+    console.log('current session----', currentSession);
+
+
+    newSocket.on('connect', () => {
+      console.log('connected');
+      newSocket.emit('join-room', currentSession);
+    });
+
+    newSocket.on('received-slack-message', (data)=>{
+      console.log('slack-message received',data)
+      setMessageState((state) => ({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
+            type: 'apiMessage',
+            message: `${data.message}`,
+            src: 'talkingDb',
+            step: {},
+            id: Math.random(),
+          },
+        ],
+      }));
+    })
+
+      newSocket.on('close-socket-connection',(data) =>{
+        if(socketState){
+          console.log('socket closed successfully',data)
+          setSocketState(false)
+          handleSubmit('dummy')
+        }
+      })
+
+    setSocket(newSocket);
+
+    return () => newSocket.disconnect();
+  };
+    if(JSModule?.socket_base_url){
+      initializeSocket()
+    }
+  },[JSModule?.socket_base_url])
+
+
+ const sendChatbotMessage = async (message: string, sessionId: string) => {
+   if (socket && socket.connected) {
+     socket.emit('chatbot-message', { message, sessionId });
+     setMessageState((state) => ({
+      ...state,
+      messages: [
+        ...state.messages,
+        {
+          type: 'userMessage',
+          message: `${message}`,
+          src: 'talkingDb',
+          step: {},
+          id: Math.random(),
+        },
+      ],
+    }));
+   } else {
+     console.error('Socket not initialized');
+   }
+ };
+
+
+ const handleSocket = async (value?: string) => {
+   if (!socket || !socket.connected) {
+     setSocketState(false)
+   }
+   if(value && currentSession){
+     await sendChatbotMessage(value,currentSession)
+   }
+ };
+
+ const changeSocketState = async () =>{
+  setSocketInitstate(!socketInitstate)
+ }
+
+
+  async function handleSubmit(value?: string, update: boolean=false, socketMode : boolean= false) {
+    setLoading(true);
+    console.log('socket status',socketState)
+    if(socketMode){
+      setLoading(false)
+    }
+     if (socketState && !value) {
+      setQuery('');
+      console.log('inside setSocket true',value)
+      console.log('inside setSocket query', query)
+      await handleSocket(query);
+      setLoading(false);
+   } else {
     let question = query.trim();
     if (!query) {
       question = value?.trim() || '';
     }
-    
-    setLoading(true);
     setQuery('');
     try {
       let access_token = localStorage.getItem('access_token');
@@ -333,8 +435,21 @@ const Chatbot = () => {
         window.location.href = data.redirect;
         return;
       }
+      if (data?.currentStep?.windowOpen) {
+        window.open(data?.currentStep?.windowOpen,"_blank")
+      }
       if (data?.currentStep?.updateLeftPanel) {
         setLeftPanelHtml(data?.currentStep?.updateLeftPanel);
+      }
+      if (
+        data?.currentStep?.inputType === 'socket' && data?.src === 'apiMessage'
+      ) {
+        setSocketState(true)
+      }
+      else if(data?.currentStep?.inputType === 'socket'){
+        await changeSocketState()
+        setSocketState(true)
+        handleSubmit('', false, true);
       }
       if (data?.currentStep?.await) {
         setTimeout(() => {
@@ -342,7 +457,7 @@ const Chatbot = () => {
         }, data.currentStep.await);
       }
       if (data.error) {
-        if (data.currentStep.hideUserResponse) {
+        if (data?.currentStep?.hideUserResponse) {
           let stepInfo = JSON.parse(JSON.stringify(data.currentStep));
           {
             /* @ts-ignore */
@@ -395,7 +510,7 @@ const Chatbot = () => {
               ...state.messages,
               {
                 type: 'userMessage',
-                message: data.currentStep.answer || question,
+                message: data?.currentStep?.answer || question,
                 src: 'test',
                 id: Math.random(),
               },
@@ -410,7 +525,7 @@ const Chatbot = () => {
             ],
             history: [
               ...state.history,
-              [question, data.currentStep.answer || question],
+              [question, data?.currentStep?.answer || question],
             ],
           }));
         }
@@ -427,7 +542,7 @@ const Chatbot = () => {
               ...state.messages,
               {
                 type: 'userMessage',
-                message: data.currentStep.answer || question,
+                message: data?.currentStep?.answer || question,
                 src: 'test',
                 id: Math.random(),
               },
@@ -468,6 +583,7 @@ const Chatbot = () => {
       setLoading(false);
       console.log('error', error);
     }
+  }
   }
 
   // File Handler Submission
@@ -649,7 +765,9 @@ const Chatbot = () => {
                       if (JSModule?.enabled) {
                         icon = (
                           <div className={styles?.libby}>
-                            <Libby />
+                            {
+                              JSModule.chatbotIcon ? <span dangerouslySetInnerHTML={{ __html: JSModule.chatbotIcon }} /> : <Libby/>
+                            }
                           </div>
                         );
                       }
@@ -657,7 +775,9 @@ const Chatbot = () => {
                     } else {
                       icon = (
                         <div className={styles?.libby}>
-                          <You />
+                          {
+                              JSModule.userIcon ? <span dangerouslySetInnerHTML={{ __html: JSModule.userIcon }} />: <You/>
+                            }
                         </div>
                       );
                       // The latest message sent by the user will be animated while waiting for a response
@@ -736,6 +856,13 @@ const Chatbot = () => {
                                       <ReactMarkdown
                                         // @ts-ignore
                                         rehypePlugins={[rehypeRaw]}
+                                        components={{
+                                          p: ({ node, children, ...props }) => (
+                                            <p className={styles?.userMessageFont} {...props}>
+                                              {children}
+                                            </p>
+                                          ),
+                                        }}
                                       >
                                         {message.message}
                                       </ReactMarkdown>
@@ -1116,7 +1243,7 @@ const Chatbot = () => {
                                   setContent(message.message)
                                 }}
                               >
-                                <Pencil /> Edit
+                                <Pencil color={JSModule.editButtonColor? JSModule.editButtonColor : '#FF6900'} /> Edit
                               </Button>
                             ) : message?.type !== 'apiMessage' &&
                               editableIndex === index &&

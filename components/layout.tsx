@@ -39,7 +39,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <ThemeContext.Provider value={{ styles: CSSStyles }}>
       <div className={styles.container}>
-        <div className={styles['main-content']}>{children}</div>
+        <div className={`${styles['main-content']} ${CSSStyles['main-content']}`}>{children}</div>
       </div>
     </ThemeContext.Provider>
   );

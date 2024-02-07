@@ -8,10 +8,25 @@ definitions:
           - bash ./run.sh build
         services:
           - docker
+    - step: &sonarqube-scan
+        name: SonarQube analysis
+        script:
+          - pipe: sonarsource/sonarqube-scan:2.0.1
+            variables:
+              SONAR_HOST_URL: ${SONAR_HOST_URL}
+              SONAR_TOKEN: ${SONAR_TOKEN}
+        caches:
+          sonar: ~/.sonar  
+
+clone:
+  depth: full
 
 pipelines:
   branches:
     develop:
+      - step: 
+          name: Patch version update
+          script: bash version.sh patch
       - step: *build
       - step:
           name: Deploy Dev
@@ -20,6 +35,7 @@ pipelines:
           script:
             - gcloud components install kubectl
             - bash ./run.sh deploy-dev
+      - step: *sonarqube-scan
     release/v*-*-*-prod:
       - step: *build
       - step:

@@ -26,7 +26,8 @@ line-height: 20px; /* 133.333% */
   .main-content {
     flex: 1; /* Takes the remaining height */
     padding: 20px;
-    background: var(--grey-20-bg, #F1F4F9);  }
+    background: var(--grey-20-bg, #F1F4F9);  
+  }
 
   
   .nav-links {

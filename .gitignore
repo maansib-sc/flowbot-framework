@@ -53,3 +53,6 @@ configuration/*
 !configuration/bot-forger
 
 zipped_configuration
+
+# Sentry Config File
+.sentryclirc
