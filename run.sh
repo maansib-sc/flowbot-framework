@@ -68,6 +68,7 @@ deploy() {
     local GCP_CLUSTER="$3"
     local CONNECTOR="$4"
     local SIMILARITY="$5"
+    local ENV_FILE="$6"
     
     if [ -n "$K8S_KEY" ]; then
         echo "$K8S_KEY" > k8s-key.json
@@ -105,7 +106,8 @@ deploy-dev() {
     "$BITBUCKET_BRANCH" \
     "$GCP_CLUSTER_DEV" \
     "$CONNECTOR_DEV" \
-    "$SIMILARITY_DEV"
+    "$SIMILARITY_DEV" \
+    "$ENV_DEV"
 }
 
 deploy-prod() {
@@ -114,7 +116,8 @@ deploy-prod() {
     "prod" \
     "$GCP_CLUSTER_PROD" \
     "$CONNECTOR_PROD" \
-    "$SIMILARITY_PROD"
+    "$SIMILARITY_PROD" \
+    "$ENV_PROD"
 }
 
 deploy-rel() {
@@ -123,7 +126,8 @@ deploy-rel() {
     "$REL_TAG" \
     "$GCP_CLUSTER_REL" \
     "$CONNECTOR_REL" \
-    "$SIMILARITY_REL"
+    "$SIMILARITY_REL" \
+    "$ENV_STAG"
 }
 
 case "$1" in
