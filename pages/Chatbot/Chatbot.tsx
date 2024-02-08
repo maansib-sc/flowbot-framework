@@ -1265,6 +1265,12 @@ const Chatbot = () => {
                     );
                   })}
                 </div>
+                {(loading && JSModule?.loaderEnabled) && 
+                <span style={{ marginLeft: "10px"}}>
+                  Typing
+                  <LoadingDots color="#000" />
+                </span>
+                }
               </div>
               <div className={styles?.center}>
                 <div className={styles?.cloudform}>
