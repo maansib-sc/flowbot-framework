@@ -409,6 +409,20 @@ const Chatbot = () => {
     if (!query) {
       question = value?.trim() || '';
     }
+    if(query && JSModule?.showUserResponseFirst){
+      if (question) {console.log('questionm',question)
+      setMessageState((state) => ({
+      ...state,
+      messages: [
+        ...state.messages,
+        {
+          type: 'userMessage',
+          message: `${question}`,
+          src: "test",
+          id: Math.random(),
+        },
+      ],
+    }));}}
     setQuery('');
     try {
       let access_token = localStorage.getItem('access_token');
@@ -503,7 +517,26 @@ const Chatbot = () => {
               ],
             }));
           }
-        } else {
+        } else if(JSModule?.showUserResponseFirst){
+          setMessageState((state) => ({
+            ...state,
+            messages: [
+              ...state.messages,
+              {
+                type: 'apiMessage',
+                message: `${data.errorMessage}`,
+                src: data.src,
+                step: data.currentStep || {},
+                sourceDocs: data.sourceDocuments,
+                id: Math.random(),
+              },
+            ],
+            history: [
+              ...state.history,
+              [question, data?.currentStep?.answer || question],
+            ],
+          }));
+        }else{
           setMessageState((state) => ({
             ...state,
             messages: [
@@ -535,7 +568,7 @@ const Chatbot = () => {
           setIsSignupPage(true);
           return;
         }
-        if (!data.hideAnswer && (data.currentStep.answer || question)) {
+        if (!data.hideAnswer && (data.currentStep.answer || question) &&  !JSModule?.showUserResponseFirst) {
           setMessageState((state) => ({
             ...state,
             messages: [
@@ -1235,7 +1268,7 @@ const Chatbot = () => {
                             (messages[index - 1]?.step?.inputType === 'text' || messages[index - 1]?.step?.inputType === 'number') && 
                             messages?.length - 2 === index &&
                             editableIndex !== index &&
-                            !message?.error ? (
+                            !message?.error && !JSModule?.hideEditButton ? (
                               <Button
                                 variant="link"
                                 onClick={() => {

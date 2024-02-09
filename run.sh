@@ -70,7 +70,7 @@ deploy() {
     local SIMILARITY="$5"
     local ENV_FILE="$6"
 
-    echo "$ENV_FILE"
+    echo $ENV_FILE
     
     if [ -n "$K8S_KEY" ]; then
         echo "$K8S_KEY" > k8s-key.json
