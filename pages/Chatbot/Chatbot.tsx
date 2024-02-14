@@ -89,6 +89,7 @@ const Chatbot = () => {
   });
   const [styles, setStyle] = useState<any>({});
   const { messages, history } = messageState;
+  const [typingState, setTypingState] = useState<boolean>(false);
 
   const messageListRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -336,6 +337,12 @@ const Chatbot = () => {
           },
         ],
       }));
+      setTypingState(false);
+    })
+
+    newSocket.on('received-slack-user-typing', (data) => {
+      console.log('typing data received =>', data);
+      setTypingState(true);
     })
 
       newSocket.on('close-socket-connection',(data) =>{
@@ -1316,6 +1323,12 @@ const Chatbot = () => {
                         handleSubmit();
                       }}
                     >
+                      { typingState && 
+                        <span style={{ marginLeft: "10px"}}>
+                          Typing
+                          <LoadingDots color="#000" />
+                        </span>
+                      }
                       <textarea
                         disabled={disableInput || loading}
                         onKeyDown={handleEnter}
