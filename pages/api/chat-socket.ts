@@ -26,6 +26,11 @@ const SocketHandler = (req: any, res: any) => {
                 io.to(sessionId).emit('received-slack-message', { message, sessionId });
             });
 
+            socket.on('slack-user-typing', ({ event, sessionId }) => {
+                console.log('message', event);
+                io.to(sessionId).emit('received-slack-user-typing', { event, sessionId });
+            });
+
             socket.on('close-socket', ({ sessionId }) => {
                 console.log('close socket', sessionId);
                 io.to(sessionId).emit('close-socket-connection', { sessionId });
