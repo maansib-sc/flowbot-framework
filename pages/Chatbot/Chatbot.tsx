@@ -1,53 +1,52 @@
-import Button from '@/components/ui/Buttons/Button';
-import ChatIcon from '@/assets/svgs/ChatIcon';
-import { useEffect, useState, useRef, Fragment } from 'react';
-import rehypeRaw from 'rehype-raw';
-import RegisterationGuy from '@/assets/svgs/RegisterationGuy';
-import { Message } from '@/types/chat';
-import LoadingDots from '@/components/ui/LoadingDots';
-import Image from 'next/image';
-import ReactMarkdown from 'react-markdown';
-import { generateRandomString } from '@/utils/generateRandomeString';
-import RadioGroup from '@/components/ui/Radio/RadioGroup';
-import Libby from '@/assets/svgs/Libby';
-import You from '@/assets/svgs/You';
-import Pencil from '@/assets/svgs/Pencil';
-import PasswordInput from '@/components/ui/Input/PasswordInput';
-import Address from '@/components/ui/Address/Address';
-import { useRouter } from 'next/router';
-import ChatbotInfo from '@/components/ui/ChatbotInfo';
 import {
   getDefaultPromptTemplate,
   resetPromptTemplate,
   submitPromptTemplate,
 } from '@/apiRequests';
-import { PromptModal } from '@/components/customPromptModal';
-import CardRadioGroup from '@/components/ui/Radio/CardRadioGroup';
-import CheckboxGroup from '@/components/ui/Checkbox/CheckboxGroup';
-import SelectInputField from '@/components/ui/SelectInputField/SelectInputField';
+import ChatIcon from '@/assets/svgs/ChatIcon';
+import Libby from '@/assets/svgs/Libby';
+import Pencil from '@/assets/svgs/Pencil';
+import You from '@/assets/svgs/You';
+import ToolTip from '@/assets/svgs/icons/ToolTip';
 import NextFunction from '@/components/NextFunction';
-import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
-import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
-import LoginPasswordAsk from '@/components/ui/LoginPasswordAsk/LoginPasswordAsk';
-import ColumnCards from '@/components/ui/Radio/ColumnCards';
-import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
-import Summary from '@/components/ui/Summary/Summary';
-import MultiSelectInput from '@/components/ui/MutiSelectInput/MultiSelectInput';
+import { PromptModal } from '@/components/customPromptModal';
+import Address from '@/components/ui/Address/Address';
 import AutoCompleteInput from '@/components/ui/AutoCompleteInput/AutoCompleteInput';
-import Table from '@/components/ui/Table/Table';
+import Button from '@/components/ui/Buttons/Button';
+import CheckboxGroup from '@/components/ui/Checkbox/CheckboxGroup';
 import CostCards from '@/components/ui/CostCards/CostCards';
+import CostMilestone from '@/components/ui/CostMilestone/CostMilestone';
+import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
+import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent';
+import PasswordInput from '@/components/ui/Input/PasswordInput';
 import InstallationInfo from '@/components/ui/InstallationInfo/InstallationInfo';
 import Invoice from '@/components/ui/Invoice/Invoice';
-import SearchInput from '@/components/ui/Search/Search';
-import StripeComponent from '@/components/ui/StripeComponent/StripeComponent';
-import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
-import CostMilestone from '@/components/ui/CostMilestone/CostMilestone';
+import LoadingDots from '@/components/ui/LoadingDots';
+import LoginPasswordAsk from '@/components/ui/LoginPasswordAsk/LoginPasswordAsk';
+import MultiSelectInput from '@/components/ui/MutiSelectInput/MultiSelectInput';
 import ProjectCard from '@/components/ui/ProjectCard/ProjectCard';
+import CardRadioGroup from '@/components/ui/Radio/CardRadioGroup';
+import ColumnCards from '@/components/ui/Radio/ColumnCards';
+import GoogleLoginComponent from '@/components/ui/Radio/GoogleLoginComponent';
+import RadioGroup from '@/components/ui/Radio/RadioGroup';
 import RatingCard from '@/components/ui/RatingCard/RatingCard';
 import ReferralCard from '@/components/ui/ReferralCard/ReferralCard';
-import io from 'socket.io-client';
+import SearchInput from '@/components/ui/Search/Search';
+import SelectInputField from '@/components/ui/SelectInputField/SelectInputField';
+import ShowDetails from '@/components/ui/ShowDetails/ShowDetails';
+import StripeComponent from '@/components/ui/StripeComponent/StripeComponent';
+import Summary from '@/components/ui/Summary/Summary';
+import Table from '@/components/ui/Table/Table';
+import { Message } from '@/types/chat';
+import { generateRandomString } from '@/utils/generateRandomeString';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { InlineWidget } from "react-calendly";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import type { Socket } from 'socket.io-client';
-import ToolTip from '@/assets/svgs/icons/ToolTip';
+import io from 'socket.io-client';
 
 declare const window: any;
 
@@ -932,6 +931,11 @@ const Chatbot = () => {
                                           }
                                         }}
                                       />
+                                    ) : null}
+                                    {(message.type === 'apiMessage' &&
+                                    message?.step?.inputType ===
+                                      'radioButton' && message?.step?.integration == 'Calandly') ? (
+                                        <InlineWidget url="https://calendly.com/aashishrawte1/15min" />
                                     ) : null}
                                     {message.type === 'apiMessage' &&
                                     message?.step?.inputType === 'html' ? (
