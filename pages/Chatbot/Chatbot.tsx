@@ -21,6 +21,7 @@ import FileUploadComponent from '@/components/ui/FileUpload/FileUploadComponent'
 import PasswordInput from '@/components/ui/Input/PasswordInput';
 import InstallationInfo from '@/components/ui/InstallationInfo/InstallationInfo';
 import Invoice from '@/components/ui/Invoice/Invoice';
+import Loader from '@/components/ui/Loader/Loader';
 import LoadingDots from '@/components/ui/LoadingDots';
 import LoginPasswordAsk from '@/components/ui/LoginPasswordAsk/LoginPasswordAsk';
 import MultiSelectInput from '@/components/ui/MutiSelectInput/MultiSelectInput';
@@ -695,6 +696,14 @@ const Chatbot = () => {
     }
   }, [newChatRoom]);
 
+  if(!JSModule?.enabled || botLoading){
+    return(
+      <div className={styles['LoaderContainer']}>
+         <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
+      </div>
+    )
+  }
+  else{
   return (
     <div className={styles['container']}>
       {JSModule?.enabled && (
@@ -1391,6 +1400,6 @@ const Chatbot = () => {
       </div>
     </div>
   );
-};
+}}
 
 export default Chatbot;
