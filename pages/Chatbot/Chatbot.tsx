@@ -156,18 +156,19 @@ const Chatbot = () => {
             },
           );
         });
-    } else {
-      setCurrentSession(generateRandomString('session_', 9));
-      import(`@/configuration/default/webapp`).then((module) => {
-        setJSModule(module);
-      });
-      import(`@/configuration/default/webapp/Index.module.css`).then(
-        (module) => {
-          setStyle(module);
-        },
-      );
-    }
-    setBotLoading(false);
+        setBotLoading(false);
+    } 
+    // else {
+    //   setCurrentSession(generateRandomString('session_', 9));
+    //   import(`@/configuration/default/webapp`).then((module) => {
+    //     setJSModule(module);
+    //   });
+    //   import(`@/configuration/default/webapp/Index.module.css`).then(
+    //     (module) => {
+    //       setStyle(module);
+    //     },
+    //   );
+    // }
   }, [chatId]);
 
   useEffect(() => {
@@ -696,10 +697,12 @@ const Chatbot = () => {
     }
   }, [newChatRoom]);
 
-  if(!JSModule?.enabled || botLoading){
+  if(botLoading || !(JSModule?.enabled)){
     return(
-      <div className={styles['LoaderContainer']}>
-         <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <div style={{ width: '150px',  height: '150px' }}>
+          <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
+        </div>
       </div>
     )
   }
@@ -713,7 +716,7 @@ const Chatbot = () => {
         />
       )}
       <div className={styles['main-content']}>
-        {headerPaneHtml ? (
+        {(headerPaneHtml|| JSModule?.headerPaneHtml) ? (
           <div
             className={styles['main-header']}
             dangerouslySetInnerHTML={{ __html: headerPaneHtml }}
