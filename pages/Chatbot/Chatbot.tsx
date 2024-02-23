@@ -1070,7 +1070,12 @@ const Chatbot = () => {
                             className={styles?.container}
                             style={{ flexDirection: JSModule?.botName == 'LocalVR' ? (message?.type == 'apiMessage' ? 'row' : 'row-reverse') : 'row' }}
                           >
-                            {icon}
+                            {JSModule?.botName !== 'LocalVR' && 
+                              <>
+                                {icon}
+                              </>
+                            }
+                            
                             <div
                               style={{
                                 display: 'flex',
@@ -1080,34 +1085,39 @@ const Chatbot = () => {
                               }}
                               
                             >
-                              {message?.type == 'apiMessage' ? (
-                                <span
-                                  className={styles?.botName}
-                                  style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: '2px',
-                                    width: '100%',
-                                  }}
-                                >
-                                  {JSModule?.botName}
-                                  {message?.step?.tooltip && (
-                                    <p
-                                      title={message?.step?.tooltip}
-                                      className={styles?.tooltipIcon}
-                                    >
-                                      <ToolTip />
-                                    </p>
+                              {JSModule?.botName !== 'LocalVR' && 
+                                <>
+                                  {message?.type == 'apiMessage' ? (
+                                  <span
+                                    className={styles?.botName}
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'row',
+                                      gap: '2px',
+                                      width: '100%',
+                                    }}
+                                  >
+                                    {JSModule?.botName}
+                                    {message?.step?.tooltip && (
+                                      <p
+                                        title={message?.step?.tooltip}
+                                        className={styles?.tooltipIcon}
+                                      >
+                                        <ToolTip />
+                                      </p>
+                                    )}
+                                  </span>
+                                  ) : (
+                                    <span
+                                      className={styles?.botName}
+                                      style={{
+                                        textAlign: JSModule?.botName == 'LocalVR' ? 'right' : 'left'
+                                      }}
+                                    >You</span>
                                   )}
-                                </span>
-                              ) : (
-                                <span
-                                  className={styles?.botName}
-                                  style={{
-                                    textAlign: JSModule?.botName == 'LocalVR' ? 'right' : 'left'
-                                  }}
-                                >You</span>
-                              )}
+                                </>
+                              }
+                              
                               <div
                                 className={`${styles?.markdownanswer} ${message?.type == 'apiMessage' ? styles?.chat_container_left : styles?.chat_container_right}`}
                               >
