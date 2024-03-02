@@ -1077,7 +1077,7 @@ const Chatbot = () => {
                         <div key={`chatMessage-${index}`} className={className}>
                           <div
                             className={styles?.container}
-                            style={{ flexDirection: JSModule?.botName == 'LocalVR' ? (message?.type == 'apiMessage' ? 'row' : 'row-reverse') : 'row' }}
+                            style={{ flexDirection: JSModule?.conversationLayout ? (message?.type == 'apiMessage' ? 'row' : 'row-reverse') : 'row' }}
                           >
                             {JSModule?.botName !== 'LocalVR' && 
                               <div>
@@ -1086,7 +1086,7 @@ const Chatbot = () => {
                             }
 
                             {
-                              JSModule?.botName == 'LocalVR' && 
+                              JSModule?.conversationLayout && 
                               message?.type == 'apiMessage' && 
                               (index === messages.length - 1 || (index < messages.length - 1 && messages[index + 1]?.type !== 'apiMessage')) &&
                               <div className={styles?.botIcon}>
@@ -1129,7 +1129,7 @@ const Chatbot = () => {
                                     <span
                                       className={styles?.botName}
                                       style={{
-                                        textAlign: JSModule?.botName == 'LocalVR' ? 'right' : 'left'
+                                        textAlign: JSModule?.conversationLayout ? 'right' : 'left'
                                       }}
                                     >You</span>
                                   )}
@@ -1139,12 +1139,12 @@ const Chatbot = () => {
                               <div
                                 className={`${styles?.markdownanswer}`}
                                 style={{
-                                  maxWidth: message?.step?.showBotIcon && JSModule?.botName == 'LocalVR' ? 'auto' : '90%',
-                                  marginLeft: (!(index === messages.length - 1 || (index < messages.length - 1 && messages[index + 1]?.type !== 'apiMessage'))) && JSModule?.botName == 'LocalVR' ? '9%' : '',
+                                  maxWidth: message?.step?.showBotIcon && JSModule?.conversationLayout ? 'auto' : '90%',
+                                  marginLeft: (!(index === messages.length - 1 || (index < messages.length - 1 && messages[index + 1]?.type !== 'apiMessage'))) && JSModule?.conversationLayout ? '2rem' : '',
                                   width: '100%',
-                                  alignSelf: message?.type == 'userMessage' && JSModule?.botName == 'LocalVR' ? 
+                                  alignSelf: message?.type == 'userMessage' && JSModule?.conversationLayout ? 
                                             'self-end' : 
-                                            message?.type == 'apiMessage' && JSModule?.botName == 'LocalVR' ?
+                                            message?.type == 'apiMessage' && JSModule?.conversationLayout ?
                                             'self-start' :
                                             'flex-start',
                                   display: 'flex',
@@ -1205,7 +1205,7 @@ const Chatbot = () => {
                                     )}
                                   </div>
                                 </span>
-                                {showLoading &&( JSModule?.botName == 'LocalVR' && ((message?.step?.inputType === 'await' && index === messages.length - 1) || ( typingState && index === messages.length - 1) || ( loading && index === messages.length - 1 )) )&&
+                                {showLoading &&( JSModule?.conversationLayout && ((message?.step?.inputType === 'await' && index === messages.length - 1) || ( typingState && index === messages.length - 1) || ( loading && index === messages.length - 1 )) )&&
                                 <span
                                   className={`${styles?.markdownanswerspan} ${message?.type == 'apiMessage' ? styles?.chat_container_left : styles?.chat_container_right}`}
                                   style={{
@@ -1219,24 +1219,6 @@ const Chatbot = () => {
                                 
                                 {JSModule?.conversational && (
                                   <div className={styles?.extraContainer}>
-                                    {message.type === 'apiMessage' &&
-                                    message?.step?.inputType ===
-                                      'radioButton' ? (
-                                      <RadioGroup
-                                        options={message?.step?.options}
-                                        value={message?.step?.default}
-                                        disabled={
-                                          index !== messages.length - 1
-                                            ? true
-                                            : false
-                                        }
-                                        onChange={(value) => {
-                                          if (index === messages.length - 1) {
-                                            handleSubmit(value);
-                                          }
-                                        }}
-                                      />
-                                    ) : null}
                                     {message.type === 'apiMessage' &&
                                     message?.step?.inputType ===
                                       'radioButton' &&
@@ -1573,8 +1555,26 @@ const Chatbot = () => {
                               </div>
                             </div>
                           </div>
+                          {message.type === 'apiMessage' &&
+                                    message?.step?.inputType ===
+                                      'radioButton' ? (
+                                      <RadioGroup
+                                        options={message?.step?.options}
+                                        value={message?.step?.default}
+                                        disabled={
+                                          index !== messages.length - 1
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={(value) => {
+                                          if (index === messages.length - 1) {
+                                            handleSubmit(value);
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
                           <div className={styles?.editbtn}>
-                            {message?.type !== 'apiMessage' && JSModule?.botName !== 'LocalVR' &&
+                            {message?.type !== 'apiMessage' && JSModule?.conversationLayout &&
                             (messages[index - 1]?.step?.inputType === 'text' ||
                               messages[index - 1]?.step?.inputType ===
                                 'number') &&
@@ -1596,7 +1596,7 @@ const Chatbot = () => {
                                       : '#FF6900'
                                   }
                                 />{' '}
-                                {JSModule?.botName == 'LocalVR' ? '' : 'Edit'}
+                                {JSModule?.hideEditButton? '' : 'Edit'}
                               </Button>
                             ) : message?.type !== 'apiMessage' &&
                               editableIndex === index &&
