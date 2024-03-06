@@ -438,6 +438,22 @@ const Chatbot = () => {
     if (!query) {
       question = value?.trim() || '';
     }
+    if(question && JSModule?.showRadioSelection) {
+      if (question) {console.log('questionm',question)
+      setMessageState((state) => ({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
+            type: 'userMessage',
+            message: `${JSON.parse(question)['label']}`,
+            src: "test",
+            id: Math.random(),
+          },
+        ],
+      }));}
+    }
+    
     if(query && JSModule?.showUserResponseFirst){
       if (question) {console.log('questionm',question)
       setMessageState((state) => ({
@@ -1559,7 +1575,25 @@ const Chatbot = () => {
                                     message?.step?.inputType ===
                                       'radioButton' ? (
                                         <>
-                                         {/* <audio src="https://bigsoundbank.com/UPLOAD/mp3/0001.mp3" autoPlay /> */}
+                                         <audio src="assets/sounds/notification.wav" autoPlay />
+                                         { ( index == messages.length - 1 ) && JSModule?.showRadioSelection ?  
+                                         <div className={`${styles?.alignRadioToBottom} ` }>
+                                          <RadioGroup
+                                            
+                                            options={message?.step?.options}
+                                            value={message?.step?.default}
+                                            disabled={
+                                              index !== messages.length - 1
+                                                ? true
+                                                : false
+                                            }
+                                            onChange={(value) => {
+                                              if (index === messages.length - 1) {
+                                                handleSubmit(value);
+                                              }
+                                            }}
+                                          />  </div> : null} 
+                                      { JSModule?.conversationLayout && !JSModule?.showRadioSelection ?  
                                       <RadioGroup
                                         options={message?.step?.options}
                                         value={message?.step?.default}
@@ -1573,7 +1607,7 @@ const Chatbot = () => {
                                             handleSubmit(value);
                                           }
                                         }}
-                                      />
+                                      />  : null}
                                         </>
                                        
                                     ) : null}
