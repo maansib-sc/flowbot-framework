@@ -1223,7 +1223,7 @@ const Chatbot = () => {
                                 </span>
                                 {showLoading &&( JSModule?.conversationLayout && ((message?.step?.inputType === 'await' && index === messages.length - 1) || ( typingState && index === messages.length - 1) || ( loading && index === messages.length - 1 )) )&&
                                 <span
-                                  className={`${styles?.markdownanswerspan} ${message?.type == 'apiMessage' ? styles?.chat_container_left : styles?.chat_container_right}`}
+                                  className={`${styles?.markdownanswerspan} ${styles?.chat_container_left}`}
                                   style={{
                                     width: '40px',
                                     marginTop: '20px',
@@ -1575,7 +1575,7 @@ const Chatbot = () => {
                                     message?.step?.inputType ===
                                       'radioButton' ? (
                                         <>
-                                         <audio src="assets/sounds/notification.wav" autoPlay />
+                                         <audio src="assets/sounds/send.mp3" autoPlay />
                                          { ( index == messages.length - 1 ) && JSModule?.showRadioSelection ?  
                                          <div className={`${styles?.alignRadioToBottom} ` }>
                                           <RadioGroup
