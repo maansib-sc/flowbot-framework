@@ -1167,7 +1167,7 @@ const Chatbot = () => {
                                   flexDirection: 'column',
                                 }}
                               >
-
+                                { (!loading ) &&
                                   <span 
                                   className={`${styles?.markdownanswerspan} ${message?.type == 'apiMessage' ? styles?.chat_container_left : styles?.chat_container_right}`}
                                 >
@@ -1222,13 +1222,14 @@ const Chatbot = () => {
                                     )}
                                   </div>
                                 </span>
-                                
+                                }                              
                                 {showLoading &&( JSModule?.conversationLayout && ((message?.step?.inputType === 'await' && index === messages.length - 1) || ( typingState && index === messages.length - 1) || ( loading && index === messages.length - 1 )) )&&
                                 <span
                                   className={`${styles?.chat_container_left}`}
                                   style={{
                                     width: '40px',
                                     marginTop: '20px',
+                                    backgroundColor: '#F6F5F5'
                                   }}
                                 >
                                   <LoadingDots color="#000" />
