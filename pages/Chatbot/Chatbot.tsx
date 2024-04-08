@@ -447,7 +447,7 @@ const Chatbot = () => {
     if (!query) {
       question = value?.trim() || '';
     }
-    if(question && JSModule?.showRadioSelection) {
+    if(!query && question && JSModule?.showRadioSelection) {
       if (question) {console.log('questionm',question)
       setMessageState((state) => ({
         ...state,
