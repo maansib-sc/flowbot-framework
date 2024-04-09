@@ -456,7 +456,7 @@ const Chatbot = () => {
           {
             type: 'userMessage',
             // message: `${question ? question : JSON.parse(question)['label']}`,
-            message: `${JSON.parse(question)['label']}`,
+            message: `${value == 'contact us' ? question : JSON.parse(question)['label']}`,
             src: "test",
             id: Math.random(),
           },
