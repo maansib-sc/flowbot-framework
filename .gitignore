@@ -51,7 +51,6 @@ build.sh
 configuration/*
 !configuration/default
 !configuration/bot-forger
-!configuration/decathlon-store
 
 zipped_configuration
 
