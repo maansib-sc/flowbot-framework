@@ -1,0 +1,1191 @@
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  width: initial;
+  padding: 0px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: var(--white, #fff);
+  width: 100%;
+  height: 100%;
+}
+
+.main-header {
+  border-bottom: 1px solid var(--grey-15, #f5f5f6);
+  display: flex;
+  padding: 20px 32px;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+}
+
+.main-header > span {
+  color: var(--black, #112041);
+  font-family: Aspekta;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px; /* 155.556% */
+}
+
+.main {
+  padding: 20px 32px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* align-items: end; */
+  /* padding: 1rem; */
+  /* border: 1px solid #d9d9e3; */
+  border-radius: 0.5rem;
+}
+
+.registerguy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  height: 100%;
+  width: 473px;
+}
+
+.registerguy h3 {
+  color: var(--black, #112041);
+  text-align: center;
+
+  /* 18px/medium */
+  font-family: Aspekta;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px; /* 155.556% */
+}
+
+.registerguy span {
+  color: var(--grey-100, #727a8b);
+  text-align: center;
+
+  /* 15px/regular */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 133.333% */
+  margin: 10px 0px;
+}
+
+/* button.module.css */
+
+.primaryButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  border-radius: 6px;
+  background: var(--orange-100, #ff6900);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.secondaryButton {
+  display: inline-flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  background: var(
+    --orange-20,
+    linear-gradient(0deg, #fdf0e7 0%, #fdf0e7 100%),
+    #fff
+  );
+  color: var(--orange-100, #ff6900);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.ghostButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  border: 1px solid #dfe2e9;
+  color: var(--orange-100, #ff6900);
+
+  /* 15px/medium */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+.linkButton {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  color: var(--orange-100, #ff6900);
+
+  /* 15px/medium */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 133.333% */
+}
+
+/* Radio */
+
+.radioGroup {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.radioGroup input[type='radio'] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-clip: content-box;
+  border: 2px solid #dfe2e9;
+  padding: 3px;
+}
+
+.radioGroup input[type='radio']:checked {
+  border: 2px solid var(--orange-100, #ff6900);
+  background-color: var(--orange-100, #ff6900);
+}
+
+.radioLabel {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  border-radius: 10px;
+  display: flex;
+  width: 246px;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 8px;
+  align-items: center;
+  /* Add smooth transitions for visual effects */
+}
+
+.radioLabel.selected {
+  border-radius: 10px;
+  border: 1px solid var(--orange-100, #ff6900);
+  background: var(
+    --orange-20,
+    linear-gradient(0deg, #fdf0e7 0%, #fdf0e7 100%),
+    #fff
+  );
+}
+
+.radioInput {
+  margin-right: 5px;
+  cursor: pointer;
+  /* Add any additional input styles here */
+}
+
+/* Radio */
+
+.checkboxGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Checkbox Styling */
+.checkboxGroup input[type='checkbox'] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid #dfe2e9;
+  background-clip: content-box;
+  position: relative;
+}
+
+.checkboxGroup input[type='checkbox']:checked {
+  border: 2px solid var(--orange-100, #ff6900);
+  content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>');
+  background-color: var(--orange-100, #ff6900);
+}
+
+.checkboxLabel {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  border-radius: 10px;
+  display: flex;
+  width: 246px;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 8px;
+  /* Add smooth transitions for visual effects */
+}
+
+.checkboxLabel.selected {
+  border-radius: 10px;
+  border: 1px solid var(--orange-100, #ff6900);
+  background: var(
+    --orange-20,
+    linear-gradient(0deg, #fdf0e7 0%, #fdf0e7 100%),
+    #fff
+  );
+}
+
+.checkboxInput {
+  margin-right: 5px;
+  cursor: pointer;
+  /* Add any additional input styles here */
+}
+
+/* Accordion.css */
+
+.accordion {
+  border: 1px solid #ccc;
+  margin: 10px 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.accordion.open {
+  border: none; /* Border color when accordion is open */
+}
+
+.accordion-header {
+  display: flex;
+  background-color: #f5f5f5;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 1000px;
+  background: var(--grey-20-bg, #f1f4f9);
+}
+
+.accordion-title {
+  font-weight: bold;
+}
+
+.accordion-icon {
+  font-size: 20px;
+  transform: rotate(0deg);
+  display: none;
+  transition: transform 0.3s ease-in-out;
+}
+
+.accordion.open .accordion-icon {
+  transform: rotate(180deg); /* Rotate icon when accordion is open */
+}
+
+.accordion-content {
+  background-color: #ffffff;
+  padding: 10px;
+  display: none;
+}
+
+.accordion.open .accordion-content {
+  display: block;
+}
+
+/* styles.css */
+
+.circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 100px;
+  background: var(--orange-100, #ff6900);
+  border-radius: 50%; /* Makes it a circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+.circle-text {
+  color: var(--white, #fff);
+
+  /* 11px/semibold */
+  font-family: Aspekta;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+}
+
+/* card radio */
+
+.cardradioGroup {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cardradioGroup input[type='radio'] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-clip: content-box;
+  border: 2px solid #dfe2e9;
+  padding: 3px;
+}
+
+.cardradioGroup input[type='radio']:checked {
+  border: 2px solid var(--orange-100, #ff6900);
+  background-color: var(--orange-100, #ff6900);
+}
+
+.cardradioLabel {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  border-radius: 10px;
+  display: flex;
+  width: 246px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 8px;
+  /* Add smooth transitions for visual effects */
+}
+
+.cardradioLabel.selected {
+  border-radius: 10px;
+  border: 1px solid var(--orange-100, #ff6900);
+  background: var(
+    --orange-20,
+    linear-gradient(0deg, #fdf0e7 0%, #fdf0e7 100%),
+    #fff
+  );
+}
+
+.cardradioInput {
+  margin-right: 5px;
+  cursor: pointer;
+  /* Add any additional input styles here */
+}
+
+.cardradioiconcontainer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.cardradioiconcontainer span {
+  margin-top: 8px;
+}
+
+/* passwordinput.module.css */
+.input_container {
+  position: relative;
+  width: 200px;
+}
+
+.password_input {
+  padding-right: 40px; /* Increase right padding to accommodate the button */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+  padding: 12px 14px;
+}
+
+.show_hide_button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background: white;
+  width: 40px; /* Width of the button */
+  /* background: #f5f5f5; */
+  border: 1px solid #ccc;
+  border-left: 0px;
+  border-radius: 4px;
+  cursor: pointer;
+  padding-left: 4px;
+}
+
+/* selectinput.module.css */
+.select_container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.select_input {
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+  background: white;
+  height: 54px;
+}
+
+.select_icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 30px;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.Address {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+.Address_topcontainer {
+  display: flex;
+  gap: 12px;
+}
+
+.fileUploadComponent {
+  display: flex;
+  align-items: center;
+}
+
+.fileUploadComponent span {
+  color: var(--grey-100, #727a8b);
+
+  /* 14px/medium */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin-right: 2px;
+}
+.fileUploadComponent small {
+  color: var(--grey-80, #aab1ba);
+
+  /* 14px/regular */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-right: 2px;
+}
+
+/* card radio */
+
+.colCardsGroup {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.colCardsGroup input[type='radio'] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-clip: content-box;
+  border: 2px solid #dfe2e9;
+  padding: 3px;
+}
+
+.colCardsGroup input[type='radio']:checked {
+  border: 2px solid var(--orange-100, #ff6900);
+  background-color: var(--orange-100, #ff6900);
+}
+
+.colCardsLabel {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  border-radius: 10px;
+  display: flex;
+  width: 246px;
+  /* justify-content: space-between; */
+  padding: 16px;
+  gap: 8px;
+  width: 100%;
+  /* Add smooth transitions for visual effects */
+}
+
+.colCardsLabel.selected {
+  border-radius: 10px;
+  border: 1px solid var(--orange-100, #ff6900);
+  background: var(
+    --orange-20,
+    linear-gradient(0deg, #fdf0e7 0%, #fdf0e7 100%),
+    #fff
+  );
+}
+
+.colCardsInput {
+  margin-bottom: auto;
+  margin-top: 5px;
+}
+
+.colCardsiconcontainer {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+
+.colCardsiconcontainer span {
+  margin-top: 8px;
+  color: var(--grey-100, #727a8b);
+
+  /* 14px/regular */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.colCardsHeader {
+  overflow: hidden;
+  color: var(--black, #112041);
+  font-feature-settings: 'cv11' on;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  /* 16px/medium */
+  font-family: Aspekta;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px; /* 150% */
+}
+
+.header {
+  width: auto;
+}
+
+.header p {
+  text-align: center;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.buttonWrapper {
+  display: inline-block;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 12px;
+  border: none;
+  border-radius: 20.5px;
+  cursor: pointer;
+  width: auto;
+  font-weight: 500;
+  transition: background-color 0.3s ease-in-out;
+  /* background-color: #e5e7ea; */
+  color: black;
+  border: 1px solid black;
+  position: relative;
+}
+
+.coming-soon-button {
+  display: inline-block;
+  background-color: #007bff;
+  /* Change the background color as desired */
+  color: #fff;
+  /* Change the text color as desired */
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  position: relative;
+}
+
+.comingSoonLabel {
+  position: absolute;
+  transform: translate(30%, -90%);
+  background-color: #ff5733;
+  /* Change the background color as desired */
+  color: #fff;
+  /* Change the text color as desired */
+  padding: 5px 10px;
+  border-radius: 25px;
+  font-size: 10px;
+  z-index: 10;
+}
+
+.crossicon {
+  width: 25px;
+  height: 25px;
+  /* fill: #ffffff; */
+  opacity: 1;
+  padding-top: 0.5rem;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.botName {
+  color: #112041;
+  font-family: 'Aspekta';
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.cloudform {
+  position: relative;
+  width: 100%;
+}
+
+.pdfContainer {
+  /* Remove any margin or padding that may affect the layout */
+  background: #ffffff;
+  border-radius: 0.5rem;
+  border: 1px solid #d9d9e3;
+  /*display: flex;*/
+  justify-content: center;
+  margin-top: 4%;
+  margin-left: 2%;
+  align-items: center;
+  padding: 10px;
+  padding: 0;
+  /* Ensure the list items are displayed vertically */
+  display: block;
+  /* Optional: Adjust styling for list items */
+  list-style-type: none;
+  padding: 0;
+  position: absolute;
+  width: 320px;
+}
+
+.pdfMain {
+  overflow-y: auto;
+  height: 350px;
+}
+
+.textarea {
+  position: relative;
+  resize: none;
+  font-size: 1.1rem;
+  padding: 1rem 2rem 1rem 2rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #d9d9e3;
+  background: #ffffff;
+  color: #000;
+  outline: none;
+}
+
+.textarea:disabled {
+  opacity: 0.5;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #6b7280;
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.5);
+}
+
+.textarea::placeholder {
+  color: #6b7280;
+}
+
+.generatebutton {
+  position: absolute;
+  top: 0.87rem;
+  right: 1rem;
+  color: rgb(165, 162, 162);
+  background: none;
+  padding: 0.3rem;
+  border: none;
+  display: flex;
+  border-radius: 6px;
+}
+
+.loadingwheel {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.25rem;
+}
+
+.svgicon {
+  transform: rotate(90deg);
+  width: 1.2em;
+  height: 1.2em;
+  fill: currentColor;
+}
+
+.generatebutton:hover {
+  background: #e4575726;
+  border-radius: 0.2rem;
+}
+
+.generatebutton:disabled {
+  opacity: 0.9;
+  cursor: not-allowed;
+  background: none;
+}
+
+.attachmentButton {
+  position: absolute;
+  top: 0.87rem;
+  right: 3rem;
+  color: rgb(182, 233, 183);
+  background: none;
+  padding: 0.3rem;
+  border: none;
+  display: flex;
+}
+
+.messagelist {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  border-radius: 0.5rem;
+}
+
+.messagelistloading {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.usermessage {
+  /* padding: 1.5rem; */
+  padding-bottom: 20px;
+  color: #000;
+  animation: fadein 0.5s;
+  border-radius: 20px 20px 20px 0px;
+}
+
+.usermessagewaiting {
+  padding: 1.5rem;
+  color: #000;
+  background: linear-gradient(to left, #07080938, #1a1c2024, #07080936);
+  background-size: 200% 200%;
+  background-position: -100% 0;
+  animation: loading-gradient 2s ease-in-out infinite;
+  animation-direction: alternate;
+  animation-name: loading-gradient;
+}
+
+@keyframes loading-gradient {
+  0% {
+    background-position: -100% 0;
+  }
+
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+.apimessage {
+  /* padding: 1.5rem; */
+  padding-bottom: 20px;
+  color: #000;
+  animation: fadein 0.5s;
+  border-radius: 20px 20px 20px 0px;
+}
+
+.libby {
+  margin-right: 12px;
+}
+
+.markdownanswerspan {
+  color: var(--grey-100, #727a8b);
+
+  /* 15px/regular */
+  font-family: Aspekta;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  /* 133.333% */
+}
+
+.extraContainer {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+}
+
+.editbtn {
+  margin-left: auto;
+}
+
+.headerContainer {
+  border-radius: 1000px;
+  background: var(--grey-20-bg, #f1f4f9);
+  padding: 8px 10px;
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.stepCircle {
+  background: var(--orange-100, #ff6900);
+  border: 1px solid var(--orange-100, #ff6900);
+  color: white;
+  border-radius: 50%;
+  height: 26px;
+  width: 26px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+.stepText {
+}
+
+.detailsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.detailsContainer h3 {
+  color: var(--black, #112041);
+
+  /* 14px/medium */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.detailsShow {
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0px;
+}
+
+.detailsShow h6 {
+  color: var(--grey-100, #727a8b);
+
+  /* 14px/regular */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.detailsShow span {
+  color: var(--black, #112041);
+
+  /* 14px/medium */
+  font-family: Aspekta;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.detailsFlex {
+  display: flex;
+  gap: 12px;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.apimessage,
+.usermessage,
+.usermessagewaiting {
+  display: flex;
+}
+
+.markdownanswer {
+  line-height: 1.75;
+  width: 100%;
+}
+
+.markdownanswer a:hover {
+  opacity: 0.8;
+}
+
+.markdownanswer a {
+  color: #b13a3a;
+  font-weight: 500;
+}
+
+.markdownanswer code {
+  color: #15cb19;
+  font-weight: 500;
+  white-space: pre-wrap !important;
+}
+
+.markdownanswer ol,
+.markdownanswer ul {
+  margin: 1rem;
+}
+
+.boticon,
+.usericon {
+  margin-right: 1rem;
+  border-radius: 0.1rem;
+  height: 100%;
+}
+
+.markdownanswer h1,
+.markdownanswer h2,
+.markdownanswer h3 {
+  font-size: inherit;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 1rem 0;
+  flex-direction: column;
+}
+
+.cloud {
+  /* width: 73vw; */
+  height: 70vh;
+  background: #ffffff;
+  border-radius: 0.5rem;
+  /* border: 1px solid #d9d9e3; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pointsnormal {
+  width: 90%;
+  height: 90%;
+}
+
+.pointsdim {
+  width: 90%;
+  height: 90%;
+  opacity: 0.25;
+}
+
+.footer {
+  color: #5f6368;
+  font-size: 0.8rem;
+  margin: 1.5rem;
+}
+
+.footer a {
+  font-weight: 500;
+  color: #7a7d81;
+}
+
+.footer a:hover {
+  opacity: 0.8;
+}
+
+.customGoogle span {
+  color: black;
+}
+
+/* Mobile optimization */
+
+@media (max-width: 600px) {
+  .main {
+    padding: 1rem;
+    max-height: 90vh;
+  }
+
+  .cloud {
+    width: 22rem;
+    height: 28rem;
+  }
+
+  .textarea {
+    width: 22rem;
+  }
+
+  .topnav {
+    border: 1px solid black;
+    align-items: center;
+    padding: 0.85rem 0.75rem 0.85rem 0.75rem;
+  }
+
+  .navlogo {
+    font-size: 1.25rem;
+    width: 20rem;
+  }
+
+  .markdownanswer code {
+    white-space: pre-wrap !important;
+  }
+
+  .footer {
+    font-size: 0.7rem;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2%;
+  position: absolute;
+  width: 320px;
+}
+
+/* New class for button content */
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Space between icon and text */
+
+.buttonContent img {
+  margin-right: 10px;
+}
+
+.roundedButton {
+  border-radius: 30px;
+  /* Half of the desired button height */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.untrainButton,
+.trainButton {
+  flex: 1;
+  /* Distribute equal space */
+  background-color: #7a7a7a;
+  color: white;
+  border: 2px solid #624f4f;
+  padding: 10px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.untrainButton {
+  margin-left: 2px;
+}
+
+.trainButton {
+  margin-right: 2px;
+}
+
+.untrainButton:hover,
+.trainButton:hover {
+  background-color: #555;
+}
+
+.untrainButton p,
+.trainButton p {
+  margin-top: 5px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.displayButton {
+  flex: 1;
+  background-color: rgb(7, 89, 100);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.result {
+  width: 73vw;
+  height: 65vh;
+  background: #ffffff;
+  border-radius: 0.5rem;
+  border: 1px solid #d9d9e3;
+  /*display: flex;*/
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.pdfName {
+  display: flex;
+}
+
+.pdfList {
+  list-style: none;
+  /*display: flex;
+  flex-wrap: wrap;
+  */
+  /* Adjust as needed */
+  gap: 10px;
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-right: 20px;
+  margin-bottom: 8px;
+}
+
+.pdfListItem {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 15px;
+  margin-bottom: 2px;
+  /* Add any other styling you want */
+}
+
+.pdfIcon {
+  /* Optional: Add margin to create spacing between the image and the file name */
+  margin-right: 8px;
+}
