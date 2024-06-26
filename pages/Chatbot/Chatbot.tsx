@@ -788,7 +788,7 @@ const Chatbot = () => {
   useEffect(()=>{
     const fetchData = async (chatbotUrl: string, apiKey: string) => {
       try {
-        const response = await fetch(`${config.NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}/chatbotUrl${newChatRoom}`, {
+        const response = await fetch(`${config.NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}/${chatbotUrl}${newChatRoom}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
