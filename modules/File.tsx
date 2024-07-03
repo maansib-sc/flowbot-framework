@@ -27,18 +27,23 @@ export default function FileList({ selectedFileType, progressUrl, apiKey, filena
                   
                   if (response) {
                     const responseJson = await response.json()
-                    setProgress(() => Math.ceil(Number(responseJson.data.deep.replace(/%/g, ""))))
-                    let deepdataProgress = Math.ceil(Number(responseJson.data.deep.replace(/%/g, "")))
-                    let shallowdataProgress = Math.ceil(Number(responseJson.data.shallow.replace(/%/g, "")))
-                    if (deepdataProgress === 100) {
-                        setTimeout(() => {
-                            setIs_Trained(true)
-                        }, 10000)
+                    if ( typeof responseJson?.data?.deep === "string") {
+                        setProgress(() => Math.ceil(Number(responseJson.data.deep.replace(/%/g, ""))))
+                        let deepdataProgress = Math.ceil(Number(responseJson.data.deep.replace(/%/g, "")))
+
+                        if (deepdataProgress === 100) {
+                            setTimeout(() => {
+                                setIs_Trained(true)
+                            }, 10000)
+                        }
                     }
-                    if (shallowdataProgress === 100) {
-                        setTimeout(() => {
-                            setIs_Shallow_Trained(true)
-                        }, 10000)
+                    if (typeof responseJson?.data?.shallow === "string") {
+                        let shallowdataProgress = Math.ceil(Number(responseJson.data.shallow.replace(/%/g, "")))
+                        if (shallowdataProgress === 100) {
+                            setTimeout(() => {
+                                setIs_Shallow_Trained(true)
+                            }, 10000)
+                        }
                     }
                 }
             } catch (error) {
