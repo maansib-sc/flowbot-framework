@@ -769,7 +769,6 @@ const Chatbot = () => {
         const jsonData = await response.json();
         console.log("data response::::::", jsonData.data)
         setChatbots(jsonData.data)
-        setPdfList(jsonData.data)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -798,7 +797,6 @@ const Chatbot = () => {
         const jsonData = await response.json();
         console.log("data response::::::", jsonData.data)
         setChatbots(jsonData.data)
-        setPdfList(jsonData.data)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -840,6 +838,7 @@ const Chatbot = () => {
   const handlePDFFileChange = (e: any) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      setPdfList((prevList: any) => [ ...prevList, {name: selectedFile.name, is_trained: false}])
       setShowLoader(true);
       setSelectedFileType('PDF');
       setSelecteduploadFile(selectedFile);
@@ -874,7 +873,7 @@ const Chatbot = () => {
               </div>
             </div>
             <div className={styles['DataContainer']}>
-              {chatbots?.map((chatbot, index) => (
+              {chatbots?.map((chatbot: {name: string}, index) => (
                 <div key={index} className={styles['DataItem']}>
                   <PdfIcon />
                   <span>{chatbot?.name}</span>
@@ -912,9 +911,9 @@ const Chatbot = () => {
               }
               
             </div>
-            {pdfList &&
+           
             <div style={{ width: '100%' }}>
-              {pdfList.map((item, index) => {
+              {pdfList?.map((item, index) => {
                 return (
                   <FileList
                     key={index}
@@ -923,12 +922,12 @@ const Chatbot = () => {
                     index={index}
                     progressUrl={JSModule?.trainedChatbotProgressUrl}
                     apiKey={config.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY}
-                    trained={item.is_trained}
+                    trained={item.is_trained || false}
                     setTrainingInProgress={setTrainingInProgress}
                   />
                 );
               })}
-            </div>}
+            </div>
             {/* <div className={styles['InProgressContainer']}>
                 <div className={styles['DataItem']}>
                     <PdfIcon />

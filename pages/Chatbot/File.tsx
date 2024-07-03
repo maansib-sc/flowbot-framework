@@ -25,9 +25,10 @@ export default function FileList({ selectedFileType, progressUrl, apiKey, filena
                       'API-KEY': apiKey
                     },
                   });
-                if (response) {
+                  
+                  if (response) {
                     const responseJson = await response.json()
-                    setProgress(Math.ceil(Number(responseJson.data.deep.replace(/%/g, ""))))
+                    setProgress(() => Math.ceil(Number(responseJson.data.deep.replace(/%/g, ""))))
                     let deepdataProgress = Math.ceil(Number(responseJson.data.deep.replace(/%/g, "")))
                     let shallowdataProgress = Math.ceil(Number(responseJson.data.shallow.replace(/%/g, "")))
                     if (deepdataProgress === 100) {
@@ -48,28 +49,25 @@ export default function FileList({ selectedFileType, progressUrl, apiKey, filena
     }
 
     useEffect(() => {
-        if (selectedFileType === "PDF") {
-            if (!trained && progress !== 100) {
-                let interval: any;
-                if (progress < 100) {
-                    interval = setInterval(() => {
-                        pdfProgress()
-                    }, 1200); // 1200 milliseconds (2 minutes divided by 100 steps)
-                }
-
-                return () => {
-                    clearInterval(interval);
-                };
+        if (selectedFileType === "PDF" && !trained && progress !== 100) {
+            let interval: any;
+            if (progress < 100) {
+                interval = setInterval(() => {
+                    pdfProgress()
+                }, 1200); // 1200 milliseconds (2 minutes divided by 100 steps)
             }
+            return () => {
+                clearInterval(interval);
+            };
+        }
 
-            if (!trained && progress === 100) {
-                setTimeout(() => {
-                    setTrainingInProgress(false)
-                }, 5000);
-            }
+        if (!trained && progress === 100) {
+            setTimeout(() => {
+                setTrainingInProgress(false)
+            }, 5000);
         }
     }, [progress, selectedFileType]);
-    if (progress !==100) {
+    if (progress !== 100) {
         return (
             <ul className="bg-white rounded-lg shadow divide-y divide-gray-200 max-w-sm mt-2">
                 <li className="px-6 py-4">

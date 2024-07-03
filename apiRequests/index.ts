@@ -31,7 +31,8 @@ export const pdfFileProgress = async (filename: string) => {
     try {
         return await axiosPDFInstance.get(`/data/progress?file_name=${filename}`);
     } catch (error) {
-
+        console.log(`something went wrong during checking the data progress ${error}`);
+        return false;
     }
 }
 
