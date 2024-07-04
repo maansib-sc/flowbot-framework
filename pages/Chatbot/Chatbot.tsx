@@ -16,6 +16,7 @@ const Chatbot: React.FC = () => {
     typingState,
     handleSubmit,
     handleInputChange,
+    handleFileUpload,
     JSModule,
     open,
     setOpen,
@@ -36,7 +37,13 @@ const Chatbot: React.FC = () => {
       <div className={styles['main-content']}>
         <ChatHeader />
         <div className={styles['main']}>
-          <ChatMessages messages={messages} loading={loading} handleSubmit={handleSubmit} />
+          <ChatMessages 
+            messages={messages} 
+            loading={loading} 
+            handleSubmit={handleSubmit} 
+            handleFileUpload={handleFileUpload}
+            typingState={typingState}
+          />
           <ChatInput
             query={query}
             messages={messages}

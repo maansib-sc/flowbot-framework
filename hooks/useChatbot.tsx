@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useRouter }  from 'next/router';
+import { useRouter } from 'next/router';
 import io from 'socket.io-client';
 import { Message } from '@/types/chat';
 import {
@@ -465,7 +465,24 @@ export const useChatbot = () => {
 
     // Function to handle file upload
     const handleFileUpload = async (files: FileList) => {
-        // Logic for file upload
+        for (let item of files) {
+            const formData = new FormData();
+            formData.append('chatId', newChatRoom);
+            formData.append('sessionId', currentSession);
+            formData.append('file', item);
+
+            fetch('/api/file-upload', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('File uploaded successfully:', data);
+                })
+                .catch((error) => {
+                    console.error('Error uploading file:', error);
+                });
+        }
     };
 
     // Function to get default prompt template
