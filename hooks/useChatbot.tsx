@@ -10,7 +10,7 @@ import {
 
 import type { Socket } from 'socket.io-client';
 import ThemeContext from '@/contexts/ThemeContext';
-// import FileList from './File';
+import { generateRandomString } from '@/utils/generateRandomeString';
 
 declare const window: any;
 
@@ -21,7 +21,6 @@ export const useChatbot = () => {
     // State declarations
     const [botLoading, setBotLoading] = useState<boolean>(true);
     const [initChat, setInitChat] = useState<boolean>(false);
-    const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [query, setQuery] = useState<string>('');
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -51,7 +50,7 @@ export const useChatbot = () => {
     const [socketInitstate, setSocketInitstate] = useState(false)
 
     const { JSModule, styles } = useContext(ThemeContext);
-
+    const { messages, history } = messageState;
     // Effect for initializing chat and socket
     useEffect(() => {
         initializeChat();
@@ -66,6 +65,10 @@ export const useChatbot = () => {
         // This includes setting up newChatRoom, currentSession, etc.
         setBotLoading(true);
         if (chatId) {
+            if (typeof chatId === 'string') {
+                setNewChatRoom(chatId)
+                setCurrentSession(generateRandomString('session_', 9));
+            }
             setBotLoading(false);
         }
     };
@@ -264,10 +267,21 @@ export const useChatbot = () => {
                             session: currentSession,
                             reqQuery: router.query,
                             edit: update
-                        }),
+                        })
                     },
                 );
                 const data = await response.json();
+                // const data = {
+                //     "text": "Hi there! I'm your Enjoy Mondays talent advisor, and I'm here to help! I can offer personalized career advice, valuable job search tips, and even suggest upskilling opportunities to boost your resume.",
+                //     "src": "talkingDb",
+                //     "currentStep": {
+                //         "id": 0,
+                //         "inputType": "await",
+                //         "question": "Hi there! I'm your Enjoy Mondays talent advisor, and I'm here to help! I can offer personalized career advice, valuable job search tips, and even suggest upskilling opportunities to boost your resume.",
+                //         "await": 1000
+                //     },
+                //     "hideAnswer": false
+                // }
                 console.log("data", data)
                 if (data?.redirect) {
                     window.location.href = data.redirect;

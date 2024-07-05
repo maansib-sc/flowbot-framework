@@ -5,7 +5,6 @@ import { SideDrawer } from '@/modules/SideDrawer';
 import { ChatMessages } from '@/modules/ChatMessages';
 import { ChatInput } from '@/modules/ChatInput';
 import 'react-modern-drawer/dist/index.css';
-import HamburgerIcon from '@/assets/HamburgerIcon';
 
 const Chatbot: React.FC = () => {
   const {

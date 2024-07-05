@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Address, CardRadioGroup, ColumnCards, GoogleLoginComponent, LoginPasswordAsk, PasswordInput, SelectInputField, MultiSelectInput, AutoCompleteInput, CheckboxGroup, Invoice, SearchInput, ShowDetails, FileUploadComponent, Summary, Table, CostCards, InstallationInfo, StripeComponent, DateTimePicker, CostMilestone, ProjectCard, RatingCard, ReferralCard } from './ui';
 import { InlineWidget } from 'react-calendly';
 import NextFunction from './NextFunction';
 import { Message } from '@/types/chat';
+import ThemeContext from '@/contexts/ThemeContext';
 
 type ComponentFunction = () => JSX.Element | null;
 type ComponentsType = {
@@ -18,10 +19,11 @@ interface DynamicComponentProps {
   index: number
 }
 
-export const DynamicComponent: React.FC<DynamicComponentProps> = ({message, index, messages, handleSubmit, handleFileUpload}) => {
+export const DynamicComponent: React.FC<DynamicComponentProps> = ({ message, index, messages, handleSubmit, handleFileUpload }) => {
+  const { JSModule, styles } = useContext(ThemeContext);
   const isLastMessage = index === messages.length - 1;
   const { type, step } = message;
-  const { inputType, integration, html, options, answer, disabled, defaultValue, data } = step || {};
+  const { inputType, integration, html, options, answer, disabled, defaultValue, data, question } = step || {};
 
   const handleChange = (value: string) => {
     if (isLastMessage) {
@@ -51,7 +53,7 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({message, inde
           value={answer}
           onChange={() => null}
         />
-      ): null,
+      ) : null,
 
     loginPasswordAsk: () => (
       <LoginPasswordAsk
@@ -194,10 +196,12 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({message, inde
         disabled={!isLastMessage}
         onClose={handleChange}
       />
-    ),
+    )
 
   };
 
   const Component = components[inputType];
-  return type === 'apiMessage' && Component && Component();
+  return (
+    JSModule?.conversational && Component?.()
+  )
 };
