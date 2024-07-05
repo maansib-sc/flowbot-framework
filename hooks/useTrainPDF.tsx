@@ -11,7 +11,6 @@ export const useTainPDF = () => {
     const [pdfList, setPdfList] = useState<
         { name?: string; training_id?: string; is_trained: boolean }[]
     >([]);
-    const [showLoader, setShowLoader] = useState<boolean>(false);
     const [selectedFileType, setSelectedFileType] = useState<string>('PDF');
     const [selecteduploadFile, setSelecteduploadFile] = useState<File | null>(
         null,
@@ -28,7 +27,6 @@ export const useTainPDF = () => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
             setPdfList((prevList: any) => [...prevList, { name: selectedFile.name, is_trained: false }])
-            setShowLoader(true);
             setSelectedFileType('PDF');
             setSelecteduploadFile(selectedFile);
             setTrainingInProgress(true);
@@ -85,6 +83,7 @@ export const useTainPDF = () => {
 
     return {
         pdfList,
+        chatbots,
         selectedFileType,
         uploading,
         setTrainingInProgress,

@@ -33,8 +33,6 @@ export const useChatbot = () => {
     const [content, setContent] = useState('');
     const [open, setOpen] = useState(false);
     const [hiddenInput, setHiddenInput] = useState(false);
-    const [leftPanelHtml, setLeftPanelHtml] = useState('');
-    const [headerPaneHtml, setHeaderPaneHtml] = useState('');
     const [messageState, setMessageState] = useState<{
         messages: Message[];
         pending?: string;
@@ -138,9 +136,7 @@ export const useChatbot = () => {
             });
         }
         if (JSModule) {
-            setLeftPanelHtml(JSModule?.leftPanelHtml);
             window.handleLeftPanel = JSModule?.handleLeftPanel;
-            setHeaderPaneHtml(JSModule?.headerPaneHtml);
             window.handleHeaderPane = JSModule?.handleHeaderPane;
         }
     }, [JSModule]);
@@ -291,7 +287,7 @@ export const useChatbot = () => {
                     window.open(data?.currentStep?.windowOpen, "_blank")
                 }
                 if (data?.currentStep?.updateLeftPanel) {
-                    setLeftPanelHtml(data?.currentStep?.updateLeftPanel);
+                    window.handleLeftPanel = data?.currentStep?.updateLeftPanel;
                 }
                 if (
                     data?.currentStep?.inputType === 'socket' && data?.src === 'apiMessage'
