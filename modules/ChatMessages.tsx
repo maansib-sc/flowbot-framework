@@ -1,17 +1,12 @@
-import ChatIcon from "@/assets/svgs/ChatIcon";
 import Libby from "@/assets/svgs/Libby";
 import You from "@/assets/svgs/You";
 import ToolTip from "@/assets/svgs/icons/ToolTip";
-import { PromptModal } from "@/components/customPromptModal";
-import { Button } from "@/components/ui";
 import LoadingDots from "@/components/ui/LoadingDots";
 import ThemeContext from "@/contexts/ThemeContext";
 import Image from "next/image";
 import { Fragment, useContext, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Message } from '@/types/chat';
-import { InlineWidget } from "react-calendly";
-import FileList from '@/pages/Chatbot/File';
 import rehypeRaw from 'rehype-raw';
 import { DynamicComponent } from "@/components/DynamicComponent";
 

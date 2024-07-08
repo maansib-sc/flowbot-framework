@@ -155,8 +155,8 @@ const Summary = (props: IProps) => {
                         {JSON.parse(dataItem.value).label}
                       </span>
                     ) : dataItem.inputType === 'fileUploader' ? (
-                      JSON.parse(dataItem.value).map((item: string) => 
-                      <div>
+                      JSON.parse(dataItem.value).map((item: string, index: number) => 
+                      <div key={index + 1}>
                       <div className="flex gap-x-1 pt-1">
                         <FileUploderIcon />
                           <span className={styles.span}>{item}</span>

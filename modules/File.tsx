@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import PdfIcon from '@/assets/svgs/PdfIcon';
 import config from '@/config/constants';

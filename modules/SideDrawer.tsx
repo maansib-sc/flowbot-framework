@@ -5,7 +5,7 @@ import ThemeContext from "@/contexts/ThemeContext";
 import Drawer from 'react-modern-drawer';
 import DownloadIcon from "@/assets/svgs/DownloadIcon";
 import { useTainPDF } from "@/hooks/useTrainPDF";
-import FileList from "@/pages/Chatbot/File";
+import FileList from "@/modules/File";
 import config from '@/config/constants';
 
 

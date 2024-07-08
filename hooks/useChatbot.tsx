@@ -47,7 +47,7 @@ export const useChatbot = () => {
     const [socketState, setSocketState] = useState(false);
     const [socketInitstate, setSocketInitstate] = useState(false)
 
-    const { JSModule, styles } = useContext(ThemeContext);
+    const { JSModule, styles } = useContext(ThemeContext) || {};
     const { messages, history } = messageState;
     // Effect for initializing chat and socket
     useEffect(() => {
@@ -552,6 +552,8 @@ export const useChatbot = () => {
         loading,
         botLoading,
         query,
+        JSModule, 
+        styles, 
         setQuery,
         open,
         setOpen,
@@ -561,8 +563,6 @@ export const useChatbot = () => {
         handleInputChange,
         handleFileUpload,
         updatePromptTemplate,
-        resetPromptTemplateHandler,
-        JSModule,
-        styles
+        resetPromptTemplateHandler
     };
 };
