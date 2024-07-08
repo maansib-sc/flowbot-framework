@@ -8,6 +8,7 @@ import ChatIcon from '@/assets/svgs/ChatIcon';
 import DownloadIcon from '@/assets/svgs/DownloadIcon';
 import Libby from '@/assets/svgs/Libby';
 import PdfIcon from '@/assets/svgs/PdfIcon';
+import TrashIcon from '@/assets/svgs/TrashIcon';
 import Pencil from '@/assets/svgs/Pencil';
 import You from '@/assets/svgs/You';
 import ToolTip from '@/assets/svgs/icons/ToolTip';
@@ -675,6 +676,38 @@ const Chatbot = () => {
   }
   }
 
+  const handleDeleteDocument = async ( documentName: string) => {
+    try {
+      console.log(`called to delete the doc with name ${documentName}`);
+      const response = await fetch(`${config.NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}/data/${documentName}?chatbot_id=document-${chatId}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'API-KEY': config.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY
+        },
+      });
+      if (response) {
+        try {
+          const chatbotUrl = JSModule?.trainedChatbotUrl as string
+          const response = await fetch(`${config.NEXT_PUBLIC_BACKEND_CONNECTOR_HOST}/${chatbotUrl}${newChatRoom}`, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'API-KEY': config.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY
+            }
+          });
+          const jsonData = await response.json();
+          setChatbots(jsonData.data)
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+    } catch (error) {
+      console.log(`something went wrong during deleting the doc ${documentName}: ${error}`);
+      return;
+    }
+  }
+
   // File Handler Submission
   const uploadFilehandler = async (files: FileList) => {
     for (let item of files) {
@@ -873,10 +906,17 @@ const Chatbot = () => {
               </div>
             </div>
             <div className={styles['DataContainer']}>
-              {chatbots?.map((chatbot: {name: string}, index) => (
+              {chatbots?.map((document: {name: string}, index) => (
                 <div key={index} className={styles['DataItem']}>
                   <PdfIcon />
-                  <span>{chatbot?.name}</span>
+                  <span>{document?.name}</span>
+                  <div
+                  onClick={() => {
+                    handleDeleteDocument(document?.name)
+                  }}
+                  className={styles['IconContainer']}>
+                    <TrashIcon />
+                  </div>
                 </div>
               ))}
             </div>
