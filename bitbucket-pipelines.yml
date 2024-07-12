@@ -4,8 +4,10 @@ definitions:
   steps:
     - step: &build
         name: Build
-        size: 2x
+        size: 4x
         script:
+          - npx browserslist@latest --update-db
+          - export SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
           - bash ./run.sh build
         services:
           - docker
