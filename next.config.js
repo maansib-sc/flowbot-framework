@@ -12,21 +12,21 @@ const nextConfig = {
 
 
 
-import { withSentryConfig } from "@sentry/nextjs";
+// import { withSentryConfig } from "@sentry/nextjs";
 
-const sentryConfig = {
-  silent: true,
-  org: "smartercodes-xb",
-  project: "hybrid-c-chat-portal",
-};
+// const sentryConfig = {
+//   silent: true,
+//   org: "smartercodes-xb",
+//   project: "hybrid-c-chat-portal",
+// };
 
-const sentryOptions = {
-  widenClientFileUpload: true,
-  transpileClientSDK: true,
-  tunnelRoute: "/monitoring",
-  hideSourceMaps: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
-};
+// const sentryOptions = {
+//   widenClientFileUpload: true,
+//   transpileClientSDK: true,
+//   tunnelRoute: "/monitoring",
+//   hideSourceMaps: true,
+//   disableLogger: true,
+//   automaticVercelMonitors: true,
+// };
 
-export default withSentryConfig(nextConfig, sentryConfig, sentryOptions);
+// export default withSentryConfig(nextConfig, sentryConfig, sentryOptions);

@@ -4,7 +4,9 @@ definitions:
   steps:
     - step: &build
         name: Build
+        size: 4x
         script:
+          - export SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
           - bash ./run.sh build
         services:
           - docker
