@@ -13,7 +13,7 @@ const AdminPage: React.FC = () => {
     const [deleteChatbotKey, setDeleteChatbotKey] = useState<string>('');
     const router = useRouter();
     const { key } = router.query;
-    // Remove fallback value later
+    // Remove fallback value later 
     const verificationKey = process.env.NEXT_PUBLIC_ADMIN_KEY ?? "12345"
 
 
