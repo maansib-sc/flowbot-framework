@@ -25,6 +25,7 @@ export const useChatbot = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [query, setQuery] = useState<string>('');
     const [socket, setSocket] = useState<Socket | null>(null);
+    const [roomId, setRoomId] = useState<string>('');
     const [registrationMessage, setRegistrationMessage] = useState<any>(null);
     const [isSignupPage, setIsSignupPage] = useState(false);
     const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -72,6 +73,46 @@ export const useChatbot = () => {
             initializeSocket();
         }
     }, [chatId, JSModule?.socket_base_url]);
+
+    // here we will be updating the messages we are getting from api server through socket io
+    useEffect(() => {
+        const socket = io({
+          path: '/api/socket',
+        });
+        setRoomId(localStorage?.getItem('conversation_id') || '')
+    
+        socket.on('connect', () => {
+          console.log('Connected to websocket server for the messages from hcinbox');
+
+          if (roomId) {
+              socket.emit('joinRoom', roomId);
+          }
+        });
+    
+        socket.on('updateMessageState', (message) => {
+
+            console.log('yes we got emitted updateMessageState and now its in client');
+            console.log('message is', message);
+            
+            setMessageState((state: any) => ({
+                ...state,
+                messages: [
+                    ...state.messages,
+                    {
+                        type: 'apiMessage',
+                        message: `${message}`,
+                        src: 'talkingDb',
+                        step: {},
+                        id: Math.random(),
+                    },
+                ],
+            }));
+        });
+    
+        return () => {
+          socket.disconnect();
+        };
+    }, [roomId]);
 
 
     // Function to initialize socket
@@ -252,6 +293,7 @@ export const useChatbot = () => {
             setQuery('');
             try {
                 let access_token = localStorage.getItem('access_token');
+                const conversation_id = localStorage.getItem('conversation_id')
                 const response = await fetch(
                     `/api/chat?pinecone_name_space=${newChatRoom}`,
                     {
@@ -261,6 +303,7 @@ export const useChatbot = () => {
                             Authorization: `Bearer ${access_token}`,
                         },
                         body: JSON.stringify({
+                            conversation_id,
                             question,
                             history,
                             session: currentSession,
@@ -271,7 +314,21 @@ export const useChatbot = () => {
                 );
                 const data = await response.json();
                 console.log("data", data)
-                const message: string = data?.errorMessage
+
+                // it is the case user sent message to human agent;
+                if ( data?.messageHandovered) {
+                    console.log(`yess message is handovered`);
+                    setLoading(false);
+                    return
+                }
+
+                if (data?.conversationId) {
+                    console.log(`yes we got conversationId ${data?.conversationId}`);
+                    localStorage.setItem("conversation_id", data?.conversationId)
+                    setRoomId(data?.conversationId)
+                }
+                
+                const message: string = data?.errorMessage;
                 if ( message && message.includes('For more information,') ){
                     const { documentName, pageNumbers } = getDocumentNameAndPageNumber(message)
                     pageNumbers?.map((pageNumber) => {

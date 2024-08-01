@@ -18,6 +18,16 @@ interface stepData {
 }
 
 const UserSchema: Schema = new Schema({
+    email: {
+        type: String,
+    },
+    name: {
+        type: String,
+    },
+    handOverEnabled: {
+        type: Boolean,
+        default: false
+    },
     subscriptionType: {
         type: String,
         default: 'FREE',
@@ -69,6 +79,29 @@ UserSchema.method("setUserData", function (data: stepData) {
 
 UserSchema.method("getUserData", function () {
     return this.userData
+});
+
+UserSchema.method("getUserDocument", function () {
+    return this
+});
+
+UserSchema.method("updateUserDetails",  async function (email: string[], name: string) {
+    if (email?.length) {
+        this.email = email[0];
+    }
+    if (name) {
+        this.name = name;
+    }
+    this.updatedAt = Date.now();
+    await this.save()
+    return this
+});
+
+UserSchema.method("updateHandoverStatus",  async function (status: boolean) {
+    this.handOverEnabled = status;
+    this.updatedAt = Date.now();
+    await this.save()
+    return this
 });
 
 UserSchema.method("getData", function (value: string) {

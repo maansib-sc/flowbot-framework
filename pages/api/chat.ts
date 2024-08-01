@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { makeChain } from '@/utils/makechain';
 import dbConnect from '@/config/mongodb';
 import { upsertSubscription } from '@/models/subscriptionModel';
-import { upsertUser } from '@/models/userModel';
+import UserModel, { IUser, upsertUser } from '@/models/userModel';
 import axios from 'axios';
 import { BigQuery } from '@google-cloud/bigquery';
 import { DocumentProcessorServiceClient } from '@google-cloud/documentai';
@@ -20,7 +20,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { question, history, enablegptfallback, session, reqQuery, chainStatus=false } = req.body;
+  const { question, history, enablegptfallback, session, reqQuery, chainStatus=false, conversation_id } = req.body;
   const { pinecone_name_space } = req.query;
   const chatBotId = String(pinecone_name_space || 'default');
   // console.log('question', question, session);
@@ -44,7 +44,13 @@ export default async function handler(
       return res.status(200).json(response);
     }
 
-    const user = await upsertUser(chatBotId, session);
+    // we have to upsert a new user only if there is no conversation_id in the localstorage;
+    let user: IUser;
+    if (!conversation_id) {
+      user = await upsertUser(chatBotId, session);
+    } else {
+      user = await UserModel.findById(conversation_id) as IUser;
+    }
 
     const headers = req.headers;
 
