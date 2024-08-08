@@ -25,7 +25,7 @@ const CloneChatbot = ({ id, onClose }: { id: string, onClose: (id: string) => vo
             </div>
             <button
                 type='submit'
-                disabled={chatBotId ? false : true}
+                style={{cursor: chatBotId ? "pointer": "not-allowed"}}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
             >
                 Submit

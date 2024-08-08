@@ -46,6 +46,7 @@ const AdminPage: React.FC = () => {
 
 
         if (Id === "close modal") {
+            setCloneStatus(false)
             setCreateChatbot(false)
             setSelectedChatbotKey('')
         } else if (Id === "created") {
