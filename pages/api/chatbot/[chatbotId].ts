@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { deleteChatbot} from '@/utils/chatbots';
+import { updateConfigFile } from '@/utils/test';
 
 export default async function handler(
     req: NextApiRequest,
@@ -14,11 +15,21 @@ export default async function handler(
                 const deletedValue = await deleteChatbot(chatbotId)
                 return res.status(200).json({data : deletedValue});
             }
-
-          } else {
-            res.setHeader('Allow', ['DELETE']);
+        } 
+          
+        if (req.method === 'POST') {
+            const { chatbotId } = req.query;
+            const { type, content } = req.body;
+            if (chatbotId && typeof chatbotId === 'string') {
+                const updateValue = await updateConfigFile(chatbotId, type, content)
+                return res.status(200).json({data : updateValue});
+            }
+        } else {
+            res.setHeader('Allow', ['POST', 'DELETE']);
             return res.status(405).end(`Method ${req.method} Not Allowed`);
           }
+
+        
 
     } catch (error: any) {
         console.log('error', error);
