@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next';
 import FileEditor from '@/components/FileEditor';
-import { getJsTest } from '@/utils/test';
+import { getJsTest } from '@/utils/Configfiles';
 import { updateConfig } from '@/apiRequests';
 
 interface EditorProps {

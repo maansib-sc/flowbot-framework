@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { updateConfigFile } from '@/utils/test';
-import { updateConfig } from '@/apiRequests';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 

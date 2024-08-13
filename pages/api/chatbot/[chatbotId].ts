@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { deleteChatbot} from '@/utils/chatbots';
-import { updateConfigFile } from '@/utils/test';
+import { updateConfigFile } from '@/utils/Configfiles';
 
 export default async function handler(
     req: NextApiRequest,
