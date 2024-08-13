@@ -3,10 +3,11 @@ import TrashIcon from '@/assets/svgs/TrashIcon';
 import { deleteChatbot, getChatbots } from '@/apiRequests';
 import { LiveChatbot } from '@/types/chat';
 import CustomModal from '@/components/ui/customModal';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 import { ToastContainer, toast } from 'react-toastify';
 import CopyIcon from '@/assets/svgs/CopyIcon';
 import CloneChatbot from '@/modules/CloneChatbot';
+import Pencil from '@/assets/svgs/Pencil';
 
 const AdminPage: React.FC = () => {
 
@@ -34,7 +35,7 @@ const AdminPage: React.FC = () => {
         if (Id && Id !== "close modal") {
             await deleteChatbot(Id)
             await fetchLiveChatbots()
-            toast(`${Id} chatbot deleted successfully`, {type: "success"});
+            toast(`${Id} chatbot deleted successfully`, { type: "success" });
         }
         setModalStatus(false)
         setSelectedChatbotKey('')
@@ -50,7 +51,7 @@ const AdminPage: React.FC = () => {
             setCreateChatbot(false)
             setSelectedChatbotKey('')
         } else if (Id === "created") {
-            toast("Chatbot cloned successfully", {type: "success"})
+            toast("Chatbot cloned successfully", { type: "success" })
             setCreateChatbot(false)
             setSelectedChatbotKey('')
             await fetchLiveChatbots()
@@ -66,10 +67,10 @@ const AdminPage: React.FC = () => {
 
     return (
         <>
-        <ToastContainer />
+            <ToastContainer />
             {key !== verificationKey ? (
                 <div className='m-8 flex justify-center items-center h-screen'>
-                    <h1>You don't have access of this page <br/> Please contact admin for access. </h1>
+                    <h1>You don't have access of this page <br /> Please contact admin for access. </h1>
                 </div>
             ) : (
                 <div className='m-6'>
@@ -102,49 +103,59 @@ const AdminPage: React.FC = () => {
                                 >
                                     <h2 className="text-xl font-bold text-gray-800">{item?.file}</h2>
                                 </button>
-                                <button
-                                    onClick={() => {
-                                        setModalStatus(true)
-                                        setSelectedChatbotKey(item?.file)
-                                    }}
-                                    title='Delete Chatbot'
-                                    className="absolute top-2 right-2 text-gray-500 focus:outline-none hover:bg-gray-200 rounded p-1"
-                                >
-                                    <TrashIcon />
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setCloneStatus(true)
-                                        setSelectedChatbotKey(item?.file)
-                                    }}
-                                    title='Clone Chatbot'
-                                    className="absolute top-2 right-10 text-gray-500 focus:outline-none hover:bg-gray-200 rounded p-1"
-                                >
-                                    <CopyIcon />
-                                </button>
+                                <div className='flex w-6 gap-1 absolute top-2 right-16 item-center'>
+                                    <button
+                                        onClick={() => {
+                                            setCloneStatus(true)
+                                            setSelectedChatbotKey(item?.file)
+                                        }}
+                                        title='Clone Chatbot'
+                                        className="text-gray-500 focus:outline-none hover:bg-gray-200 rounded p-1"
+                                    >
+                                        <CopyIcon />
+                                    </button>
+
+                                    <button
+                                        onClick={() => window.open(`/admin/edit-file?chatbotId=${item?.file}&filetype=server`, '_blank')}
+                                        title='Edit Chatbot'
+                                        className="text-gray-500 focus:outline-none hover:bg-gray-200 rounded p-1"
+                                    >
+                                        <Pencil color='black' />
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setModalStatus(true)
+                                            setSelectedChatbotKey(item?.file)
+                                        }}
+                                        title='Delete Chatbot'
+                                        className="text-gray-500 focus:outline-none hover:bg-gray-200 rounded p-1"
+                                    >
+                                        <TrashIcon />
+                                    </button>
+                                </div>
                             </div>
                         )
                         )}
                         {modalStatus && <CustomModal id={selectedChatbotKey} title={`Do you want to delete chatbot - ${selectedChatbotKey}?`} status={modalStatus} onClose={deleteLiveChatbot} />}
-                        {cloneStatus && 
-                            <CustomModal 
-                                id={selectedChatbotKey} 
-                                title={`Do you want to clone this chatbot - ${selectedChatbotKey}?`} 
-                                status={cloneStatus} 
-                                onClose={handleCloneChatbot} 
+                        {cloneStatus &&
+                            <CustomModal
+                                id={selectedChatbotKey}
+                                title={`Do you want to clone this chatbot - ${selectedChatbotKey}?`}
+                                status={cloneStatus}
+                                onClose={handleCloneChatbot}
                             />
                         }
                         {createChatbot &&
-                        <CustomModal 
-                            id={selectedChatbotKey} 
-                            onClose={handleCloneChatbot} 
-                            status={createChatbot}
-                            title={"Enter the name for the new chatbot"}
-                            children={
-                                <CloneChatbot id={selectedChatbotKey} onClose={handleCloneChatbot}/>
-                            }
-                            showOptionsButton={false}
-                        />
+                            <CustomModal
+                                id={selectedChatbotKey}
+                                onClose={handleCloneChatbot}
+                                status={createChatbot}
+                                title={"Enter the name for the new chatbot"}
+                                children={
+                                    <CloneChatbot id={selectedChatbotKey} onClose={handleCloneChatbot} />
+                                }
+                                showOptionsButton={false}
+                            />
                         }
                     </div>
                 </div>

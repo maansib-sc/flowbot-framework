@@ -168,3 +168,34 @@ export const cloneChatbot = async (chatbotId: string, newChatbotId: string) => {
         return null
     }
 }
+
+
+export const fetchJsConfig = async (chatbotId: string, type: string) => {
+    try {
+        const body = {
+            chatbotId,
+            type
+        }
+          
+        const res = await axios.post(`/api/config/chatbot-js`, body)
+        return res
+    } catch (error) {
+        return null
+    }
+}
+
+
+
+export const updateConfig = async (chatbotId: string, type: string, content: string) => {
+    try {
+        const body = {
+            type,
+            content
+        }
+          
+        const res = await axios.post(`/api/chatbot/${chatbotId}`, body)
+        return res
+    } catch (error) {
+        return null
+    }
+}
