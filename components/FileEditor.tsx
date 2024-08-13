@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { ToastContainer, toast } from 'react-toastify';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
@@ -18,10 +19,12 @@ const FileEditor: React.FC<Props> = ({ fileType, fileContent, handleSubmit }) =>
 
   const handleSave = async () => {
     handleSubmit(content)
+    toast("Chatbot Updated successfully", { type: "success" })
   };
 
   return (
-    <div className=''>
+    <>
+      <ToastContainer />
       <div className='flex justify-between p-2 items-center'>
         <h1 className='items-center flex'>Code Editor</h1>
         <button
@@ -36,7 +39,7 @@ const FileEditor: React.FC<Props> = ({ fileType, fileContent, handleSubmit }) =>
           theme="vs-dark"
         />
         </div>
-    </div>
+    </>
   );
 };
 
