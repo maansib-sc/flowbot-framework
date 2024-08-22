@@ -25,9 +25,9 @@ GCP_CLUSTER_PROD=kg-hybrid-chat
 GCP_CLUSTER_DEV=kg-hybrid-chat
 GCP_CLUSTER_REL=kg-hybrid-chat
 
-HOST_PROD="kg.smarter.codes"
-HOST_DEV="kg.smarter.codes"
-HOST_REL="kg.smarter.codes"
+HOST_PROD="kg.hybrid.chat"
+HOST_DEV="kg.hybrid.chat"
+HOST_REL="kg.hybrid.chat"
 
 APP_PROD="$HOST_PROD"
 APP_DEV="dev.$HOST_DEV"
