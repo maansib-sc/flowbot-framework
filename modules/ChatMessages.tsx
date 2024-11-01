@@ -7,7 +7,7 @@ import ReferenceViewOuter from "@/components/ui/ReferenceView/ReferenceViewOuter
 import ReferenceViewer from "@/components/ui/ReferenceView/ReferenceView";
 import ThemeContext from "@/contexts/ThemeContext";
 import Image from "next/image";
-import { Fragment, useContext, useRef } from "react";
+import { Fragment, useContext, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { IReferences, Message } from '@/types/chat';
 import rehypeRaw from 'rehype-raw';
@@ -29,6 +29,13 @@ export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loa
     const { JSModule, styles } = useContext(ThemeContext);
     const messageListRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        // This effect will run each time the messages array is updated (i.e., when a new message is added)
+        if (messageListRef.current) {
+            messageListRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }, [messages]);
+
     const createMarkup = (question: any) => {
         return { __html: question };
     };
@@ -40,7 +47,7 @@ export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loa
     return (
         <div style={{ display:'flex', flexDirection:"row", width: "100%", height: "100%"}}>
             <div className={styles?.cloud} style={{ width: "80%"}}>
-                <div ref={messageListRef} className={styles["messagelist"]}>
+                <div className={styles["messagelist"]}>
                     {/* TODO: Move Icon to conf */}
                     {messages.map((message, index) => {
                             let icon;
@@ -263,6 +270,8 @@ export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loa
                                 </Fragment>
                             )
                     })}
+                    {/* Dummy div to scroll into view */}
+                    <div ref={messageListRef} />
                 </div>
             </div>
             {/* here we will be showing the reference documents */}
