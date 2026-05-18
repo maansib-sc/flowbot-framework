@@ -2,21 +2,25 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { makeChain } from '@/utils/makechain';
 import dbConnect from '@/config/mongodb';
 import { upsertSubscription } from '@/models/subscriptionModel';
-import { upsertUser } from '@/models/userModel';
+import UserModel, { IUser, upsertUser } from '@/models/userModel';
 import axios from 'axios';
 import { BigQuery } from '@google-cloud/bigquery';
 import { DocumentProcessorServiceClient } from '@google-cloud/documentai';
 import { GoogleAuth } from 'google-auth-library';
-const fs = require('fs');
+const parser = require('@babel/parser');
+const generator = require('@babel/generator');
+const fs = require('fs-extra');
 const FormData = require('form-data');
+const json5 = require('json5');
 import path from 'path';
+const { htmlToText } = require('html-to-text');
 
 export const config = { api: { bodyParser: { sizeLimit: '100mb' } } };
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { question, history, enablegptfallback, session } = req.body;
+  const { question, history, enablegptfallback, session, reqQuery, chainStatus=false, conversation_id } = req.body;
   const { pinecone_name_space } = req.query;
   const chatBotId = String(pinecone_name_space || 'default');
   // console.log('question', question, session);
@@ -35,50 +39,85 @@ export default async function handler(
   try {
     //create chain
     const chain = new makeChain(chatBotId);
+    if (chainStatus){
+      const response = await chain.run(question)
+      return res.status(200).json(response);
+    }
 
-    const user = await upsertUser(chatBotId, session);
+    // we have to upsert a new user only if there is no conversation_id in the localstorage;
+    let user: IUser;
+    if (!conversation_id) {
+      user = await upsertUser(chatBotId, session);
+    } else {
+      user = await UserModel.findById(conversation_id) as IUser;
+    }
 
-    import(`@/configuration/${chatBotId}/server`)
-      .then(async (module) => {
-        const response = await module.start(
-          {
-            chain,
-            axiosInstance: axios,
-            user,
-            BigQuery,
-            DocumentProcessorServiceClient,
-            GoogleAuth,
-            fs,
-            path,
-            FormData,
-          },
-          sanitizedQuestion,
-        );
-        if (response) {
-          return res.status(200).json(response);
-        }
-      })
-      .catch((error) => {
-        import(`@/configuration/default/server`).then(async (module) => {
-          const response = await module.start(
-            {
-              chain,
-              axiosInstance: axios,
-              user,
-              BigQuery,
-              DocumentProcessorServiceClient,
-              GoogleAuth,
-              fs,
-              path,
-              FormData,
-            },
-            sanitizedQuestion,
-          );
-          if (response) {
-            return res.status(200).json(response);
+    const headers = req.headers;
+
+    return new Promise((resolve, reject) => {
+      import(`@/configuration/${chatBotId}/server`)
+        .then(async (module) => {
+          try {
+            const response = await module.start(
+              {
+                chain,
+                axiosInstance: axios,
+                user,
+                BigQuery,
+                DocumentProcessorServiceClient,
+                GoogleAuth,
+                fs,
+                path,
+                FormData,
+                reqQuery,
+                reqBody: req.body,
+                chatBotId,
+                headers,
+                parser,
+                generator,
+                json5,
+                htmlToText,
+              },
+              sanitizedQuestion,
+            );
+            res.status(200).json(response);
+            resolve(response);
+          } catch (error: any) {
+            res
+              .status(500)
+              .json({ error: error?.message || 'Something went wrong' });
+            console.log(error);
+            resolve(error);
           }
+        })
+        .catch((error) => {
+          import(`@/configuration/default/server`).then(async (module) => {
+            const response = await module.start(
+              {
+                chain,
+                axiosInstance: axios,
+                user,
+                BigQuery,
+                DocumentProcessorServiceClient,
+                GoogleAuth,
+                fs,
+                path,
+                FormData,
+                reqQuery,
+                chatBotId,
+                headers,
+                parser,
+                generator,
+                json5,
+                htmlToText,
+              },
+              sanitizedQuestion,
+            );
+            res.status(200).json(response);
+            resolve(response);
+          });
         });
-      });
+    });
   } catch (error: any) {
     console.log('error', error);
     res.status(500).json({ error: error.message || 'Something went wrong' });

@@ -1,29 +1,32 @@
-import { axiosPDFInstance, axiosConvInstance } from "@/utils/axiosInstance";
+import { ChatbotsResponse, LiveChatbot } from "@/types/chat";
+import { axiosPDFInstance, axiosConvInstance } from "@/utils/axiosInstance"
+import axios from 'axios';
 
 type CHAT_ID = string | string[] | undefined
 
 export const getPDFList = async (chatId: CHAT_ID) => {
     try {
-        const response = await axiosPDFInstance.get(`/data/list?chatbot_id=${chatId}`);
+        const response = await axiosPDFInstance.get(`/data/list?chatbot_id=document-${chatId}`);
         return response.data.data;
     } catch (error) {
-
+        return false;
     }
 }
 
 export const uploadPDF = async (chatId: CHAT_ID, data: any) => {
     try {
-        await axiosPDFInstance.post(`/data/upload?chatbot_id=${chatId}`, data);
+        await axiosPDFInstance.post(`/data/upload?chatbot_id=document-${chatId}`, data);
     } catch (error) {
-
+        console.log(`something went wrong during uploading pdf: ${error}`);
+        return false;
     }
 }
 
 export const deletePDFList = async (chatId: CHAT_ID) => {
     try {
-        await axiosPDFInstance.get(`/chatbot/untrain?chatbot_id=${chatId}`);
+        await axiosPDFInstance.get(`/chatbot/untrain?chatbot_id=document-${chatId}`);
     } catch (error) {
-
+        
     }
 }
 
@@ -31,7 +34,8 @@ export const pdfFileProgress = async (filename: string) => {
     try {
         return await axiosPDFInstance.get(`/data/progress?file_name=${filename}`);
     } catch (error) {
-
+        console.log(`something went wrong during checking the data progress ${error}`);
+        return false;
     }
 }
 
@@ -90,5 +94,108 @@ export const submitPromptTemplate = async (chatId: CHAT_ID, data: any) => {
         return await axiosConvInstance.post(`/prompt_template?chat_id=${chatId}`, data);
     } catch (error) {
 
+    }
+}
+
+export const deleteDocument = async ( documentName: string, chatId: string | unknown) => {
+    try {
+        const response = await axiosPDFInstance.delete(`/data/${documentName}?chatbot_id=document-${chatId}`)
+        return response;
+    } catch (error) {
+        console.log(`something went wrong during deleting the doc ${documentName}: ${error}`);
+        return false;
+    }
+}
+
+
+export const getChatbots = async (): Promise<LiveChatbot[] | null> => {
+    try {
+        const response: ChatbotsResponse = await axios.get(`/api/chatbot`)
+        return response.data.data;
+    } catch (error) {
+        return null;
+    }
+}
+
+export const deleteChatbot = async (chatbotId: string) => {
+    try {
+        const response = await axios.delete(`/api/chatbot/${chatbotId}`)
+        return response.data.data;
+    } catch (error) {
+        return null;
+    }
+}
+
+
+export const UploadChatbotZip = async (chatBotId:string, file: File) => {
+    try {
+        const formData = new FormData()
+        formData.append("chatBotId", chatBotId)
+        formData.append("file", file)
+        const response = await axios.post(`/api/upload`, formData)
+        return response;
+    } catch (error) {
+        // console.log("error occured at UploadChatbotZip ==>", error)
+        return null;
+    }
+}
+
+export const UploadConfig = async (chatBotId: string, fileType: string, serverType: string, file: File ) => {
+    try {
+        const formData = new FormData()
+        formData.append("chatBotId", chatBotId)
+        formData.append("fileType", fileType)
+        formData.append("serverType", serverType)
+        formData.append("file", file)
+        const response = await axios.post(`/api/config-upload`, formData)
+        return response;
+    } catch (error) {
+        // console.log("error occured at UploadConfig ==>", error)
+        return null;
+    }
+}
+
+
+export const cloneChatbot = async (chatbotId: string, newChatbotId: string) => {
+    try {
+        const body = {
+            chatbotId,
+            newChatbotId
+        }
+        const data = await axios.post(`/api/clone-chatbot`, body)
+        return data
+    } catch (error) {
+        return null
+    }
+}
+
+
+export const fetchJsConfig = async (chatbotId: string, type: string) => {
+    try {
+        const body = {
+            chatbotId,
+            type
+        }
+          
+        const res = await axios.post(`/api/config/chatbot-js`, body)
+        return res
+    } catch (error) {
+        return null
+    }
+}
+
+
+
+export const updateConfig = async (chatbotId: string, type: string, content: string) => {
+    try {
+        const body = {
+            type,
+            content
+        }
+          
+        const res = await axios.post(`/api/chatbot/${chatbotId}`, body)
+        return res
+    } catch (error) {
+        return null
     }
 }

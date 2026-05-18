@@ -1,102 +1,161 @@
-export const getTitle = "Document chatbot";
-export const getWelcomeMessage = "I am a Assistant. I'll assist you with any queries related to documents";
-export const getInputPlaceholder = "Write Message";
-export const Navbar = false;
-export const botName = "Alex";
-export const testProject = false;
-export const ChatBotStep = [
-    {
+export const conversational = true;
 
-        "question": "Welcome to beginAProject",
-        "id": 0,
-        "fullWidth": true,
-        "title": "Registeration with Libby",
-        "description": "Libby will guide you through the registration process and willanswer any questions that you have. If you experience anyplatform issues during the registration process, click the “Chatwith Platform Support” button on the top right of the channelduring the sign-up process."
-    },
-    {
-        "id": 1,
-        "question": "What is your first Name and last Name",
-        "inputType": "text",
-        "options": []
-    },
-    {
-        "id": 2,
-        "question": "So, would you like to register using using your Google log-in ?",
-        "inputType": "radioButton",
-        "options": [
-            { label: 'Yes', value: 'Yes' },
-            { label: 'No', value: 'No' }
-        ],
-        "default": "Yes"
-    },
-    {
-        "id": 3,
-        "question": "What is your email address",
-        "inputType": "text",
-        "options": []
-    },
-    {
-        "id": 4,
-        "question": "Please enter your mobile number",
-        "inputType": "text",
-        "options": []
-    },
-    {
-        "id": 5,
-        "question": "Please check your phone for the SMS verification code. Once you receive it, please type it into the chat box. If you fail to receive it, please type in please resend into the chatbox.",
-        "inputType": "text",
-        "options": []
-    },
-    {
-        "id": 6,
-        "question": "Please enter your preferred password. It must contain letters, numbers and symbols. It is required to have at least one letter, one number and one symbol.",
-        "inputType": "password",
-        "options": []
-    },
-    {
-        "id": 7,
-        "question": "Please re-enter your password",
-        "inputType": "password",
-        "options": []
-    },
-    {
-        "id": 8,
-        "question": "Okay, now please enter your company name",
-        "inputType": "",
-        "options": []
-    },
-    {
-        "id": 9,
-        "question": "The next step is for you to enter the primary contact name for the business",
-        "inputType": "",
-        "options": []
-    },
-    {
-        "id": 10,
-        "question": "Thank you, now can you please enter your primary address",
-        "inputType": "address",
-        "options": []
-    },
+export const openid = {
+  authorization_endpoint: '',
+  token_endpoint: '',
+  userinfo_endpoint: '',
+  scopes_supported: ['openid', 'profile', 'email'],
+  client_id: '',
+  realm: '',
+};
 
-];
-export const finalMessage = "Thanks for the provided information"
-export const conversational = false
+export const ChatBotStep = ({ chatBotId, tokenUser, answer }) => [];
+
+export const insertUserData = (handler, step, answer, summary = true) => {
+  let obj = {};
+  let currentStep = ChatBotStep().find((item) => item.id == step);
+  if (currentStep.header) {
+    obj = {
+      key: currentStep.mongo_key,
+      category_id: currentStep.header.step,
+      category_description: currentStep.header.text,
+      inputType: currentStep.inputType,
+      answer: answer,
+      summary: summary,
+    };
+  } else {
+    obj = {
+      key: currentStep.mongo_key,
+      answer: answer,
+      inputType: currentStep.inputType,
+      summary: summary,
+    };
+  }
+  handler.user.setUserData(obj);
+};
+
+export const insertUserDataWithKey = (
+  handler,
+  key,
+  answer,
+  inputType,
+  summary = true,
+) => {
+  let obj = {
+    key: key,
+    answer: answer,
+    inputType: inputType,
+    summary: summary,
+  };
+  handler.user.setUserData(obj);
+};
+
 export const start = async (handler, question) => {
-    if (conversational) {
-        const answ = ChatBotStep[handler.user.lastStep]
-        if (answ === undefined) return { "text": finalMessage, "src": "talkingDb" };
-        if (answ.id === 1) return { "text": answ.question, "src": "talkingDb", currentStep: answ }
-        if (answ.callApi) {
-            try {
-                const response = await handler.axiosInstance.request(answ.apiOptions);
-                return { "text": `${answ.question} - ${response.data.map((item) => item.name)}`, "src": "talkingDb" };
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        return { "text": answ.question, "src": "talkingDb", currentStep: answ };
-    } else {
-        const response = await handler.chain.run(question)
-        return response
+  let { chatBotId } = handler;
+  let tokenUser = {};
+  if (conversational) {
+    const token = handler.headers?.authorization || '';
+    if (token) {
+      handler.axiosInstance.defaults.headers.common['Authorization'] = token;
+      try {
+        let res = await handler.axiosInstance.get(openid.userinfo_endpoint);
+        tokenUser = res.data;
+      } catch (error) {}
     }
-} 
+    let currentStep = await handler.user.getlastStep();
+    let answ = ChatBotStep({
+      chatBotId,
+      tokenUser,
+    }).find((item) => item.id == currentStep);
+    if (answ === undefined)
+      return {
+        text: 'Chatbot flow ended!',
+        currentStep: {
+          inputHidden: true,
+        },
+        src: 'talkingDb',
+      };
+    if (answ.preHook) {
+      const { nextStep, error } = await answ.preHook(handler, question);
+      if (error === false) {
+        handler.user.setlastStep(nextStep);
+        return await start(handler, question);
+      }
+    }
+    if (!handler.user.getData('firstCall')?.answer) {
+      insertUserDataWithKey(handler, 'firstCall', 'true', 'text', false);
+      await handler.user.save();
+      return {
+        text: answ.question,
+        src: 'talkingDb',
+        currentStep: answ,
+        hideAnswer: false,
+      };
+    }
+    if (answ.callBack) {
+      const { nextStep, toast, error, hideAnswer, answer } =
+        await answ.callBack(handler, question);
+      handler.user.setlastStep(nextStep);
+      await handler.user.save();
+      answ = ChatBotStep({
+        chatBotId,
+        tokenUser,
+        answer,
+      }).find((item) => item.id == nextStep);
+      if (answ === undefined)
+        return {
+          text: 'Chatbot flow ended!',
+          currentStep: {
+            inputHidden: true,
+          },
+          src: 'talkingDb',
+        };
+      if (answ.apiCall) {
+        answ.options = await answ.apiResult(handler);
+      }
+      if (answ.inputType === 'summary') {
+        answ['data'] = handler.user.getUserData();
+      }
+      if (answ.inputType === 'await') {
+        answ['await'] = 4000;
+      }
+      if (error) {
+        const clonedObject = JSON.parse(JSON.stringify(answ));
+        clonedObject['answer'] = question;
+        if (answ.inputType === 'fileUploader') {
+          const { fileName, imageData } = JSON.parse(question);
+          clonedObject['answer'] = fileName;
+          clonedObject['showQuestion'] = true;
+          delete clonedObject.header;
+        }
+        if (answ.inputType === 'googleLogin') {
+          clonedObject['answer'] = JSON.parse(question).email;
+          clonedObject['showQuestion'] = true;
+        }
+        answ = clonedObject;
+      }
+      if (answ.header) {
+        answ['update'] = true;
+      }
+      return {
+        text: answ.question,
+        src: 'talkingDb',
+        currentStep: answ,
+        error: error,
+        errorMessage: toast || '',
+        hideAnswer: hideAnswer || false,
+      };
+    }
+    return {
+      text: answ.question,
+      src: 'talkingDb',
+      currentStep: answ,
+      error: error,
+      errorMessage: toast || '',
+      hideAnswer: hideAnswer || false,
+    };
+  } else {
+    const response = await handler.chain.run(question);
+    return response;
+  }
+};

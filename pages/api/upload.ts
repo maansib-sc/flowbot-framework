@@ -56,7 +56,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         // Optionally, you can remove the original zip file after extraction
         // fs.unlink(tempPath);
       }
-
       return res.status(200).json({ msg: 'file uploaded' });
     } else {
       return res.status(500).json({ error: 'Something went wrong' });

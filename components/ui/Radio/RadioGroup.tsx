@@ -6,6 +6,7 @@ const RadioGroup = ({
   value,
   disabled,
   onChange,
+
 }: {
   options: { label: string; value: string; data?: any }[];
   value: string;
@@ -27,6 +28,9 @@ const RadioGroup = ({
     setSelectedValue(value);
     onChange(JSON.stringify(value));
   };
+
+
+
   return (
     <div className={styles.radioGroup}>
       {' '}
@@ -34,11 +38,10 @@ const RadioGroup = ({
       {options.map((option, index) => (
         <label
           key={option.value}
-          className={`${styles.radioLabel} ${
-            selectedValue?.value === option.value ? styles.selected : ''
-          }`}
+          className={`${styles.radioLabel} ${selectedValue?.value === option.value ? styles.selected : ''
+            }`}
         >
-          <span style={{ width: '180px' }}>{option.label}</span>
+          <span className={`${styles.radioText}`} style={{ width: '180px' }} >{option.label}</span>
           <input
             type="radio"
             value={option.value}

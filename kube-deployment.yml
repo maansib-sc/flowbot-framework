@@ -50,10 +50,22 @@ spec:
           volumeMounts:
             - name: app-config-volume
               mountPath: "/app/configuration"
+          resources:
+            limits:
+              memory: 4Gi  # Adjust the memory limit as needed
+            requests:
+              memory: 2Gi  # Set a reasonable memory request
       volumes:
         - name: app-config-volume
           persistentVolumeClaim:
             claimName: pvc-$APP
+      nodeSelector:
+        type: encoder
+      tolerations:
+        - key: "type"
+          operator: "Equal"
+          value: "encoder"
+          effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Service

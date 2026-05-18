@@ -10,7 +10,7 @@ import {
 import Image from 'next/image';
 import { useEffect, useRef, useState, useContext } from 'react';
 import FileList from '../fileList';
-import { Oval } from 'react-loader-spinner';
+import {Radio}  from 'react-loader-spinner';
 import ThemeContext from '@/contexts/ThemeContext';
 
 const ChatbotInfo = ({ chatBotId }: { chatBotId: string }) => {
@@ -306,17 +306,12 @@ const ChatbotInfo = ({ chatBotId }: { chatBotId: string }) => {
                 top: '50%',
               }}
             >
-              <Oval
+              <Radio
                 height={40}
                 width={40}
-                color="#338bff"
                 wrapperStyle={{}}
                 wrapperClass=""
                 visible={true}
-                ariaLabel="oval-loading"
-                secondaryColor="#338bff"
-                strokeWidth={4}
-                strokeWidthSecondary={4}
               />
             </div>
           ) : (

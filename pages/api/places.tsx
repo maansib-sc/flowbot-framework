@@ -11,7 +11,7 @@ export default async function handler(
     let config: AxiosRequestConfig = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
+      url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${process.env.GOOGLE_API_KEY}`,
       headers: {},
     };
 

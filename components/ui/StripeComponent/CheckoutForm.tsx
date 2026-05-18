@@ -49,7 +49,8 @@ const CheckoutForm = ({ onClose }: { onClose: (value: string) => void }) => {
 
     if (result.error) {
       // Show error to your customer (for example, payment details incomplete)
-      console.log(result.error.message);
+      // console.log(" error ====>",result.error.message);
+      onClose(JSON.stringify({error: true, message: result.error.message}))
     } else if (
       result.paymentIntent &&
       result.paymentIntent.status === 'succeeded'
@@ -58,13 +59,13 @@ const CheckoutForm = ({ onClose }: { onClose: (value: string) => void }) => {
         result.paymentIntent.payment_method,
       );
       let response = { ...result, paymentDetail: paymentdetail };
-      onClose(JSON.stringify(response));
+      onClose(JSON.stringify({error: false, message: response}));
     } else {
       let paymentdetail = await getpaymentDetails(
-        result.paymentIntent.payment_method,
+        result.paymentIntent.payment_method, 
       );
       let response = { ...result, paymentDetail: paymentdetail };
-      onClose(JSON.stringify(response));
+      onClose(JSON.stringify({error: false, message: response}));
     }
   };
 

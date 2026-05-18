@@ -13,12 +13,8 @@ function CostMilestone({
   return (
     <div>
       <CostCards
-        options={[
-          { id: 1, text: 'Draw Amount:', price: `$5,500.26` },
-          { id: 2, text: 'Total Project Cost:', price: `$27,501.32` },
-        ]}
+        options={options.data}
         onChange={(value) => {
-          console.log('value ==>', value);
         }}
         showSubmit={false}
         fontSize="32px"

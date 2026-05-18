@@ -9,17 +9,21 @@ const Invoice = ({
   values,
   onChange,
   disabled,
+  showList=true,
+  showConfirmButton=true
 }: {
   options: { label: string; value: string; data: any; table: [] }[];
   values: any;
   onChange: (value: string) => void;
   disabled?: boolean;
+  showList?: boolean;
+  showConfirmButton?: boolean;
 }) => {
   const [selectedValues, setSelectedValue] = useState<
     { label: string; value: string; data: any; table: [] }[] | []
   >([]);
   const [showButton, setShowButton] = useState(true);
-  const [show, setShow] = useState<null | number>(null);
+  const [show, setShow] = useState<null | number>(!showList ? 0 : null);
 
   const handleCheckboxChange = (value: {
     label: string;
@@ -49,6 +53,7 @@ const Invoice = ({
       <div className={styles.invoiceContainer}>
         {options.map((option, index) => (
           <>
+          {showList &&
             <div key={index} className="flex justify-between">
               <label
                 key={option.value}
@@ -111,6 +116,7 @@ const Invoice = ({
                 )}
               </div>
             </div>
+          }
 
             {index === show && (
               <div className={styles.descriptionContainer}>
@@ -154,6 +160,11 @@ const Invoice = ({
                                         <div>Image 3</div>
                                     </div>
                                 </div> */}
+                <div className="mt-4">
+                  <p className={styles.descriptionText}>
+                    {option?.data?.chargeDescription}
+                  </p>
+                </div>
                 <div className="mt-6">
                   <CostCards
                     options={[
@@ -188,7 +199,7 @@ const Invoice = ({
           </>
         ))}
       </div>
-      {showButton && (
+      {showButton && showList && showConfirmButton && (
         <div className="mt-4">
           <Button
             onClick={() => {
@@ -197,6 +208,18 @@ const Invoice = ({
             }}
             disabled={selectedValues.length === 0}
             variant={selectedValues.length === 0 ? 'ghost' : 'primary'}
+          >
+            Confirm
+          </Button>
+        </div>
+      )}
+      {!showList && showButton && showConfirmButton && (
+        <div className="mt-4">
+          <Button
+            onClick={() => {
+              onChange(JSON.stringify(options));
+              setShowButton(false);
+            }}
           >
             Confirm
           </Button>

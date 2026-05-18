@@ -1,0 +1,638 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { useRouter } from 'next/router';
+import io from 'socket.io-client';
+import { Message, IReferences } from '@/types/chat';
+import {
+    getDefaultPromptTemplate,
+    resetPromptTemplate,
+    submitPromptTemplate
+} from '@/apiRequests';
+
+import type { Socket } from 'socket.io-client';
+import ThemeContext from '@/contexts/ThemeContext';
+import { generateRandomString } from '@/utils/generateRandomeString';
+import { getDocumentNameAndPageNumber } from '@/utils/extractDocumentNameAndPage';
+
+declare const window: any;
+
+export const useChatbot = () => {
+    const router = useRouter();
+    const { 'chat-id': chatId, code: openidCode } = router.query;
+
+    // State declarations
+    const [botLoading, setBotLoading] = useState<boolean>(true);
+    const [initChat, setInitChat] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [query, setQuery] = useState<string>('');
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const [roomId, setRoomId] = useState<string>('');
+    const [registrationMessage, setRegistrationMessage] = useState<any>(null);
+    const [isSignupPage, setIsSignupPage] = useState(false);
+    const [activeIndex, setActiveIndex] = useState<number>(0);
+    const [promptTemplate, setPromptTemplate] = useState<string>('');
+    const [newChatRoom, setNewChatRoom] = useState<string>('');
+    const [currentSession, setCurrentSession] = useState<string>('');
+    const [content, setContent] = useState('');
+    const [open, setOpen] = useState(false);
+    const [hiddenInput, setHiddenInput] = useState(false);
+    const [references, setReferences] = useState<IReferences[]>([]);
+    const [messageState, setMessageState] = useState<{
+        messages: Message[];
+        pending?: string;
+        history: [string, string][];
+        pendingSourceDocs?: Document[];
+    }>({
+        messages: [],
+        history: [],
+    });
+    const [typingState, setTypingState] = useState<boolean>(false);
+
+    const [socketState, setSocketState] = useState(false);
+    const [socketInitstate, setSocketInitstate] = useState(false)
+
+    const { JSModule, styles } = useContext(ThemeContext) || {};
+    const { messages, history } = messageState;
+    // Effect for initializing chat and socket
+    useEffect(() => {
+        // Function to initialize chat
+        const initializeChat = async () => {
+            // Logic to set up initial chat state
+            // This includes setting up newChatRoom, currentSession, etc.
+            
+            setBotLoading(true);
+            if (chatId) {
+                if (typeof chatId === 'string') {
+                    setNewChatRoom(chatId)
+                    if (!currentSession) setCurrentSession(generateRandomString('session_', 9));
+                }
+                setBotLoading(false);
+            }
+        };
+        initializeChat();
+        if (JSModule?.socket_base_url) {
+            initializeSocket();
+        }
+    }, [chatId, JSModule?.socket_base_url]);
+
+    // here we will be updating the messages we are getting from api server through socket io
+    useEffect(() => {
+        const socket = io({
+          path: '/api/socket',
+        });
+        setRoomId(localStorage?.getItem('conversation_id') || '')
+    
+        socket.on('connect', () => {
+          console.log('Connected to websocket server for the messages from hcinbox');
+
+          if (roomId) {
+              socket.emit('joinRoom', roomId);
+          }
+        });
+    
+        socket.on('updateMessageState', (message) => {
+
+            console.log('yes we got emitted updateMessageState and now its in client');
+            console.log('message is', message);
+            
+            setMessageState((state: any) => ({
+                ...state,
+                messages: [
+                    ...state.messages,
+                    {
+                        type: 'apiMessage',
+                        message: `${message}`,
+                        src: 'talkingDb',
+                        step: {},
+                        id: Math.random(),
+                    },
+                ],
+            }));
+        });
+    
+        return () => {
+          socket.disconnect();
+        };
+    }, [roomId]);
+
+
+    // Function to initialize socket
+    const initializeSocket = async () => {
+        // Logic to set up socket connection
+        console.log('socket base url____', JSModule?.socket_base_url)
+        await fetch('/api/chat-socket');
+        const newSocket = io(`${JSModule?.socket_base_url}`, { path: '/socket.io' });
+
+
+        console.log('current session----', currentSession);
+
+
+        newSocket.on('connect', () => {
+            console.log('connected');
+            newSocket.emit('join-room', currentSession);
+        });
+
+        newSocket.on('received-slack-message', (data: any) => {
+            console.log('slack-message received', data)
+            setMessageState((state: any) => ({
+                ...state,
+                messages: [
+                    ...state.messages,
+                    {
+                        type: 'apiMessage',
+                        message: `${data.message}`,
+                        src: 'talkingDb',
+                        step: {},
+                        id: Math.random(),
+                    },
+                ],
+            }));
+            setTypingState(false);
+        })
+
+        newSocket.on('received-slack-user-typing', (data: any) => {
+            console.log('typing data received =>', data);
+            setTypingState(true);
+        })
+
+        newSocket.on('close-socket-connection', (data: any) => {
+            if (socketState) {
+                console.log('socket closed successfully', data)
+                setSocketState(false)
+                handleSubmit('dummy')
+            }
+        })
+
+        setSocket(newSocket);
+
+        return () => newSocket.disconnect();
+    };
+
+
+    useEffect(() => {
+        if (!initChat && JSModule && JSModule?.conversational && chatId) {
+            setInitChat(true);
+            handleSubmit();
+        } else {
+            setInitChat(false);
+            setMessageState({
+                messages: [],
+                history: [],
+            });
+        }
+        if (JSModule) {
+            window.handleLeftPanel = JSModule?.handleLeftPanel;
+            window.handleHeaderPane = JSModule?.handleHeaderPane;
+        }
+    }, [JSModule]);
+
+    useEffect(() => {
+        let access_token = localStorage.getItem('access_token');
+        if (access_token && JSModule?.handleHeaderPane) {
+            JSModule?.handleHeaderPane('login');
+        }
+    }, [JSModule?.handleHeaderPane]);
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            if (openidCode && JSModule?.openid) {
+                try {
+                    const response = await fetch(JSModule.openid.token_endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            grant_type: 'authorization_code',
+                            client_id: JSModule.openid.client_id,
+                            code: openidCode as string,
+                            redirect_uri: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}?chat-id=${chatId}`,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const { access_token } = data;
+
+                        localStorage.setItem('access_token', access_token);
+                        window.location.href = `/?chat-id=${chatId}`;
+                    } else {
+                        console.error('Token request failed:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error fetching token:', error);
+                }
+            }
+        };
+
+        fetchToken();
+    }, [openidCode, JSModule?.openid]);
+
+    async function nextStep() {
+        setActiveIndex(1);
+        handleSubmit();
+    }
+
+    const changeSocketState = async () => {
+        setSocketInitstate(!socketInitstate)
+    }
+
+    // Function to handle form submission
+    const handleSubmit = async (value?: string, update: boolean = false, socketMode: boolean = false) => {
+        setLoading(true);
+        console.log('socket status', socketState)
+        if (socketMode) {
+            setLoading(false)
+        }
+        if (socketState && !value) {
+            setQuery('');
+            console.log('inside setSocket true', value)
+            console.log('inside setSocket query', query)
+            await handleSocket(query);
+            setLoading(false);
+        } else {
+            let question = query.trim();
+            if (!query) {
+                question = value?.trim() || '';
+            }
+            if (!query && question && JSModule?.showRadioSelection) {
+                if (question) {
+                    console.log('questionm', question)
+                    setMessageState((state: any) => ({
+                        ...state,
+                        messages: [
+                            ...state.messages,
+                            {
+                                type: 'userMessage',
+                                // message: `${question ? question : JSON.parse(question)['label']}`,
+                                message: `${value == 'contact us' ? question : JSON.parse(question)['label']}`,
+                                src: "test",
+                                id: Math.random(),
+                            },
+                        ],
+                    }));
+                }
+            }
+
+            if (query && JSModule?.showUserResponseFirst) {
+                if (question) {
+                    console.log('questionm', question)
+                    setMessageState((state: any) => ({
+                        ...state,
+                        messages: [
+                            ...state.messages,
+                            {
+                                type: 'userMessage',
+                                message: `${question}`,
+                                src: "test",
+                                id: Math.random(),
+                            },
+                        ],
+                    }));
+                }
+            }
+            setQuery('');
+            try {
+                let access_token = localStorage.getItem('access_token');
+                const conversation_id = localStorage.getItem('conversation_id')
+                const response = await fetch(
+                    `/api/chat?pinecone_name_space=${newChatRoom}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                        body: JSON.stringify({
+                            conversation_id,
+                            question,
+                            history,
+                            session: currentSession,
+                            reqQuery: router.query,
+                            edit: update
+                        })
+                    },
+                );
+                const data = await response.json();
+                console.log("data", data)
+
+                // it is the case user sent message to human agent;
+                if ( data?.messageHandovered) {
+                    console.log(`yess message is handovered`);
+                    setLoading(false);
+                    return
+                }
+
+                if (data?.conversationId) {
+                    console.log(`yes we got conversationId ${data?.conversationId}`);
+                    localStorage.setItem("conversation_id", data?.conversationId)
+                    setRoomId(data?.conversationId)
+                }
+                
+                const message: string = data?.errorMessage;
+                if ( message && message.includes('For more information,') ){
+                    const { documentName, pageNumbers } = getDocumentNameAndPageNumber(message)
+                    pageNumbers?.map((pageNumber) => {
+                      setReferences((prev) => [ ...prev, { documentName, pageNumber: Number(pageNumber)}])
+                    })
+                }
+                if (data?.redirect) {
+                    window.location.href = data.redirect;
+                    return;
+                }
+                if (data?.currentStep?.windowOpen) {
+                    window.open(data?.currentStep?.windowOpen, "_blank")
+                }
+                if (data?.currentStep?.updateLeftPanel) {
+                    window.handleLeftPanel = data?.currentStep?.updateLeftPanel;
+                }
+                if (
+                    data?.currentStep?.inputType === 'socket' && data?.src === 'apiMessage'
+                ) {
+                    setSocketState(true)
+                }
+                else if (data?.currentStep?.inputType === 'socket') {
+                    await changeSocketState()
+                    setSocketState(true)
+                    handleSubmit('', false, true);
+                }
+                if (data?.currentStep?.await) {
+                    setTimeout(() => {
+                        handleSubmit('dummy', false);
+                    }, data.currentStep.await);
+                }
+                if (data.error) {
+                    if (data?.currentStep?.hideUserResponse) {
+                        let stepInfo = JSON.parse(JSON.stringify(data.currentStep));
+                        {
+                            /* @ts-ignore */
+                        }
+                        stepInfo['inputType'] = 'text';
+                        if (data.currentStep.showQuestion) {
+                            setMessageState((state: any) => ({
+                                ...state,
+                                messages: [
+                                    ...state.messages,
+                                    {
+                                        type: 'apiMessage',
+                                        message: `${data.errorMessage}`,
+                                        src: data.src,
+                                        step: stepInfo || {},
+                                        sourceDocs: data.sourceDocuments,
+                                        id: Math.random(),
+                                    },
+                                    {
+                                        type: 'apiMessage',
+                                        message: data.text,
+                                        src: data.src,
+                                        step: data.currentStep || {},
+                                        sourceDocs: data.sourceDocuments,
+                                        id: Math.random(),
+                                    },
+                                ],
+                                history: [...state.history, [question, data.text]],
+                            }));
+                        } else {
+                            setMessageState((state: any) => ({
+                                ...state,
+                                messages: [
+                                    ...state.messages,
+                                    {
+                                        type: 'apiMessage',
+                                        message: `${data.errorMessage}`,
+                                        src: data.src,
+                                        step: data.currentStep || {},
+                                        sourceDocs: data.sourceDocuments,
+                                        id: Math.random(),
+                                    },
+                                ],
+                            }));
+                        }
+                    } else if (JSModule?.showUserResponseFirst) {
+                        setMessageState((state: any) => ({
+                            ...state,
+                            messages: [
+                                ...state.messages,
+                                {
+                                    type: 'apiMessage',
+                                    message: `${data.errorMessage}`,
+                                    src: data.src,
+                                    step: data.currentStep || {},
+                                    sourceDocs: data.sourceDocuments,
+                                    id: Math.random(),
+                                },
+                            ],
+                            history: [
+                                ...state.history,
+                                [question, data?.currentStep?.answer || question],
+                            ],
+                        }));
+                    } else {
+                        setMessageState((state: any) => ({
+                            ...state,
+                            messages: [
+                                ...state.messages,
+                                {
+                                    type: 'userMessage',
+                                    message: data?.currentStep?.answer || question,
+                                    src: 'test',
+                                    id: Math.random(),
+                                },
+                                {
+                                    type: 'apiMessage',
+                                    message: `${data.errorMessage}`,
+                                    src: data.src,
+                                    step: data.currentStep || {},
+                                    sourceDocs: data.sourceDocuments,
+                                    id: Math.random(),
+                                },
+                            ],
+                            history: [
+                                ...state.history,
+                                [question, data?.currentStep?.answer || question],
+                            ],
+                        }));
+                    }
+                } else {
+                    if (data.currentStep.fullWidth) {
+                        setRegistrationMessage(data.currentStep);
+                        setIsSignupPage(true);
+                        return;
+                    }
+                    if (!data.hideAnswer && (data.currentStep.answer || question) && !JSModule?.showUserResponseFirst) {
+                        setMessageState((state: any) => ({
+                            ...state,
+                            messages: [
+                                ...state.messages,
+                                {
+                                    type: 'userMessage',
+                                    message: data?.currentStep?.answer || question,
+                                    src: 'test',
+                                    id: Math.random(),
+                                },
+                            ],
+                        }));
+                    }
+                    if (data.currentStep.update) {
+                        JSModule?.leftPanelStateUpdate(+data.currentStep.header.step);
+                    }
+                    setIsSignupPage(false);
+                    setMessageState((state: any) => ({
+                        ...state,
+                        messages: [
+                            ...state.messages,
+                            {
+                                type: 'apiMessage',
+                                message: data.text,
+                                src: data.src,
+                                step: data.currentStep || {},
+                                sourceDocs: data.sourceDocuments,
+                                id: Math.random(),
+                            },
+                        ],
+                        history: [...state.history, [question, data.text]],
+                    }));
+                    setActiveIndex(data.currentStep.id);
+                }
+
+                if (data.currentStep?.inputHidden) {
+                    setHiddenInput(true);
+                } else {
+                    setHiddenInput(false);
+                }
+                setContent('')
+                setLoading(false);
+                removeAuthTokenFromURL()
+            } catch (error) {
+                setLoading(false);
+                console.log('error', error);
+            }
+        }
+    };
+
+    // Function to handle input change
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setQuery(e.target.value);
+    };
+
+    // remove redirect url parameters
+    function removeAuthTokenFromURL() {
+        let currentUrl = window.location.href;
+        if (currentUrl.includes('authtoken=')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const chatIdParam = urlParams.get('chat-id');
+            const newSearchParams = new URLSearchParams();
+            if (chatIdParam) {
+                newSearchParams.set('chat-id', chatIdParam);
+            }
+            const updatedUrl = `${window.location.origin}${window.location.pathname}?${newSearchParams.toString()}${window.location.hash}`;
+            window.history.replaceState({ path: updatedUrl }, '', updatedUrl);
+        }
+    }
+
+    // Function to handle file upload
+    const handleFileUpload = async (files: FileList) => {
+        for (let item of files) {
+            const formData = new FormData();
+            formData.append('chatId', newChatRoom);
+            formData.append('sessionId', currentSession);
+            formData.append('file', item);
+
+            fetch('/api/file-upload', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('File uploaded successfully:', data);
+                })
+                .catch((error) => {
+                    console.error('Error uploading file:', error);
+                });
+        }
+    };
+
+    // Function to get default prompt template
+    const getPromptTemplate = async () => {
+        const template = await getDefaultPromptTemplate(newChatRoom);
+        if (template) {
+            setPromptTemplate(template.data);
+        }
+    };
+
+    // Function to check and disableUserInput
+    // const disableUserInput = () => {
+    //     if (messages.length > 0 && messages[messages.length - 1]?.step) {
+    //     let message = messages[messages.length - 1];
+    //     if (message?.step?.inputType && message?.step?.inputDisabled) {
+    //         setDisableInput(true);
+    //     } else {
+    //         setDisableInput(false);
+    //     }
+    //     }
+    // };
+
+    // Function to sendchatbot message
+    const sendChatbotMessage = async (message: string, sessionId: string) => {
+        if (socket && socket.connected) {
+            socket.emit('chatbot-message', { message, sessionId });
+            setMessageState((state: any) => ({
+                ...state,
+                messages: [
+                    ...state.messages,
+                    {
+                        type: 'userMessage',
+                        message: `${message}`,
+                        src: 'talkingDb',
+                        step: {},
+                        id: Math.random(),
+                    },
+                ],
+            }));
+        } else {
+            console.error('Socket not initialized');
+        }
+    };
+
+    // Function to update prompt template
+    const updatePromptTemplate = async () => {
+        await submitPromptTemplate(newChatRoom, { template_instructions: promptTemplate });
+        await getPromptTemplate();
+    };
+
+    // Function to reset prompt template
+    const resetPromptTemplateHandler = async () => {
+        await resetPromptTemplate(newChatRoom);
+        await getPromptTemplate();
+    };
+
+    const handleSocket = async (value?: string) => {
+        if (!socket || !socket.connected) {
+            setSocketState(false)
+        }
+        if (value && currentSession) {
+            await sendChatbotMessage(value, currentSession)
+        }
+    };
+
+    return {
+        chatId,
+        messages,
+        loading,
+        botLoading,
+        query,
+        JSModule, 
+        styles, 
+        setQuery,
+        open,
+        setOpen,
+        typingState,
+        promptTemplate,
+        handleSubmit,
+        handleInputChange,
+        handleFileUpload,
+        updatePromptTemplate,
+        resetPromptTemplateHandler,
+        references, 
+        setReferences
+    };
+};

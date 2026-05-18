@@ -62,7 +62,7 @@ const LoginPasswordAsk = ({
         </div>
       </div>
       <div className={styles.forgot}>
-        <Button variant='link'>Forgot Password?</Button>
+        <Button variant='link' onClick={() => onSave("forgotPassword")}>Forgot Password?</Button>
       </div>
 
       {showButton && <div>

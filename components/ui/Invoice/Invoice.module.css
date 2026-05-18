@@ -16,6 +16,22 @@
     font-weight: 500;
 }
 
+.descriptionText {
+    color: #727A8B;
+    font-family: Aspekta;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0em;
+    text-align: left;
+    font-family: Aspekta;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
 .viewDetails {
     color: var(--orange-100, #FF6900);
     cursor: pointer;

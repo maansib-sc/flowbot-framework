@@ -1,4 +1,5 @@
 import { Document } from 'langchain/document';
+import { AxiosResponse } from 'axios';
 
 export type Message = {
   type: 'apiMessage' | 'userMessage';
@@ -23,3 +24,14 @@ export type Page = {
   page_number: string;
   page_body: string
 };
+
+export interface IReferences {
+  documentName: string;
+  pageNumber: number;
+}
+
+export interface LiveChatbot {
+  file: string;
+  url: string;
+}
+export type ChatbotsResponse = AxiosResponse<{data: LiveChatbot[]}>;

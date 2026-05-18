@@ -23,6 +23,14 @@
     margin-bottom: 20px;
 }
 
+.answerContainer {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    display: flex;
+    column-gap: 8px;
+    padding-top: 4px;
+}
+
 .stepCircle {
     /* background: var(--orange-100, #FF6900); */
     border: 1px solid var(--orange-100, #FF6900);
