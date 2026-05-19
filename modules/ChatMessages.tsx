@@ -12,6 +12,10 @@ import ReactMarkdown from "react-markdown";
 import { IReferences, Message } from '@/types/chat';
 import rehypeRaw from 'rehype-raw';
 import { DynamicComponent } from "@/components/DynamicComponent";
+import UploadLargeIcon from "@/assets/svgs/UploadLargeIcon";
+import LoginIcon from '@/assets/svgs/LoginIcon';
+import { useRouter } from 'next/router';
+import { useChatbot } from "@/hooks/useChatbot";
 
 interface ChatMessageProps {
     chatId: string;
@@ -21,12 +25,14 @@ interface ChatMessageProps {
     handleFileUpload: (file: FileList) => void
     messages: Message[]
     references: IReferences[]
+    onUploadClick?: () => void
 }
 
-
-export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loading, handleSubmit, typingState, handleFileUpload, references }) => {
+export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loading, handleSubmit, typingState, handleFileUpload, references, onUploadClick }) => {
 
     const { JSModule, styles } = useContext(ThemeContext);
+    const router = useRouter();
+    const { isLoggedIn, hasOpenID, handleLogin } = useChatbot();
     const messageListRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -46,8 +52,50 @@ export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loa
 
     return (
         <div style={{ display:'flex', flexDirection:"row", width: "100%", height: "100%"}}>
-            <div className={styles?.cloud} style={{ width: "80%"}}>
+            <div className={styles?.cloud} style={{ width: "100%"}}>
                 <div className={styles["messagelist"]}>
+                    {/* Empty state / Welcome screen */}
+                    {messages.length === 0 && (
+                        <div className={styles?.['welcome-screen']}>
+                            <div className={styles?.['welcome-icon']}>
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                            </div>
+                            <h2 className={styles?.['welcome-title']}>
+                                Welcome to {JSModule?.botName}
+                            </h2>
+                            <p className={styles?.['welcome-subtitle']}>
+                                Upload your documents and start chatting to get AI-powered answers.
+                            </p>
+                            {JSModule?.howToUseSteps?.length > 0 && (
+                                <div className={styles?.['how-to-use']}>
+                                    <h3>How to use</h3>
+                                    {JSModule.howToUseSteps.map((step: any) => (
+                                        <div key={step.number} className={styles?.['how-to-step']}>
+                                            <div className={styles?.['step-number']}>{step.number}</div>
+                                            <div className={styles?.['step-content']}>
+                                                <p className={styles?.['step-title']}>{step.title}</p>
+                                                <p className={styles?.['step-description']}>{step.description}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {hasOpenID && !isLoggedIn ? (
+                                <button className={styles?.['login-button']} onClick={handleLogin}>
+                                    <LoginIcon size={16} stroke="currentColor" />
+                                    Login to Continue
+                                </button>
+                            ) : JSModule?.drawerEnabled && (
+                                <div className={styles?.['upload-prompt']} onClick={() => onUploadClick?.()}>
+                                    <UploadLargeIcon size={32} stroke="#6b7280" />
+                                    <span>Upload a document to get started</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* TODO: Move Icon to conf */}
                     {messages.map((message, index) => {
                             let icon;

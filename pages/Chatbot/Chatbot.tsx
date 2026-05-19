@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useChatbot } from '@/hooks/useChatbot';
 import { ChatHeader } from '@/modules/ChatHeader';
-import { SideDrawer } from '@/modules/SideDrawer';
+import { SidePanel } from '@/modules/SideDrawer';
 import { ChatMessages } from '@/modules/ChatMessages';
 import { ChatInput } from '@/modules/ChatInput';
-import 'react-modern-drawer/dist/index.css';
 import { Loader } from '@/components/ui';
 
 const Chatbot: React.FC = () => {
@@ -26,6 +25,25 @@ const Chatbot: React.FC = () => {
     chatId
   } = useChatbot();
 
+  // Left panel state for toggle
+  const [leftPanelExpanded, setLeftPanelExpanded] = useState(true);
+
+  // Set up window functions immediately (for headerPaneHtml onclick handlers)
+  if (typeof window !== 'undefined') {
+    (window as any).toggleDrawer = () => setOpen(!open);
+    (window as any).toggleLeftPanel = () => setLeftPanelExpanded(prev => !prev);
+  }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).toggleDrawer;
+        delete (window as any).toggleLeftPanel;
+      }
+    };
+  }, []);
+
   if (botLoading || !(JSModule?.enabled)) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -37,36 +55,81 @@ const Chatbot: React.FC = () => {
   }
   else {
     return (
-      <div className={styles['container']}>
-        {JSModule?.drawerEnabled &&
-          <SideDrawer open={open} setOpen={(val) => setOpen(val)} />
-        }
-        {JSModule?.enabled && (
-          <div
-            className={styles['sidebar']}
-            dangerouslySetInnerHTML={{ __html: JSModule.leftPanelHtml }}
-          />
-        )}
-        <div className={styles['main-content']}>
-          <ChatHeader />
-          <div className={styles['main']}>
-            <ChatMessages
-              chatId={String(chatId)}
-              references={references}
-              messages={messages}
-              loading={loading}
-              handleSubmit={handleSubmit}
-              handleFileUpload={handleFileUpload}
-              typingState={typingState}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      }}>
+        <ChatHeader
+          drawerOpen={open}
+          onDrawerToggle={() => setOpen(!open)}
+        />
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          overflow: 'hidden',
+        }}>
+          {/* Left panel from bot config */}
+          {JSModule?.leftPanelHtml && leftPanelExpanded && (
+            <div
+              className={styles?.['sidebar']}
+              dangerouslySetInnerHTML={{ __html: JSModule.leftPanelHtml }}
             />
-            <ChatInput
-              query={query}
-              messages={messages}
-              typingState={typingState}
-              loading={loading}
-              onSubmit={handleSubmit}
-              onChange={setQuery}
-            />
+          )}
+
+          {/* Main Content Area */}
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#ffffff',
+            overflow: 'hidden',
+            minWidth: 0,
+          }}>
+            <div style={{
+              flex: 1,
+              overflow: 'auto',
+              display: 'flex',
+              flexDirection: 'row',
+            }}>
+              {/* Chat Area */}
+              <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                minWidth: 0,
+              }}>
+                <div style={{
+                  flex: 1,
+                  overflow: 'auto',
+                }}>
+                  <ChatMessages
+                    chatId={String(chatId)}
+                    references={references}
+                    messages={messages}
+                    loading={loading}
+                    handleSubmit={handleSubmit}
+                    handleFileUpload={handleFileUpload}
+                    typingState={typingState}
+                    onUploadClick={JSModule?.drawerEnabled ? () => setOpen(true) : undefined}
+                  />
+                </div>
+                <ChatInput
+                  query={query}
+                  messages={messages}
+                  typingState={typingState}
+                  loading={loading}
+                  onSubmit={handleSubmit}
+                  onChange={setQuery}
+                />
+              </div>
+              {/* Right Documents Panel */}
+              {JSModule?.drawerEnabled && (
+                <SidePanel open={open} setOpen={setOpen} />
+              )}
+            </div>
           </div>
         </div>
       </div>

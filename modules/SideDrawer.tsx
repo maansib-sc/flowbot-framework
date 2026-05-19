@@ -1,137 +1,96 @@
-import { useContext, useRef, useState } from "react";
+import React, { useContext, useRef } from "react";
 import { useRouter } from 'next/router';
-import HamburgerIcon from "@/assets/HamburgerIcon";
 import { Loader } from "@/components/ui";
 import ThemeContext from "@/contexts/ThemeContext";
-import Drawer from 'react-modern-drawer';
-import DownloadIcon from "@/assets/svgs/DownloadIcon";
-import PdfIcon from "@/assets/svgs/PdfIcon";
-import TrashIcon from "@/assets/svgs/TrashIcon";
 import { useTainPDF } from "@/hooks/useTrainPDF";
 import FileList from "@/modules/File";
 import config from '@/config/constants';
 import { getPDFList, deleteDocument } from "@/apiRequests";
+import UploadIcon from '@/assets/svgs/UploadIcon';
+import FileTextIcon from '@/assets/svgs/FileTextIcon';
+import TrashIcon from '@/assets/svgs/TrashIcon';
 
 
+interface SideDrawerProps {
+    open: boolean;
+    setOpen: (val: boolean) => void;
+}
 
-export const SideDrawer = ({ open, setOpen }: { open: boolean, setOpen: (val: boolean) => void }) => {
-
+export const SidePanel: React.FC<SideDrawerProps> = ({ open }) => {
     const { JSModule, styles } = useContext(ThemeContext);
-    const { pdfList, setPdfList, uploading, selectedFileType, setTrainingInProgress, handlePDFFileChange } = useTainPDF()
-
+    const { pdfList, setPdfList, uploading, selectedFileType, setTrainingInProgress, handlePDFFileChange } = useTainPDF();
     const router = useRouter();
     const { 'chat-id': chatId } = router.query;
-    const fileInputRef = useRef(null);
-    const handleDeleteDocument = async ( documentName: string) => {
-        try {
-          const response = await deleteDocument(documentName, `${chatId}` )
-          if (response) {
-            const uploadedDocuments = await getPDFList(`${chatId}`)
-            setPdfList(uploadedDocuments)
-          }
-        } catch (error) {
-          console.log(`something went wrong during deleting the doc ${documentName}: ${error}`);
-          return;
-        }
-      }
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const handleDeleteDocument = async (documentName: string) => {
+        try {
+            const response = await deleteDocument(documentName, `${chatId}`);
+            if (response) {
+                const uploadedDocuments = await getPDFList(`${chatId}`);
+                setPdfList(uploadedDocuments);
+            }
+        } catch (error) {
+            console.log(`Error deleting doc ${documentName}: ${error}`);
+        }
+    };
+
+    if (!JSModule?.drawerEnabled || !open) return null;
 
     return (
-        <div>
-            {JSModule?.drawerEnabled && (
-                <div>
-                    <Drawer
-                        open={open}
-                        onClose={() => setOpen(false)}
-                        direction="right"
-                        className="bla bla bla"
-                        style={{ width: '400px' }}
-                    >
-                        <div className={styles['HamburgerContainer']}>
-                            <div className={styles['HamburgerHeaderContainer']}>
-                                <div className={styles['HamburgerHeader']}>
-                                    Trained on documents
-                                </div>
-                            </div>
-                            <div className={styles['DataContainer']}>
-                                {pdfList?.map((document: { name?: string | undefined; training_id?: string | undefined; is_trained: boolean; }, index) => (
-                                  <div key={index} className={styles['DataItem']}>
-                                    <PdfIcon />
-                                    <span>{document?.name}</span>
-                                    <div
-                                        onClick={() => {
-                                          handleDeleteDocument(document?.name!)
-                                        }}
-                                        className={styles['IconContainer']}
-                                    >
-                                      <TrashIcon />
-                                    </div>
-                                  </div>
-                                ))}
-                            </div>
-                            <div className={styles['Divider']}></div>
-                            <div className={styles['UploaderHeader']}>Upload Document</div>
-                            <div className={styles['UploadContainer']}>
-                                {!uploading ? <div className={styles['UploadButtonContainer']}>
-                                    <label className={styles['uploadButton']}>
-                                        <input
-                                            type="file"
-                                            accept=".pdf,.docx"
-                                            className="hidden"
-                                            onChange={handlePDFFileChange}
-                                            ref={fileInputRef}
-                                        />
-                                        <div style={{ transform: 'translateY(2px)' }} >
-                                            <DownloadIcon />
-                                        </div>
-                                        <span style={{ transform: 'translateY(-2px)' }} className="mt-2 text-base leading-normal">
-                                            Select a file
-                                        </span>
-                                    </label>
-                                    <div>
-                                        <span>Supported Files: Pdf</span>
-                                    </div>
-                                </div> :
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                                        <div style={{ width: '150px', height: '150px' }}>
-                                            <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
-                                        </div>
-                                    </div>
-                                }
-                                <div style={{ width: '100%' }}>
-                                    {pdfList?.map((item, index) => {
-                                        return (
-                                            <FileList
-                                                key={index+1}
-                                                selectedFileType={selectedFileType}
-                                                filename={item.name ?? item.training_id}
-                                                index={index}
-                                                progressUrl={JSModule?.trainedChatbotProgressUrl}
-                                                apiKey={config.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY}
-                                                trained={item.is_trained || false}
-                                                setTrainingInProgress={setTrainingInProgress}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </div>
+        <div className={styles?.['HamburgerContainer']}>
+            <div className={styles?.['HamburgerHeaderContainer']}>
+                <div className={styles?.['HamburgerHeader']}>Documents</div>
+                <span>{pdfList?.length || 0} trained</span>
+            </div>
+
+            <div className={styles?.['UploadContainer']}>
+                {!uploading ? (
+                    <label className={styles?.['uploadButton']}>
+                        <input
+                            type="file"
+                            accept=".pdf,.docx,.txt"
+                            onChange={handlePDFFileChange}
+                            ref={fileInputRef}
+                            className="hidden"
+                        />
+                        <UploadIcon size={20} stroke="#2563eb" />
+                        <span>Click to upload</span>
+                        <span>PDF, DOCX, TXT</span>
+                    </label>
+                ) : (
+                    <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
+                )}
+            </div>
+
+            <div className={styles?.['Divider']} />
+            <div className={styles?.['UploaderHeader']}>Trained Documents</div>
+
+            <div className={styles?.['DataContainer']}>
+                {pdfList?.map((document, index) => (
+                    <div key={index} className={styles?.['DataItem']}>
+                        <FileTextIcon size={20} stroke="#6b7280" />
+                        <span>{document?.name || document?.training_id}</span>
+                        <div className={styles?.['IconContainer']} onClick={() => handleDeleteDocument(document?.name!)}>
+                            <TrashIcon size={16} stroke="#ef4444" />
                         </div>
-
-                    </Drawer>
-
-                    <div style={{ position: 'absolute', top: 8, right: 20 }}>
-                        <span
-                            style={{ cursor: 'pointer', background: 'transparent' }}
-                            onClick={() => setOpen(true)}
-                        >
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <span style={{ margin: '0.5rem 0 0 0', color: JSModule?.editButtonColor }}>Managed Documents</span>
-                                <HamburgerIcon iconColor={JSModule?.editButtonColor} />
-                            </div>
-                        </span>
                     </div>
-                </div>
-            )}
+                ))}
+            </div>
+
+            {pdfList?.map((item, index) => (
+                <FileList
+                    key={index}
+                    selectedFileType={selectedFileType}
+                    filename={item.name ?? item.training_id}
+                    index={index}
+                    progressUrl={JSModule?.trainedChatbotProgressUrl}
+                    apiKey={config.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY}
+                    trained={item.is_trained || false}
+                    setTrainingInProgress={setTrainingInProgress}
+                />
+            ))}
         </div>
-    )
-}
+    );
+};
+

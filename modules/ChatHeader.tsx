@@ -1,40 +1,33 @@
 import React, { useContext } from 'react';
-import { Button } from '@/components/ui';
 import ThemeContext from '@/contexts/ThemeContext';
-import ChatIcon from '@/assets/svgs/ChatIcon';
+import PanelIcon from '@/assets/svgs/PanelIcon';
 
+interface ChatHeaderProps {
+    drawerOpen?: boolean;
+    onDrawerToggle?: () => void;
+}
 
-
-export const ChatHeader: React.FC = () => {
+export const ChatHeader: React.FC<ChatHeaderProps> = ({ drawerOpen = false, onDrawerToggle }) => {
     const { JSModule, styles } = useContext(ThemeContext);
 
+    // Bot-level override: full custom header HTML
+    if (JSModule?.headerPaneHtml) {
+        return (
+            <div
+                className={styles?.['main-header']}
+                dangerouslySetInnerHTML={{ __html: JSModule.headerPaneHtml }}
+            />
+        );
+    }
+
     return (
-        <>
-            {JSModule?.headerPaneHtml ? (
-                <div
-                    className={styles['main-header']}
-                    dangerouslySetInnerHTML={{ __html: JSModule?.headerPaneHtml }}
-                />
-            ) : (
-                <div className={styles['main-header']}>
-                    <span>{JSModule?.getTitle}</span>
-                    {JSModule?.enabled ? (
-                        <Button variant="link">
-                            <ChatIcon />
-                            Chat with Platform Support
-                        </Button>
-                    ) : (
-                        <div className="flex items-center ">
-                            <button
-                                className={`${styles.buttonWrapper} bg-white mr-4`}
-                                // onClick={() => setPromptModal(true)}
-                            >
-                                Custom Prompt
-                            </button>
-                        </div>
-                    )}
-                </div>
+        <div className={styles?.['main-header']}>
+            <span>{JSModule?.getTitle}</span>
+            {onDrawerToggle && JSModule?.drawerEnabled && (
+                <button onClick={onDrawerToggle} style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: 'auto' }}>
+                    <PanelIcon size={20} stroke={drawerOpen ? '#2563eb' : '#6b7280'} />
+                </button>
             )}
-        </>
-    )
-}
+        </div>
+    );
+};

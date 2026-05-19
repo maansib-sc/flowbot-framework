@@ -49,8 +49,39 @@ export const useChatbot = () => {
 
     const [socketState, setSocketState] = useState(false);
     const [socketInitstate, setSocketInitstate] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const { JSModule, styles } = useContext(ThemeContext) || {};
+
+    // Check login status on mount
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        setIsLoggedIn(!!token);
+    }, []);
+
+    // Check if OpenID is configured
+    const hasOpenID = JSModule?.openid?.authorization_endpoint && JSModule?.openid?.client_id;
+
+    const handleLogin = () => {
+        if (JSModule?.openid?.authorization_endpoint && chatId) {
+            const redirectUri = `${window.location.origin}/?chat-id=${chatId}`;
+            const authUrl = `${JSModule.openid.authorization_endpoint}?` +
+                `client_id=${encodeURIComponent(JSModule.openid.client_id)}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `response_type=code&` +
+                `scope=${encodeURIComponent(JSModule.openid.scopes_supported?.join(' ') || 'openid profile email')}`;
+            window.location.href = authUrl;
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        setIsLoggedIn(false);
+        if (JSModule?.handleHeaderPane) {
+            JSModule.handleHeaderPane('logout');
+        }
+        window.location.reload();
+    };
     const { messages, history } = messageState;
     // Effect for initializing chat and socket
     useEffect(() => {
@@ -633,6 +664,10 @@ export const useChatbot = () => {
         updatePromptTemplate,
         resetPromptTemplateHandler,
         references, 
-        setReferences
+        setReferences,
+        isLoggedIn,
+        hasOpenID,
+        handleLogin,
+        handleLogout
     };
 };
