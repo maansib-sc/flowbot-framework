@@ -10,10 +10,11 @@ interface ChatInputProps {
     loading: boolean
     onChange: (val: string) => void
     messages: Message[]
+    onAddClick?: () => void
 }
 
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, typingState, query, loading, onChange, messages }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, typingState, query, loading, onChange, messages, onAddClick }) => {
 
     const { JSModule, styles } = useContext(ThemeContext);
 
@@ -46,6 +47,20 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, typingState, que
                                 Typing
                                 <LoadingDots color="#000" />
                             </span>
+                        )}
+                        {JSModule?.drawerEnabled && onAddClick && (
+                            <button
+                                type="button"
+                                onClick={onAddClick}
+                                disabled={loading}
+                                className={styles?.addButton}
+                                title="Add documents"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                            </button>
                         )}
                         <textarea
                             disabled={loading}
