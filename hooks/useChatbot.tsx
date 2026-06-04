@@ -339,7 +339,8 @@ export const useChatbot = () => {
                             history,
                             session: currentSession,
                             reqQuery: router.query,
-                            edit: update
+                            edit: update,
+                            graphId: sessionStorage.getItem('graphId') || undefined
                         })
                     },
                 );

@@ -12,7 +12,6 @@ import ReactMarkdown from "react-markdown";
 import { IReferences, Message } from '@/types/chat';
 import rehypeRaw from 'rehype-raw';
 import { DynamicComponent } from "@/components/DynamicComponent";
-import UploadLargeIcon from "@/assets/svgs/UploadLargeIcon";
 import LoginIcon from '@/assets/svgs/LoginIcon';
 import { useRouter } from 'next/router';
 import { useChatbot } from "@/hooks/useChatbot";
@@ -82,16 +81,11 @@ export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loa
                                     ))}
                                 </div>
                             )}
-                            {hasOpenID && !isLoggedIn ? (
+                            {hasOpenID && !isLoggedIn && (
                                 <button className={styles?.['login-button']} onClick={handleLogin}>
                                     <LoginIcon size={16} stroke="currentColor" />
                                     Login to Continue
                                 </button>
-                            ) : JSModule?.drawerEnabled && (
-                                <div className={styles?.['upload-prompt']} onClick={() => onUploadClick?.()}>
-                                    <UploadLargeIcon size={32} stroke="#6b7280" />
-                                    <span>Upload a document to get started</span>
-                                </div>
                             )}
                         </div>
                     )}

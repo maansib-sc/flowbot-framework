@@ -97,6 +97,17 @@ export const submitPromptTemplate = async (chatId: CHAT_ID, data: any) => {
     }
 }
 
+// TODO: Wire with polling once upload API returns jobId
+export const getJobProgress = async (jobId: string) => {
+    try {
+        const response = await axiosPDFInstance.get(`/jobs/${jobId}`);
+        return response.data;
+    } catch (error) {
+        console.log(`Error fetching job progress for ${jobId}: ${error}`);
+        return null;
+    }
+}
+
 export const deleteDocument = async ( documentName: string, chatId: string | unknown) => {
     try {
         const response = await axiosPDFInstance.delete(`/data/${documentName}?chatbot_id=document-${chatId}`)

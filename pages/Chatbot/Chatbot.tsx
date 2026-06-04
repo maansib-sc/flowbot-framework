@@ -123,6 +123,7 @@ const Chatbot: React.FC = () => {
                   loading={loading}
                   onSubmit={handleSubmit}
                   onChange={setQuery}
+                  onAddClick={JSModule?.drawerEnabled ? () => setOpen(true) : undefined}
                 />
               </div>
               {/* Right Documents Panel */}

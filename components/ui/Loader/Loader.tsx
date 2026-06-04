@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import lottie, { AnimationItem } from 'lottie-web';
+import type { AnimationItem } from 'lottie-web';
 
 interface LoaderProps {
   loader?: string;
@@ -7,22 +7,24 @@ interface LoaderProps {
 
 const Loader: React.FC<LoaderProps> = ({ loader }) => {
   const container = useRef<HTMLDivElement>(null);
-  let animation: AnimationItem | null = null;
+  const animationRef = useRef<AnimationItem | null>(null);
 
   useEffect(() => {
     if (container.current) {
-      animation = lottie.loadAnimation({
-        container: container.current,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: loader ? loader : 'https://lottie.host/43ec45fc-8d19-4b9f-8f22-ed906d42db71/xdmFrfrtKB.json'
+      import('lottie-web').then((lottie) => {
+        animationRef.current = lottie.default.loadAnimation({
+          container: container.current!,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: loader ? loader : 'https://lottie.host/43ec45fc-8d19-4b9f-8f22-ed906d42db71/xdmFrfrtKB.json'
+        });
       });
     }
 
     return () => {
-      if (animation) {
-        animation.destroy();
+      if (animationRef.current) {
+        animationRef.current.destroy();
       }
     };
   }, [loader]);

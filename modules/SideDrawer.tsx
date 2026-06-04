@@ -1,96 +1,244 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState, useCallback } from "react";
 import { useRouter } from 'next/router';
-import { Loader } from "@/components/ui";
 import ThemeContext from "@/contexts/ThemeContext";
 import { useTainPDF } from "@/hooks/useTrainPDF";
-import FileList from "@/modules/File";
-import config from '@/config/constants';
-import { getPDFList, deleteDocument } from "@/apiRequests";
 import UploadIcon from '@/assets/svgs/UploadIcon';
 import FileTextIcon from '@/assets/svgs/FileTextIcon';
-import TrashIcon from '@/assets/svgs/TrashIcon';
+import Spinner from '@/components/ui/Spinner';
+import { SideDrawerProps, UploadDropZoneProps, UploadFileCardProps, UploadsSectionProps, TrainedDocumentsProps } from '@/types/sideDrawer';
 
+const formatBytes = (bytes: number) => {
+    if (!bytes) return '';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${Math.round((bytes / Math.pow(1024, i)) * 10) / 10} ${sizes[i]}`;
+};
 
-interface SideDrawerProps {
-    open: boolean;
-    setOpen: (val: boolean) => void;
-}
+const UploadDropZone: React.FC<UploadDropZoneProps> = ({
+    styles, dragOver, setDragOver, handleFileDrop, handlePDFFileChange, fileInputRef
+}) => (
+    <div className={styles?.['UploadContainer']}>
+        <label
+            className={`${styles?.['dropZone']} ${dragOver ? styles?.['dropZoneActive'] : ''}`}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => {
+                e.preventDefault();
+                setDragOver(false);
+                if (e.dataTransfer.files?.length) handleFileDrop(e.dataTransfer.files);
+            }}
+        >
+            <input
+                type="file"
+                accept=".pdf,.docx,.txt"
+                multiple
+                onChange={handlePDFFileChange}
+                ref={fileInputRef}
+                className="hidden"
+            />
+            <div className={styles?.['dropZoneIcon']}>
+                <UploadIcon size={20} stroke="#3b82f6" />
+            </div>
+            <div className={styles?.['dropZoneTitle']}>Drag and drop files here</div>
+            <div className={styles?.['dropZoneOr']}>or click to browse</div>
+            <div className={styles?.['dropZoneHint']}>PDF, DOCX, TXT (Max 50MB)</div>
+        </label>
+    </div>
+);
 
-export const SidePanel: React.FC<SideDrawerProps> = ({ open }) => {
-    const { JSModule, styles } = useContext(ThemeContext);
-    const { pdfList, setPdfList, uploading, selectedFileType, setTrainingInProgress, handlePDFFileChange } = useTainPDF();
-    const router = useRouter();
-    const { 'chat-id': chatId } = router.query;
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleDeleteDocument = async (documentName: string) => {
-        try {
-            const response = await deleteDocument(documentName, `${chatId}`);
-            if (response) {
-                const uploadedDocuments = await getPDFList(`${chatId}`);
-                setPdfList(uploadedDocuments);
-            }
-        } catch (error) {
-            console.log(`Error deleting doc ${documentName}: ${error}`);
-        }
-    };
-
-    if (!JSModule?.drawerEnabled || !open) return null;
+const UploadFileCard: React.FC<UploadFileCardProps> = ({
+    styles, file, canCancel, cancelUpload, retryUpload, removeUpload
+}) => {
+    const isDone = file.phase === 'done';
+    const isError = file.phase === 'error' || file.phase === 'cancelled';
+    const isProcessing = file.phase === 'processing';
+    const statusLabel = isDone ? 'Upload complete'
+        : isError ? (file.error || 'Failed to upload')
+        : isProcessing ? 'Processing...'
+        : 'Uploading...';
 
     return (
-        <div className={styles?.['HamburgerContainer']}>
-            <div className={styles?.['HamburgerHeaderContainer']}>
-                <div className={styles?.['HamburgerHeader']}>Documents</div>
-                <span>{pdfList?.length || 0} trained</span>
-            </div>
-
-            <div className={styles?.['UploadContainer']}>
-                {!uploading ? (
-                    <label className={styles?.['uploadButton']}>
-                        <input
-                            type="file"
-                            accept=".pdf,.docx,.txt"
-                            onChange={handlePDFFileChange}
-                            ref={fileInputRef}
-                            className="hidden"
-                        />
-                        <UploadIcon size={20} stroke="#2563eb" />
-                        <span>Click to upload</span>
-                        <span>PDF, DOCX, TXT</span>
-                    </label>
-                ) : (
-                    <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
-                )}
-            </div>
-
-            <div className={styles?.['Divider']} />
-            <div className={styles?.['UploaderHeader']}>Trained Documents</div>
-
-            <div className={styles?.['DataContainer']}>
-                {pdfList?.map((document, index) => (
-                    <div key={index} className={styles?.['DataItem']}>
-                        <FileTextIcon size={20} stroke="#6b7280" />
-                        <span>{document?.name || document?.training_id}</span>
-                        <div className={styles?.['IconContainer']} onClick={() => handleDeleteDocument(document?.name!)}>
-                            <TrashIcon size={16} stroke="#ef4444" />
-                        </div>
+        <div className={styles?.['fileCard']}>
+            <div className={styles?.['fileCardTop']}>
+                <div className={styles?.['fileIcon']}>
+                    <FileTextIcon size={22} stroke={isError ? '#ef4444' : isDone ? '#10b981' : '#6b7280'} />
+                </div>
+                <div className={styles?.['fileMeta']}>
+                    <div className={styles?.['fileName']}>{file.name}</div>
+                    <div className={styles?.['fileSub']}>
+                        {formatBytes(file.size)}{file.type ? ` • ${file.type}` : ''}
                     </div>
-                ))}
+                </div>
+                <div className={styles?.['fileStatusRight']}>
+                    {isDone ? (
+                        <span className={styles?.['fileDoneLabel']}>✓ Done</span>
+                    ) : isError ? (
+                        <span className={styles?.['fileErrorIcon']}>!</span>
+                    ) : (
+                        <>
+                            <span className={styles?.['filePercent']}>{file.progress}%</span>
+                            {canCancel(file.name) && (
+                                <button className={styles?.['fileCancelX']} onClick={() => cancelUpload(file.name)}>✕</button>
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
 
-            {pdfList?.map((item, index) => (
-                <FileList
-                    key={index}
-                    selectedFileType={selectedFileType}
-                    filename={item.name ?? item.training_id}
-                    index={index}
-                    progressUrl={JSModule?.trainedChatbotProgressUrl}
-                    apiKey={config.NEXT_PUBLIC_BACKEND_CONNECTOR_KEY}
-                    trained={item.is_trained || false}
-                    setTrainingInProgress={setTrainingInProgress}
+            <div className={styles?.['fileProgressBg']}>
+                <div
+                    className={`${styles?.['fileProgressFill']} ${
+                        isError ? styles?.['fileProgressError']
+                        : isDone ? styles?.['fileProgressDone']
+                        : isProcessing ? styles?.['fileProgressProcessing']
+                        : ''
+                    }`}
+                    style={{ width: isError ? '100%' : `${file.progress}%` }}
+                />
+            </div>
+
+            {isError ? (
+                <div className={styles?.['fileErrorActions']}>
+                    <button className={styles?.['fileRetryBtn']} onClick={() => retryUpload(file.name)}>↻ Retry</button>
+                    <button className={styles?.['fileRemoveBtn']} onClick={() => removeUpload(file.name)}>🗑 Remove</button>
+                </div>
+            ) : (
+                <div className={`${styles?.['fileStatusLabel']} ${
+                    isDone ? styles?.['fileStatusDone']
+                    : isProcessing ? styles?.['fileStatusProcessing']
+                    : styles?.['fileStatusUploading']
+                }`}>
+                    {!isDone && <Spinner size={12} />}
+                    {statusLabel}
+                </div>
+            )}
+
+            {!isDone && !isError && !canCancel(file.name) && file.progress >= 90 && (
+                <div className={styles?.['cancelHint']}>Cancel will be disabled soon ⓘ</div>
+            )}
+        </div>
+    );
+};
+
+const UploadsSection: React.FC<UploadsSectionProps> = ({
+    styles, uploads, canCancel, cancelUpload, retryUpload, removeUpload
+}) => {
+    const activeUploads = uploads.filter(f => f.phase !== 'done');
+    if (activeUploads.length === 0) return null;
+
+    return (
+        <div className={styles?.['uploadsSection']}>
+            <div className={styles?.['uploadsHeader']}>Uploads ({activeUploads.length})</div>
+            {activeUploads.map((file) => (
+                <UploadFileCard
+                    key={file.name}
+                    styles={styles}
+                    file={file}
+                    canCancel={canCancel}
+                    cancelUpload={cancelUpload}
+                    retryUpload={retryUpload}
+                    removeUpload={removeUpload}
                 />
             ))}
         </div>
     );
 };
 
+const TrainedDocuments: React.FC<TrainedDocumentsProps> = ({ styles, pdfList }) => {
+    return (
+    <>
+        <div className={styles?.['Divider']} />
+        <div className={styles?.['UploaderHeader']}>Trained Documents</div>
+        <div className={styles?.['DataContainer']}>
+            {pdfList?.filter(d => d.is_trained).map((document, index) => (
+                <div key={index} className={styles?.['fileCard']}>
+                    <div className={styles?.['fileCardTop']}>
+                        <div className={styles?.['fileIcon']}>
+                            <FileTextIcon size={22} stroke="#10b981" />
+                        </div>
+                        <div className={styles?.['fileMeta']}>
+                            <div className={styles?.['fileName']}>{document?.name || document?.training_id}</div>
+                        </div>
+                        <span className={styles?.['fileDoneLabel']}>✓ Done</span>
+                    </div>
+                    <div className={styles?.['fileProgressBg']}>
+                        <div className={`${styles?.['fileProgressFill']} ${styles?.['fileProgressDone']}`} style={{ width: '100%' }} />
+                    </div>
+                </div>
+            ))}
+        </div>
+    </>
+    );
+};
+
+export const SidePanel: React.FC<SideDrawerProps> = ({ open, setOpen }) => {
+    const { JSModule, styles } = useContext(ThemeContext);
+    const {
+        pdfList, setPdfList, uploads, selectedFileType, setTrainingInProgress,
+        handlePDFFileChange, handleFileDrop, cancelUpload, retryUpload, removeUpload, canCancel
+    } = useTainPDF();
+    const router = useRouter();
+    const { 'chat-id': chatId } = router.query;
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [drawerWidth, setDrawerWidth] = useState(320);
+    const [dragOver, setDragOver] = useState(false);
+    const isResizing = useRef(false);
+
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        isResizing.current = true;
+        const startX = e.clientX;
+        const startWidth = drawerWidth;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizing.current) return;
+            const diff = startX - e.clientX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 250), 600);
+            setDrawerWidth(newWidth);
+        };
+
+        const handleMouseUp = () => {
+            isResizing.current = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }, [drawerWidth]);
+
+    if (!JSModule?.drawerEnabled || !open) return null;
+
+    return (
+        <div className={styles?.['HamburgerContainer']} style={{ width: drawerWidth, minWidth: 250, maxWidth: 600 }}>
+            <div className={styles?.['drawerResizeHandle']} onMouseDown={handleMouseDown} />
+
+            <div className={styles?.['HamburgerHeaderContainer']}>
+                <div className={styles?.['HamburgerHeaderTop']}>
+                    <div className={styles?.['HamburgerHeader']}>Documents</div>
+                    <div className={styles?.['drawerCloseBtn']} onClick={() => setOpen(false)}>✕</div>
+                </div>
+                <p className={styles?.['drawerSubtitle']}>Upload documents and ask questions based on their content.</p>
+            </div>
+
+            <UploadDropZone
+                styles={styles}
+                dragOver={dragOver}
+                setDragOver={setDragOver}
+                handleFileDrop={handleFileDrop}
+                handlePDFFileChange={handlePDFFileChange}
+                fileInputRef={fileInputRef}
+            />
+
+            <UploadsSection
+                styles={styles}
+                uploads={uploads}
+                canCancel={canCancel}
+                cancelUpload={cancelUpload}
+                retryUpload={retryUpload}
+                removeUpload={removeUpload}
+            />
+
+            <TrainedDocuments styles={styles} pdfList={pdfList} />
+        </div>
+    );
+};
