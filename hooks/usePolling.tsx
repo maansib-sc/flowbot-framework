@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-interface UsePollingOptions<T> {
-    fn: () => T | Promise<T>;
-    interval?: number;
-    shouldStop?: (data: T) => boolean;
-    onComplete?: (data: T) => void;
-    enabled?: boolean;
-}
+import { UsePollingOptions } from '@/types/polling';
 
 export function usePolling<T>({ fn, interval = 400, shouldStop, onComplete, enabled = false }: UsePollingOptions<T>) {
     const [data, setData] = useState<T | null>(null);

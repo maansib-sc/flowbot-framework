@@ -3,19 +3,9 @@ import { getPDFList, uploadPDF } from '@/apiRequests';
 import ThemeContext from '@/contexts/ThemeContext';
 import { useRouter } from 'next/router';
 import { usePolling } from '@/hooks/usePolling';
+import { UploadPhase, FileUploadStatus } from '@/types/fileUploadStatus';
 
-type UploadPhase = 'uploading' | 'processing' | 'done' | 'error' | 'cancelled';
-
-export interface FileUploadStatus {
-    name: string;
-    size: number;
-    type: string;
-    progress: number;
-    phase: UploadPhase;
-    error?: string;
-}
-
-// Mock: simulates a polling API response for all active files
+// TODO: Replace mock data with API response when backend endpoint is available.
 const mockPollProgress = (
     uploads: FileUploadStatus[],
     progressRef: React.MutableRefObject<Record<string, number>>,
@@ -81,7 +71,7 @@ export const useTainPDF = () => {
                 ));
             }
         },
-        interval: 400,
+        interval: JSModule?.pollingInterval || 400, // configurable polling interval from backend config
         enabled: hasActiveFiles,
         shouldStop: () => !uploadsRef.current.some(f => f.phase === 'uploading' || f.phase === 'processing'),
         onComplete: () => {
