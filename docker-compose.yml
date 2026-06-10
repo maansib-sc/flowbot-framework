@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v2.11
+    image: traefik:v3.6.4
     container_name: traefik
     restart: unless-stopped
     logging:
@@ -18,7 +18,7 @@ services:
       # HTTPS entrypoint with Let's Encrypt
       - --entryPoints.websecure.address=:443
       - --certificatesresolvers.le.acme.tlschallenge=true
-      - --certificatesresolvers.le.acme.email=sadkirat.s@smarter.codes
+      - --certificatesresolvers.le.acme.email=admin@talkingdb.io
       - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
     ports:
       - "80:80"
@@ -44,7 +44,7 @@ services:
       - .env
     volumes:
       # Add new bots here as siblings of flowbot-framework.
-      - ../flowbot-chatbot-ttt:/app/configuration/flowbot-chatbot-ttt
+      - ../configurations:/app/configuration
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.llm-chatbot.rule=Host(`${CHAT_HOST}`)"

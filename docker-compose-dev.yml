@@ -3,7 +3,7 @@
 
 services:
   traefik:
-    image: traefik:v2.11
+    image: traefik:v3.6.4
     container_name: traefik
     command:
       - --log.level=INFO
@@ -34,8 +34,8 @@ services:
       - .:/app
       - /app/node_modules
       - /app/.next
-      # Mount chatbot repos — add new bots here
-      - ../flowbot-chatbot-ttt:/app/configuration/flowbot-chatbot-ttt
+      # Mount configurations — add new bots here
+      - ../configurations:/app/configuration
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.llm-chatbot.rule=Host(`${CHAT_HOST}`)"
