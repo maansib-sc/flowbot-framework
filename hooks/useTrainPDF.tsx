@@ -1,35 +1,59 @@
 import { useContext, useEffect, useState, useRef } from 'react';
 import { getPDFList, uploadPDF } from '@/apiRequests';
-import { uploadDocument } from '@/apiRequests/ttt';
+import { uploadDocument, getJobProgress } from '@/apiRequests/ttt';
 import ThemeContext from '@/contexts/ThemeContext';
 import { useRouter } from 'next/router';
 import { usePolling } from '@/hooks/usePolling';
 import { UploadPhase, FileUploadStatus } from '@/types/fileUploadStatus';
 import { setGraphId, setJobId } from '@/utils/sessionJobs';
 
-// TODO: Replace mock data with API response when backend endpoint is available.
-const mockPollProgress = (
+const pollProgress = async (
     uploads: FileUploadStatus[],
     progressRef: React.MutableRefObject<Record<string, number>>,
     cancelledRef: React.MutableRefObject<Set<string>>
-): FileUploadStatus[] => {
-    return uploads.map((f) => {
-        if (f.phase === 'done' || f.phase === 'cancelled' || f.phase === 'error') return f;
-        if (cancelledRef.current.has(f.name)) return f;
+): Promise<FileUploadStatus[]> => {
+    return Promise.all(
+        uploads.map(async (f) => {
+            if (f.phase === 'done' || f.phase === 'cancelled' || f.phase === 'error' || !f.jobId || cancelledRef.current.has(f.name)) {
+                return f;
+            }
 
-        let p = progressRef.current[f.name] || 0;
-        p += Math.random() * 8 + 2;
+            try {
+                const response = await getJobProgress(f?.jobId);
+                
+                const progressPercentage = response?.percent || 0;
+                progressRef.current[f.name] = progressPercentage;
 
-        if (p >= 100) {
-            p = 100;
-            progressRef.current[f.name] = 100;
-            return { ...f, progress: 100, phase: 'done' as UploadPhase };
-        }
+                const currentState = response?.state
+                if (currentState == "FAILED" || currentState == "COMPLETED") {
+                    return {
+                        ...f,
+                        phase: currentState == "FAILED"? "error": "done",
+                        progress: progressPercentage
+                    };
+                }
 
-        progressRef.current[f.name] = p;
-        const phase: UploadPhase = p >= 50 ? 'processing' : 'uploading';
-        return { ...f, progress: Math.round(p), phase };
-    });
+                // if the current state is not of failed or completed, 
+                // not changing the phase, updating the progress percentage only;
+                return {
+                    ...f,
+                    progress: progressPercentage
+                };
+            } catch (error) {
+                console.error(`something went wrong in polling progress`, {
+                    message: error?.message,
+                    status: error?.response?.status,
+                    responseData: error?.response?.data
+                });
+
+                return {
+                    ...f,
+                    phase: 'error',
+                    error: 'Failed to fetch status',
+                };
+            }
+        })
+    );
 };
 
 export const useTainPDF = () => {
@@ -61,8 +85,8 @@ export const useTainPDF = () => {
     );
 
     usePolling<void>({
-        fn: () => {
-            const updated = mockPollProgress(uploadsRef.current, progressRef, cancelledRef);
+        fn: async () => {
+            const updated = await pollProgress(uploadsRef.current, progressRef, cancelledRef);
             setUploads(updated);
             // Mark newly completed files as trained
             const newlyDone = updated.filter(f => f.phase === 'done' && !uploadsRef.current.find(u => u.name === f.name && u.phase === 'done'));
@@ -115,6 +139,7 @@ export const useTainPDF = () => {
                         ? {
                               ...f,
                               jobId: job_id,
+                              phase: "processing"
                           }
                         : f
                 )
