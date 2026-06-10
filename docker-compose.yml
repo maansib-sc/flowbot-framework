@@ -1,34 +1,8 @@
-services:
-  traefik:
-    image: traefik:v3.6.4
-    container_name: traefik
-    restart: unless-stopped
-    logging:
-      options:
-        max-size: "50m"
-        max-file: "3"
-    command:
-      - --log.level=INFO
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=true
-      # HTTP entrypoint -> redirect to HTTPS
-      - --entryPoints.web.address=:80
-      - --entryPoints.web.http.redirections.entryPoint.to=websecure
-      - --entryPoints.web.http.redirections.entryPoint.scheme=https
-      # HTTPS entrypoint with Let's Encrypt
-      - --entryPoints.websecure.address=:443
-      - --certificatesresolvers.le.acme.tlschallenge=true
-      - --certificatesresolvers.le.acme.email=admin@talkingdb.io
-      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./letsencrypt:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - docker_net
+# Production compose — for VM deployment
+# Traefik is managed externally (shared with TTT backend).
+# This compose only runs the app + MongoDB on the shared network.
 
+services:
   llm-chatbot:
     build:
       context: ./
@@ -43,7 +17,6 @@ services:
     env_file:
       - .env
     volumes:
-      # Add new bots here as siblings of flowbot-framework.
       - ../configurations:/app/configuration
     labels:
       - "traefik.enable=true"
@@ -74,7 +47,7 @@ services:
 volumes:
   mongodb-data:
 
-
 networks:
   docker_net:
-    driver: bridge
+    external: true
+    name: docker_default

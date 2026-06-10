@@ -1,24 +1,8 @@
-# Development compose — hot reload, volume mounts, dev target
+# Development compose — hot reload, dev target
+# Traefik is managed externally (run TTT backend's Traefik locally).
 # Usage: docker compose -f docker-compose-dev.yml up --build
 
 services:
-  traefik:
-    image: traefik:v3.6.4
-    container_name: traefik
-    command:
-      - --log.level=INFO
-      - --api.insecure=true
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --entryPoints.web.address=:80
-    ports:
-      - "80:80"
-      - "8080:8080"   # Traefik dashboard
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - docker_net
-
   llm-chatbot:
     build:
       context: ./
@@ -30,11 +14,9 @@ services:
     env_file:
       - .env
     volumes:
-      # Mount the repo for hot reload
       - .:/app
       - /app/node_modules
       - /app/.next
-      # Mount configurations — add new bots here
       - ../configurations:/app/configuration
     labels:
       - "traefik.enable=true"
@@ -62,4 +44,5 @@ volumes:
 
 networks:
   docker_net:
-    driver: bridge
+    external: true
+    name: docker_default
