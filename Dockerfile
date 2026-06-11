@@ -1,13 +1,49 @@
-FROM node:18-alpine
-
+# ─────────────────────────────────────────────
+# Base Stage — shared dependency layer
+# ─────────────────────────────────────────────
+FROM node:18-alpine AS base
 WORKDIR /app
 
-COPY package*.json ./
-COPY yarn.lock ./
-RUN yarn
+COPY package*.json yarn.lock ./
+RUN yarn --frozen-lockfile
 
+# ─────────────────────────────────────────────
+# Development Stage — hot reload via next dev
+# Used with: docker-compose-dev.yml
+# ─────────────────────────────────────────────
+FROM base AS dev
+WORKDIR /app
 COPY . .
 
-ENV PORT 80
+ENV PORT=80
+EXPOSE 80
 
-CMD [ "yarn", "run", "dev"]
+CMD ["yarn", "dev"]
+
+# ─────────────────────────────────────────────
+# Build Stage — produces .next output
+# ─────────────────────────────────────────────
+FROM base AS build
+WORKDIR /app
+COPY . .
+
+RUN yarn build
+
+# ─────────────────────────────────────────────
+# Production Stage — minimal runtime image
+# Used with: docker-compose.yml
+# ─────────────────────────────────────────────
+FROM node:18-alpine AS prod
+WORKDIR /app
+
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./
+COPY --from=build /app/public ./public
+COPY --from=build /app/next.config.js ./
+COPY --from=build /app/configuration ./configuration
+
+ENV PORT=80
+EXPOSE 80
+
+CMD ["yarn", "start"]

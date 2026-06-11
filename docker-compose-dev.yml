@@ -1,26 +1,26 @@
-# Production compose — for VM deployment
+# Development compose — hot reload, dev target
+# Usage: docker compose -f docker-compose-dev.yml up --build
 
 services:
   llm-chatbot:
     build:
       context: ./
       dockerfile: Dockerfile
-      target: prod
+      target: dev
     container_name: llm-chatbot
-    restart: unless-stopped
-    logging:
-      options:
-        max-size: "50m"
-        max-file: "3"
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
     env_file:
       - .env
     volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
       - ../configurations:/app/configuration
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.llm-chatbot.rule=Host(`${CHAT_HOST}`)"
-      - "traefik.http.routers.llm-chatbot.entrypoints=websecure"
-      - "traefik.http.routers.llm-chatbot.tls.certresolver=le"
+      - "traefik.http.routers.llm-chatbot.entrypoints=web"
       - "traefik.http.services.llm-chatbot.loadbalancer.server.port=80"
     networks:
       - docker_net
@@ -28,10 +28,6 @@ services:
   mongodb:
     image: mongo:7
     container_name: mongodb
-    logging:
-      options:
-        max-size: "50m"
-        max-file: "3"
     restart: always
     env_file:
       - .env
@@ -47,5 +43,5 @@ volumes:
 
 networks:
   docker_net:
-    external: true
     name: docker_default
+    external: true
