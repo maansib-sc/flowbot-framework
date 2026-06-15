@@ -17,7 +17,8 @@ declare const window: any;
 
 export const useChatbot = () => {
     const router = useRouter();
-    const { 'chat-id': chatId, code: openidCode } = router.query;
+    const { 'chat-id': chatIdParam, code: openidCode } = router.query;
+    const chatId = chatIdParam || process.env.NEXT_PUBLIC_DEFAULT_CHAT_ID;
 
     // State declarations
     const [botLoading, setBotLoading] = useState<boolean>(true);
