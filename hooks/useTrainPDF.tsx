@@ -45,7 +45,7 @@ const pollProgress = async (
                     phase: currentState === "CANCELLING"? "cancelling": "processing",
                     progress: progressPercentage
                 };
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`something went wrong in polling progress`, {
                     message: error?.message,
                     status: error?.response?.status,
