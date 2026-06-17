@@ -6,6 +6,11 @@ services:
       context: ./
       dockerfile: Dockerfile
       target: prod
+      args:
+        NEXT_PUBLIC_TDB_TTT_SERVICE: ${NEXT_PUBLIC_TDB_TTT_SERVICE}
+        NEXT_PUBLIC_TDB_TTT_SERVICE_AUTHORIZATION: ${NEXT_PUBLIC_TDB_TTT_SERVICE_AUTHORIZATION}
+        NEXT_PUBLIC_NEXTAUTH_URL: ${NEXT_PUBLIC_NEXTAUTH_URL}
+        NEXT_PUBLIC_DEFAULT_CHAT_ID: ${NEXT_PUBLIC_DEFAULT_CHAT_ID}
     container_name: llm-chatbot
     restart: unless-stopped
     logging:

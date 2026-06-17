@@ -45,7 +45,7 @@ const pollProgress = async (
                     phase: currentState === "CANCELLING"? "cancelling": "processing",
                     progress: progressPercentage
                 };
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`something went wrong in polling progress`, {
                     message: error?.message,
                     status: error?.response?.status,
@@ -122,7 +122,7 @@ export const useTainPDF = () => {
         
         try {
             const {job_id, job_type, state} = await uploadDocument(file);
-            setDocumentList((prev: FileUploadStatus[]) => [...prev, { name: file.name, jobId: job_id}]);
+            setDocumentList((prev: FileUploadStatus[]) => [...prev,{ ...entry, jobId: job_id }]);
             setUploads((prev: FileUploadStatus[]) =>
                 prev.map(f =>
                     f.name === file.name && !f.jobId
