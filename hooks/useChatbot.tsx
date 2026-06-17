@@ -92,7 +92,8 @@ export const useChatbot = () => {
                 `client_id=${encodeURIComponent(JSModule.openid.client_id)}&` +
                 `redirect_uri=${encodeURIComponent(redirectUri)}&` +
                 `response_type=code&` +
-                `scope=${encodeURIComponent(JSModule.openid.scopes_supported?.join(' ') || 'openid profile email')}`;
+                `scope=${encodeURIComponent(JSModule.openid.scopes_supported?.join(' ') || 'openid profile email')}&` +
+                `prompt=select_account`;
             window.location.href = authUrl;
         }
     };
