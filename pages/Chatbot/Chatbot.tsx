@@ -51,8 +51,17 @@ const Chatbot: React.FC = () => {
     };
   }, []);
 
-  // Block unauthenticated access — wait for first session check before showing sign-in
-  if (hasOpenID && !isLoggedIn && !isCheckingSession) {
+  if (hasOpenID && isCheckingSession) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <div style={{ width: '150px', height: '150px' }}>
+          <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
+        </div>
+      </div>
+    );
+  }
+
+  if (hasOpenID && !isLoggedIn) {
     return (
       <SignInScreen
         JSModule={JSModule}
