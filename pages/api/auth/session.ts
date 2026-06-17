@@ -15,17 +15,11 @@ function buildSetCookieHeader(name: string, value: string, maxAge: number): stri
 // the endpoint arrives in the request body, an attacker could otherwise point it
 // at their own server and exfiltrate the client secret (and use the route for
 // SSRF). We therefore only ever talk to an explicit allowlist of HTTPS hosts.
-const DEFAULT_ALLOWED_TOKEN_HOSTS = ['oauth2.googleapis.com', 'auth.smarter.codes'];
-
 function getAllowedTokenHosts(): string[] {
-    const fromEnv = process.env.OAUTH_TOKEN_ENDPOINT_ALLOWLIST;
-    if (fromEnv) {
-        return fromEnv
-            .split(',')
-            .map((h) => h.trim().toLowerCase())
-            .filter(Boolean);
-    }
-    return DEFAULT_ALLOWED_TOKEN_HOSTS;
+    return (process.env.OAUTH_TOKEN_ENDPOINT_ALLOWLIST || '')
+        .split(',')
+        .map((h) => h.trim().toLowerCase())
+        .filter(Boolean);
 }
 
 function isAllowedTokenEndpoint(endpoint: unknown): endpoint is string {

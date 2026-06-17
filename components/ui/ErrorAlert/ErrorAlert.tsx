@@ -1,10 +1,6 @@
 import React from 'react';
-import ErrorCircleIcon from '@/assets/svgs/icons/ErrorCircleIcon';
-
-interface ErrorAlertProps {
-  message: string;
-  style?: React.CSSProperties;
-}
+import { XCircle } from 'lucide-react';
+import { ErrorAlertProps } from '@/types/ui';
 
 const ErrorAlert: React.FC<ErrorAlertProps> = ({ message, style }) => (
   <div
@@ -21,7 +17,7 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ message, style }) => (
     }}
   >
     <span style={{ flexShrink: 0, marginTop: '1px', display: 'flex' }}>
-      <ErrorCircleIcon />
+      <XCircle size={18} color="#ef4444" />
     </span>
     <p
       style={{

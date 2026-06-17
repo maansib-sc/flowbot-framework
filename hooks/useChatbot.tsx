@@ -15,6 +15,9 @@ import { getDocumentNameAndPageNumber } from '@/utils/extractDocumentNameAndPage
 
 declare const window: any;
 
+const AUTH_SESSION_URL = '/api/auth/session';
+const buildRedirectUri = (chatId: string) => `${window.location.origin}/?chat-id=${chatId}`;
+
 export const useChatbot = () => {
     const router = useRouter();
     const { 'chat-id': chatIdParam, code: openidCode, error: oauthError } = router.query;
@@ -59,26 +62,32 @@ export const useChatbot = () => {
     // Poll session status: fires on mount, on tab focus, and every 5 min while tab is visible.
     useEffect(() => {
         let initialised = false;
-        const check = () => {
+        const checkSession = () => {
             if (document.visibilityState !== 'visible') return;
-            fetch('/api/auth/session')
+            fetch(AUTH_SESSION_URL)
                 .then(r => r.json())
                 .then(({ isLoggedIn }) => {
                     setIsLoggedIn(!!isLoggedIn);
-                    if (!initialised) { setIsCheckingSession(false); initialised = true; }
+                    if (!initialised) {
+                        setIsCheckingSession(false);
+                        initialised = true;
+                    }
                 })
-                .catch(() => {
+                .catch((err) => {
                     setIsLoggedIn(false);
-                    if (!initialised) { setIsCheckingSession(false); initialised = true; }
+                    if (!initialised) {
+                        setIsCheckingSession(false);
+                        initialised = true;
+                    }
                 });
         };
 
-        check();
-        const id = setInterval(check, 5 * 60 * 1000);
-        document.addEventListener('visibilitychange', check);
+        checkSession();
+        const id = setInterval(checkSession, 5 * 60 * 1000);
+        document.addEventListener('visibilitychange', checkSession);
         return () => {
             clearInterval(id);
-            document.removeEventListener('visibilitychange', check);
+            document.removeEventListener('visibilitychange', checkSession);
         };
     }, []);
 
@@ -87,7 +96,7 @@ export const useChatbot = () => {
 
     const handleLogin = () => {
         if (JSModule?.openid?.authorization_endpoint && chatId) {
-            const redirectUri = `${window.location.origin}/?chat-id=${chatId}`;
+            const redirectUri = buildRedirectUri(chatId as string);
             const authUrl = `${JSModule.openid.authorization_endpoint}?` +
                 `client_id=${encodeURIComponent(JSModule.openid.client_id)}&` +
                 `redirect_uri=${encodeURIComponent(redirectUri)}&` +
@@ -99,7 +108,7 @@ export const useChatbot = () => {
     };
 
     const handleLogout = async () => {
-        await fetch('/api/auth/session', { method: 'DELETE' });
+        await fetch(AUTH_SESSION_URL, { method: 'DELETE' });
         setIsLoggedIn(false);
         if (JSModule?.handleHeaderPane) {
             JSModule.handleHeaderPane('logout');
@@ -259,14 +268,14 @@ export const useChatbot = () => {
             if (openidCode && JSModule?.openid) {
                 try {
                     // Must exactly match the redirect URI used in handleLogin
-                    const redirectUri = `${window.location.origin}/?chat-id=${chatId}`;
-                    const response = await fetch('/api/auth/session', {
+                    const redirectUri = buildRedirectUri(chatId as string);
+                    const response = await fetch(AUTH_SESSION_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             code: openidCode,
-                            tokenEndpoint: JSModule.openid.token_endpoint,
-                            clientId: JSModule.openid.client_id,
+                            tokenEndpoint: JSModule?.openid?.token_endpoint,
+                            clientId: JSModule?.openid?.client_id,
                             redirectUri,
                         }),
                         signal: controller.signal,
@@ -375,6 +384,7 @@ export const useChatbot = () => {
                     },
                 );
                 if (response.status === 401) {
+                    fetch(AUTH_SESSION_URL, { method: 'DELETE' });
                     setIsLoggedIn(false);
                     setLoading(false);
                     return;
@@ -626,7 +636,7 @@ export const useChatbot = () => {
         }
     };
 
-    // Function to check and disableUserInput
+    // Function to checkSession and disableUserInput
     // const disableUserInput = () => {
     //     if (messages.length > 0 && messages[messages.length - 1]?.step) {
     //     let message = messages[messages.length - 1];

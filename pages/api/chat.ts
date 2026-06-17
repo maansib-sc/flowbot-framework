@@ -36,7 +36,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { question, history, enablegptfallback, session, reqQuery, chainStatus=false, conversation_id } = req.body;
+  const {
+    question,
+    history,
+    enablegptfallback,
+    session,
+    reqQuery,
+    chainStatus = false,
+    conversation_id,
+  } = req.body;
   const { pinecone_name_space } = req.query;
   const chatBotId = String(pinecone_name_space || 'default');
 
@@ -49,7 +57,7 @@ export default async function handler(
   }
 
   // Enforce authentication for bots that have OpenID configured.
-  if (await botRequiresAuth(chatBotId) && !req.cookies[SESSION_COOKIE]) {
+  if ((await botRequiresAuth(chatBotId)) && !req.cookies[SESSION_COOKIE]) {
     res.status(401).json({ error: 'Authentication required' });
     return;
   }
@@ -61,8 +69,8 @@ export default async function handler(
   try {
     //create chain
     const chain = new makeChain(chatBotId);
-    if (chainStatus){
-      const response = await chain.run(question)
+    if (chainStatus) {
+      const response = await chain.run(question);
       return res.status(200).json(response);
     }
 
@@ -71,7 +79,7 @@ export default async function handler(
     if (!conversation_id) {
       user = await upsertUser(chatBotId, session);
     } else {
-      user = await UserModel.findById(conversation_id) as IUser;
+      user = (await UserModel.findById(conversation_id)) as IUser;
     }
 
     const sessionToken = req.cookies[SESSION_COOKIE];
@@ -109,10 +117,10 @@ export default async function handler(
             res.status(200).json(response);
             resolve(response);
           } catch (error: any) {
+            const status = error?.status === 401 ? 401 : 500;
             res
-              .status(500)
+              .status(status)
               .json({ error: error?.message || 'Something went wrong' });
-            console.log(error);
             resolve(error);
           }
         })
