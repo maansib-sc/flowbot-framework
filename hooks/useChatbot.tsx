@@ -16,9 +16,12 @@ import { getGraphIds } from '@/utils/sessionJobs';
 
 declare const window: any;
 
+const AUTH_SESSION_URL = '/api/auth/session';
+const buildRedirectUri = (chatId: string) => `${window.location.origin}/?chat-id=${chatId}`;
+
 export const useChatbot = () => {
     const router = useRouter();
-    const { 'chat-id': chatIdParam, code: openidCode } = router.query;
+    const { 'chat-id': chatIdParam, code: openidCode, error: oauthError } = router.query;
     const chatId = chatIdParam || process.env.NEXT_PUBLIC_DEFAULT_CHAT_ID;
 
     // State declarations
@@ -52,13 +55,41 @@ export const useChatbot = () => {
     const [socketState, setSocketState] = useState(false);
     const [socketInitstate, setSocketInitstate] = useState(false)
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isCheckingSession, setIsCheckingSession] = useState(true);
+    const [authError, setAuthError] = useState<string | null>(null);
 
     const { JSModule, styles } = useContext(ThemeContext) || {};
 
-    // Check login status on mount
+    // Poll session status: fires on mount, on tab focus, and every 5 min while tab is visible.
     useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        setIsLoggedIn(!!token);
+        let initialised = false;
+        const checkSession = () => {
+            if (document.visibilityState !== 'visible') return;
+            fetch(AUTH_SESSION_URL)
+                .then(r => r.json())
+                .then(({ isLoggedIn }) => {
+                    setIsLoggedIn(!!isLoggedIn);
+                    if (!initialised) {
+                        setIsCheckingSession(false);
+                        initialised = true;
+                    }
+                })
+                .catch((err) => {
+                    if (!initialised) {
+                        setIsLoggedIn(false);
+                        setIsCheckingSession(false);
+                        initialised = true;
+                    }
+                });
+        };
+
+        checkSession();
+        const id = setInterval(checkSession, 5 * 60 * 1000);
+        document.addEventListener('visibilitychange', checkSession);
+        return () => {
+            clearInterval(id);
+            document.removeEventListener('visibilitychange', checkSession);
+        };
     }, []);
 
     // Check if OpenID is configured
@@ -66,18 +97,19 @@ export const useChatbot = () => {
 
     const handleLogin = () => {
         if (JSModule?.openid?.authorization_endpoint && chatId) {
-            const redirectUri = `${window.location.origin}/?chat-id=${chatId}`;
+            const redirectUri = buildRedirectUri(chatId as string);
             const authUrl = `${JSModule.openid.authorization_endpoint}?` +
                 `client_id=${encodeURIComponent(JSModule.openid.client_id)}&` +
                 `redirect_uri=${encodeURIComponent(redirectUri)}&` +
                 `response_type=code&` +
-                `scope=${encodeURIComponent(JSModule.openid.scopes_supported?.join(' ') || 'openid profile email')}`;
+                `scope=${encodeURIComponent(JSModule.openid.scopes_supported?.join(' ') || 'openid profile email')}&` +
+                `prompt=select_account`;
             window.location.href = authUrl;
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('access_token');
+    const handleLogout = async () => {
+        await fetch(AUTH_SESSION_URL, { method: 'DELETE' });
         setIsLoggedIn(false);
         if (JSModule?.handleHeaderPane) {
             JSModule.handleHeaderPane('logout');
@@ -215,49 +247,55 @@ export const useChatbot = () => {
         if (JSModule) {
             window.handleLeftPanel = JSModule?.handleLeftPanel;
             window.handleHeaderPane = JSModule?.handleHeaderPane;
+            window.handleLogout = handleLogout;
         }
     }, [JSModule]);
 
     useEffect(() => {
-        let access_token = localStorage.getItem('access_token');
-        if (access_token && JSModule?.handleHeaderPane) {
+        if (isLoggedIn && JSModule?.handleHeaderPane) {
             JSModule?.handleHeaderPane('login');
         }
-    }, [JSModule?.handleHeaderPane]);
+    }, [JSModule?.handleHeaderPane, isLoggedIn]);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         const fetchToken = async () => {
+            if (oauthError) {
+                setAuthError('Authentication was cancelled or interrupted. No account was created.');
+                return;
+            }
+
             if (openidCode && JSModule?.openid) {
                 try {
-                    const response = await fetch(JSModule.openid.token_endpoint, {
+                    // Must exactly match the redirect URI used in handleLogin
+                    const redirectUri = buildRedirectUri(chatId as string);
+                    const response = await fetch(AUTH_SESSION_URL, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: new URLSearchParams({
-                            grant_type: 'authorization_code',
-                            client_id: JSModule.openid.client_id,
-                            code: openidCode as string,
-                            redirect_uri: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}?chat-id=${chatId}`,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            code: openidCode,
+                            tokenEndpoint: JSModule?.openid?.token_endpoint,
+                            clientId: JSModule?.openid?.client_id,
+                            redirectUri,
                         }),
+                        signal: controller.signal,
                     });
 
                     if (response.ok) {
-                        const data = await response.json();
-                        const { access_token } = data;
-
-                        localStorage.setItem('access_token', access_token);
                         window.location.href = `/?chat-id=${chatId}`;
                     } else {
-                        console.error('Token request failed:', response.statusText);
+                        setAuthError('We couldn\'t sign you in. Please try again.');
                     }
-                } catch (error) {
-                    console.error('Error fetching token:', error);
+                } catch (err) {
+                    if ((err as Error).name === 'AbortError') return;
+                    setAuthError('Something went wrong while trying to sign in. Please try again.');
                 }
             }
         };
 
         fetchToken();
+        return () => controller.abort();
     }, [openidCode, JSModule?.openid]);
 
     async function nextStep() {
@@ -329,7 +367,7 @@ export const useChatbot = () => {
                 let access_token = localStorage.getItem('access_token');
                 const conversation_id = localStorage.getItem('conversation_id')
                 const response = await fetch(
-                    `/api/chat?pinecone_name_space=${newChatRoom}`,
+                    `/api/chat?chatBotId=${newChatRoom}`,
                     {
                         method: 'POST',
                         headers: {
@@ -347,6 +385,15 @@ export const useChatbot = () => {
                         })
                     },
                 );
+                if (response.status === 401) {
+                    fetch(AUTH_SESSION_URL, { method: 'DELETE' });
+                    setIsLoggedIn(false);
+                    setLoading(false);
+                    return;
+                }
+                if (!response.ok) {
+                    throw new Error(`Chat request failed: ${response.status}`);
+                }
                 const data = await response.json();
                 console.log("data", data)
 
@@ -539,7 +586,7 @@ export const useChatbot = () => {
                 removeAuthTokenFromURL()
             } catch (error) {
                 setLoading(false);
-                console.log('error', error);
+                console.error('Chat request failed:', error);
             }
         }
     };
@@ -577,9 +624,6 @@ export const useChatbot = () => {
                 body: formData,
             })
                 .then((response) => response.json())
-                .then((data) => {
-                    console.log('File uploaded successfully:', data);
-                })
                 .catch((error) => {
                     console.error('Error uploading file:', error);
                 });
@@ -594,7 +638,7 @@ export const useChatbot = () => {
         }
     };
 
-    // Function to check and disableUserInput
+    // Function to checkSession and disableUserInput
     // const disableUserInput = () => {
     //     if (messages.length > 0 && messages[messages.length - 1]?.step) {
     //     let message = messages[messages.length - 1];
@@ -670,8 +714,11 @@ export const useChatbot = () => {
         references, 
         setReferences,
         isLoggedIn,
+        isCheckingSession,
         hasOpenID,
         handleLogin,
-        handleLogout
+        handleLogout,
+        authError,
+        setAuthError
     };
 };

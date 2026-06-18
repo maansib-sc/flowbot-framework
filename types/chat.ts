@@ -35,3 +35,8 @@ export interface LiveChatbot {
   url: string;
 }
 export type ChatbotsResponse = AxiosResponse<{data: LiveChatbot[]}>;
+export interface SignInScreenProps {
+  JSModule: any;
+  onLogin: () => void;
+  error?: string | null;
+}

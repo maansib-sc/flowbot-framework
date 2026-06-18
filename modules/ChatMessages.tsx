@@ -12,9 +12,7 @@ import ReactMarkdown from "react-markdown";
 import { IReferences, Message } from '@/types/chat';
 import rehypeRaw from 'rehype-raw';
 import { DynamicComponent } from "@/components/DynamicComponent";
-import LoginIcon from '@/assets/svgs/LoginIcon';
 import { useRouter } from 'next/router';
-import { useChatbot } from "@/hooks/useChatbot";
 
 interface ChatMessageProps {
     chatId: string;
@@ -31,7 +29,6 @@ export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loa
 
     const { JSModule, styles } = useContext(ThemeContext);
     const router = useRouter();
-    const { isLoggedIn, hasOpenID, handleLogin } = useChatbot();
     const messageListRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -80,12 +77,6 @@ export const ChatMessages: React.FC<ChatMessageProps> = ({ chatId, messages, loa
                                         </div>
                                     ))}
                                 </div>
-                            )}
-                            {hasOpenID && !isLoggedIn && (
-                                <button className={styles?.['login-button']} onClick={handleLogin}>
-                                    <LoginIcon size={16} stroke="currentColor" />
-                                    Login to Continue
-                                </button>
                             )}
                         </div>
                     )}

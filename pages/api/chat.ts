@@ -16,14 +16,37 @@ import path from 'path';
 const { htmlToText } = require('html-to-text');
 
 export const config = { api: { bodyParser: { sizeLimit: '100mb' } } };
+
+const SESSION_COOKIE = 'chatbot_session';
+
+async function botRequiresAuth(chatBotId: string): Promise<boolean> {
+  const loadOpenId = async (id: string) => {
+    try {
+      const mod: any = await import(`@/configuration/${id}/webapp`);
+      return mod?.openid;
+    } catch {
+      return undefined;
+    }
+  };
+  const openid = (await loadOpenId(chatBotId)) ?? (await loadOpenId('default'));
+  return !!(openid?.authorization_endpoint && openid?.client_id);
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { question, history, enablegptfallback, session, graphIds, reqQuery, chainStatus=false, conversation_id } = req.body;
-  const { pinecone_name_space } = req.query;
-  const chatBotId = String(pinecone_name_space || 'default');
-  // console.log('question', question, session);
+  const {
+    question,
+    history,
+    enablegptfallback,
+    session,
+    graphIds, 
+    reqQuery,
+    chainStatus = false,
+    conversation_id,
+  } = req.body;
+  const chatBotId = String(req.query.chatBotId || 'default');
 
   await dbConnect();
 
@@ -32,6 +55,13 @@ export default async function handler(
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
+
+  // Enforce authentication for bots that have OpenID configured.
+  if ((await botRequiresAuth(chatBotId)) && !req.cookies[SESSION_COOKIE]) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+
   // OpenAI recommends replacing newlines with spaces for best results
   const sanitizedQuestion = question;
   // const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
@@ -39,8 +69,8 @@ export default async function handler(
   try {
     //create chain
     const chain = new makeChain(chatBotId);
-    if (chainStatus){
-      const response = await chain.run(question)
+    if (chainStatus) {
+      const response = await chain.run(question);
       return res.status(200).json(response);
     }
 
@@ -49,10 +79,14 @@ export default async function handler(
     if (!conversation_id) {
       user = await upsertUser(chatBotId, session);
     } else {
-      user = await UserModel.findById(conversation_id) as IUser;
+      user = (await UserModel.findById(conversation_id)) as IUser;
     }
 
-    const headers = req.headers;
+    const sessionToken = req.cookies[SESSION_COOKIE];
+    const headers = {
+      ...req.headers,
+      ...(sessionToken ? { authorization: `Bearer ${sessionToken}` } : {}),
+    };
 
     return new Promise((resolve, reject) => {
       import(`@/configuration/${chatBotId}/server`)
@@ -84,10 +118,14 @@ export default async function handler(
             res.status(200).json(response);
             resolve(response);
           } catch (error: any) {
+            const upstream = error?.status ?? error?.response?.status;
+            const status =
+              Number.isInteger(upstream) && upstream >= 400 && upstream <= 599
+                ? upstream
+                : 500;
             res
-              .status(500)
+              .status(status)
               .json({ error: error?.message || 'Something went wrong' });
-            console.log(error);
             resolve(error);
           }
         })

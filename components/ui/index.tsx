@@ -12,6 +12,7 @@ export { default as PasswordInput } from './Input/PasswordInput';
 export { default as TextInput } from './Input/TextInput';
 export { default as InstallationInfo } from './InstallationInfo/InstallationInfo';
 export { default as Invoice } from './Invoice/Invoice';
+export { default as ErrorAlert } from './ErrorAlert/ErrorAlert';
 export { default as Loader } from './Loader/Loader';
 export { default as LoginPasswordAsk } from './LoginPasswordAsk/LoginPasswordAsk';
 export { default as MultiSelectInput } from './MutiSelectInput/MultiSelectInput';
@@ -32,16 +33,3 @@ export { default as StripeComponent } from './StripeComponent/StripeComponent';
 export { default as Summary } from './Summary/Summary';
 export { default as Table } from './Table/Table';
 export { default as TimePicker } from './TimePicker/TimePicker';
-
-
-
-
-
-
-
-
-
-
-
-
-
