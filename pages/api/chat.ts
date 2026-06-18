@@ -41,12 +41,12 @@ export default async function handler(
     history,
     enablegptfallback,
     session,
-    graphIds, reqQuery,
+    graphIds, 
+    reqQuery,
     chainStatus = false,
     conversation_id,
   } = req.body;
-  const { pinecone_name_space } = req.query;
-  const chatBotId = String(pinecone_name_space || 'default');
+  const chatBotId = String(req.query.chatBotId || 'default');
 
   await dbConnect();
 
@@ -118,7 +118,11 @@ export default async function handler(
             res.status(200).json(response);
             resolve(response);
           } catch (error: any) {
-            const status = error?.status === 401 ? 401 : 500;
+            const upstream = error?.status ?? error?.response?.status;
+            const status =
+              Number.isInteger(upstream) && upstream >= 400 && upstream <= 599
+                ? upstream
+                : 500;
             res
               .status(status)
               .json({ error: error?.message || 'Something went wrong' });

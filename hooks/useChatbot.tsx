@@ -75,8 +75,8 @@ export const useChatbot = () => {
                     }
                 })
                 .catch((err) => {
-                    setIsLoggedIn(false);
                     if (!initialised) {
+                        setIsLoggedIn(false);
                         setIsCheckingSession(false);
                         initialised = true;
                     }
@@ -367,7 +367,7 @@ export const useChatbot = () => {
                 let access_token = localStorage.getItem('access_token');
                 const conversation_id = localStorage.getItem('conversation_id')
                 const response = await fetch(
-                    `/api/chat?pinecone_name_space=${newChatRoom}`,
+                    `/api/chat?chatBotId=${newChatRoom}`,
                     {
                         method: 'POST',
                         headers: {
