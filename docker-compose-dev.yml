@@ -26,7 +26,6 @@ services:
       options:
         max-size: "50m"
         max-file: "3"
-    command: [ "npm", "run", "dev" ]
     env_file:
       - .env
     volumes:
@@ -41,7 +40,7 @@ services:
       - docker_net
 
   mongodb:
-    image: mongo:latest
+    image: mongo:7
     container_name: mongodb
     logging:
       options:
