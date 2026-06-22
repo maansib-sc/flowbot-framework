@@ -12,6 +12,8 @@ const Loader: React.FC<LoaderProps> = ({ loader }) => {
   useEffect(() => {
     if (container.current) {
       import('lottie-web').then((lottie) => {
+        // destroying the existing loader
+        animationRef.current?.destroy();
         animationRef.current = lottie.default.loadAnimation({
           container: container.current!,
           renderer: 'svg',

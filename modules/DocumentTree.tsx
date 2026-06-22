@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, FC } from 'react';
-import { Node, Edge } from '@/types/documentTree';
+import { useEffect, useRef, useState } from 'react';
+import { Node, Edge, DocumentTreeData } from '@/types/documentTree';
 import * as d3 from 'd3';
 
-const DocumentTree: FC<any> = ({ data }: { data: any }) => {
+const DocumentTree = ({ data }: { data: DocumentTreeData }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [nodes, setNodes] = useState<Node[]>([]);
     const [links, setLinks] = useState<Edge[]>([]);
@@ -53,15 +53,6 @@ const DocumentTree: FC<any> = ({ data }: { data: any }) => {
 
         svg.call(zoom);
 
-        // Define a clipPath for circular images
-        svg.append('defs').selectAll('clipPath')
-            .data(nodes)
-            .enter()
-            .append('clipPath')
-            .attr('id', d => `clip-${d.id}`)
-            .append('circle')
-            .attr('r', nodeRadius);
-
         const simulation = d3.forceSimulation(nodes)
             .force('link', d3.forceLink(links).id((d: any) => d.id).distance(40))
             .force('charge', d3.forceManyBody().strength(-300))
@@ -81,7 +72,7 @@ const DocumentTree: FC<any> = ({ data }: { data: any }) => {
             .attr('font-size', '12px')
             .attr('fill', '#69b3a2')
             .attr('text-anchor', 'middle')
-            .text(d => d.relation);
+            .text(d => d.type);
 
         const node = graphGroup.append('g')
             .selectAll('g')
@@ -95,7 +86,7 @@ const DocumentTree: FC<any> = ({ data }: { data: any }) => {
         // add circle for all nodes
         node.append('circle')
             .attr('r', nodeRadius)
-            .attr('fill', d => d.img ? 'none' : '#69b3a2')
+            .attr('fill', '#69b3a2')
             .attr('stroke', '#69b3a2')
             .attr('stroke-width', 1);
 
@@ -108,12 +99,12 @@ const DocumentTree: FC<any> = ({ data }: { data: any }) => {
             .text(d => d.id);
 
         node
-            .on('mouseover', function (_, d) {
+            .on('mouseover', function () {
                 d3.select(this)
                     .select('text')
                     .style('display', 'block');
             })
-            .on('mouseout', function (_, d) {
+            .on('mouseout', function () {
                 d3.select(this)
                     .select('text')
                     .style('display', 'none');

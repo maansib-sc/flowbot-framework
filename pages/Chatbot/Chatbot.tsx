@@ -8,6 +8,7 @@ import { Loader } from '@/components/ui';
 import { SignInScreen } from './SignIn';
 import DocumentTree from '@/modules/DocumentTree';
 import { getDocumentTreeJSon } from '@/apiRequests/ttt';
+import { DocumentTreeData } from '@/types/documentTree';
 
 const Chatbot: React.FC = () => {
   const {
@@ -37,16 +38,23 @@ const Chatbot: React.FC = () => {
   // Left panel state for toggle
   const [leftPanelExpanded, setLeftPanelExpanded] = useState(true);
   const [activeTabName, setActiveTabName] = useState<string>('chat');
-  const [documentTreeJSon, setDocumentTreeJSon] = useState();
+  const [documentTreeLoading, setDocumentTreeLoading] = useState<boolean>(false);
+  const [documentTreeJSon, setDocumentTreeJSon] = useState<DocumentTreeData | null>(null);
 
   const switchTab = async (tabName: string, graphId: string ='') => {
     setActiveTabName(tabName)
 
     // if documentTree tab is being selected, then setting the graphId of selected document;
-    if (tabName === "documentTree") {
-      const response = await getDocumentTreeJSon(graphId)
-      setDocumentTreeJSon(response)
-    } 
+    if (tabName === 'documentTree') {
+      setDocumentTreeLoading(true);
+  
+      try {
+        const response = await getDocumentTreeJSon(graphId);
+        if (response) setDocumentTreeJSon(response);
+      } finally {
+        setDocumentTreeLoading(false);
+      }
+    }
   }
 
   // Set up window functions immediately (for headerPaneHtml onclick handlers)
@@ -166,8 +174,30 @@ const Chatbot: React.FC = () => {
                       ✕
                     </button>
                     {
-                      documentTreeJSon && (
-                        <DocumentTree data={documentTreeJSon} />
+                      documentTreeLoading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                          <div style={{ width: '150px', height: '150px' }}>
+                            <Loader loader="https://lottie.host/d1fd738a-f930-465e-b6ff-cf2412f791db/8r36ZWTWb2.json" />
+                          </div>
+                        </div>
+                      ) : (                
+                        documentTreeJSon?.nodes?.length ? (
+                          <DocumentTree data={documentTreeJSon} />
+                        ) : (
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              width: '100%',
+                              height: '100%',
+                              fontSize: '16px',
+                              color: '#666',
+                            }}
+                          >
+                            Document tree is not available at this moment.
+                          </div>
+                        )
                       )
                     }
                   </div>
