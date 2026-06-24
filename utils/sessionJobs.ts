@@ -1,6 +1,15 @@
 const GRAPH_KEY = 'graphIds';
 const JOB_KEY = 'jobIds';
 
+// Fired whenever the set of session graph ids changes, so same-tab consumers
+// (e.g. the namespace gate in useChatbot) can react to upload completion.
+export const GRAPH_IDS_CHANGED_EVENT = 'graphids-changed';
+
+const notifyGraphIdsChanged = () => {
+    if (typeof window === 'undefined') return;
+    window.dispatchEvent(new Event(GRAPH_IDS_CHANGED_EVENT));
+};
+
 // adding a new graphid to the session storage
 export const addGraphId = (graphId: string) => {
     if (typeof window === 'undefined') return;
@@ -10,6 +19,7 @@ export const addGraphId = (graphId: string) => {
     if (!graphIds.includes(graphId)) {
         graphIds.push(graphId);
         sessionStorage.setItem(GRAPH_KEY, JSON.stringify(graphIds));
+        notifyGraphIdsChanged();
     }
 };
 // fetching all stored graphids from the session storage
@@ -31,6 +41,7 @@ export const clearGraphIds = () => {
     if (typeof window === 'undefined') return;
 
     sessionStorage.removeItem(GRAPH_KEY);
+    notifyGraphIdsChanged();
 };
 
 

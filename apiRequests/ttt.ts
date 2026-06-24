@@ -43,3 +43,33 @@ export const cancelDocumentProcessing = async (jobId: string) => {
         return false;
     }
 }
+
+export const listPublicNamespaces = async () => {
+    try {
+        const response = await axiosTTTInstance.get(`/public/namespaces`);
+        return response?.data;
+    } catch (error: any) {
+        console.log(`something went wrong while listing public namespaces`, {
+            message: error?.message,
+            status: error?.response?.status,
+            responseData: error?.response?.data
+        });
+        return false;
+    }
+}
+
+export const listPublicNamespaceDocuments = async (namespace: string, limit = 50, offset = 0) => {
+    try {
+        const response = await axiosTTTInstance.get(`/public/namespaces/${encodeURIComponent(namespace)}/documents`, {
+            params: { limit, offset }
+        });
+        return response?.data;
+    } catch (error: any) {
+        console.log(`something went wrong while listing documents for namespace ${namespace}`, {
+            message: error?.message,
+            status: error?.response?.status,
+            responseData: error?.response?.data
+        });
+        return false;
+    }
+}

@@ -6,18 +6,16 @@ import UploadIcon from '@/assets/svgs/UploadIcon';
 import FileTextIcon from '@/assets/svgs/FileTextIcon';
 import Spinner from '@/components/ui/Spinner';
 import { ToastContainer } from 'react-toastify';
-import { SideDrawerProps, UploadDropZoneProps, UploadFileCardProps, UploadsSectionProps, TrainedDocumentsProps } from '@/types/sideDrawer';
-
-const formatBytes = (bytes: number) => {
-    if (!bytes) return '';
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${Math.round((bytes / Math.pow(1024, i)) * 10) / 10} ${sizes[i]}`;
-};
+import { SideDrawerProps, UploadDropZoneProps, UploadFileCardProps, UploadsSectionProps, TrainedDocumentsProps, DemoDocsSectionProps } from '@/types/sideDrawer';
+import { formatBytes } from '@/utils/formatBytes';
+import { FILE_TYPE_GLYPH, DEFAULT_FILE_GLYPH, fileTypeKey } from '@/utils/fileType';
+import { FileText, ChevronRight, Wand2, FolderOpen } from 'lucide-react';
 
 const UploadDropZone: React.FC<UploadDropZoneProps> = ({
     styles, dragOver, setDragOver, handleFileDrop, handleFileChange, fileInputRef
-}) => (
+}) => {
+    const { JSModule } = useContext(ThemeContext);
+    return (
     <div className={styles?.['UploadContainer']}>
         <label
             className={`${styles?.['dropZone']} ${dragOver ? styles?.['dropZoneActive'] : ''}`}
@@ -40,12 +38,12 @@ const UploadDropZone: React.FC<UploadDropZoneProps> = ({
             <div className={styles?.['dropZoneIcon']}>
                 <UploadIcon size={20} stroke="#3b82f6" />
             </div>
-            <div className={styles?.['dropZoneTitle']}>Drag and drop files here</div>
-            <div className={styles?.['dropZoneOr']}>or click to browse</div>
+            <div className={styles?.['dropZoneTitle']}>{JSModule?.uploadDropTitle ?? 'Upload or drag & drop'}</div>
             <div className={styles?.['dropZoneHint']}>PDF, DOCX, TXT (Max 50MB)</div>
         </label>
     </div>
-);
+    );
+};
 
 const UploadFileCard: React.FC<UploadFileCardProps> = ({
     styles, file, canCancel, cancelUpload, retryUpload, removeUpload
@@ -154,12 +152,23 @@ const UploadsSection: React.FC<UploadsSectionProps> = ({
 };
 
 const TrainedDocuments: React.FC<TrainedDocumentsProps> = ({ styles, documentList }) => {
+    const { JSModule } = useContext(ThemeContext);
+    const trainedDocs = documentList?.filter((d: any) => d.phase == "done") || [];
     return (
     <>
         <div className={styles?.['Divider']} />
         <div className={styles?.['UploaderHeader']}>Trained Documents</div>
         <div className={styles?.['DataContainer']}>
-            {documentList?.filter(d => d.phase == "done").map((document, index) => (
+            {trainedDocs.length === 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '28px 16px', border: '1px solid #f0f1f3', borderRadius: '12px', background: '#fcfcfd' }}>
+                    <div style={{ color: '#cbd5e1', marginBottom: '8px' }}>
+                        <FolderOpen size={40} strokeWidth={1.6} aria-hidden="true" />
+                    </div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#6b7280' }}>{JSModule?.trainedEmptyTitle ?? 'No documents yet'}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '2px' }}>{JSModule?.trainedEmptySubtitle ?? 'Upload a document to get started.'}</div>
+                </div>
+            )}
+            {trainedDocs.map((document, index) => (
                 <div key={index} className={styles?.['fileCard']}>
                     <div className={styles?.['fileCardTop']}>
                         <div className={styles?.['fileIcon']}>
@@ -180,7 +189,78 @@ const TrainedDocuments: React.FC<TrainedDocumentsProps> = ({ styles, documentLis
     );
 };
 
-export const SidePanel: React.FC<SideDrawerProps> = ({ open, setOpen }) => {
+// --- Demo (preloaded sample) documents — reuses the drawer's fileCard pattern ---
+const DemoFileIcon: React.FC<{ type: string }> = ({ type }) => {
+    const { color } = FILE_TYPE_GLYPH[type] || DEFAULT_FILE_GLYPH;
+    return <FileText size={26} color={color} strokeWidth={1.75} aria-hidden="true" />;
+};
+
+const DemoDocsSection: React.FC<DemoDocsSectionProps> = ({ styles, namespace }) => {
+    const { JSModule } = useContext(ThemeContext);
+    const themeColor: string = JSModule?.themeColor || '#3b82f6';
+    const tryText: string = JSModule?.demoTryButtonText ?? 'Try with a demo document';
+    const sectionLabel: string = JSModule?.demoSectionLabel ?? 'Demo documents';
+    const orText: string = JSModule?.demoOrText ?? 'or';
+
+    if (!namespace.demoActivated) {
+        return (
+            <div style={{ padding: '0 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16, color: '#9ca3af', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                    <span style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
+                    {orText}
+                    <span style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
+                </div>
+                <button
+                    type="button"
+                    onClick={namespace.activateDemo}
+                    style={{ width: '100%', marginTop: 12, padding: '12px 16px', borderRadius: 10, border: `1px solid ${themeColor}`, background: '#fff', color: themeColor, fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                >
+                    <Wand2 size={16} aria-hidden="true" />
+                    {tryText}
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <div className={styles?.['Divider']} />
+            <div className={styles?.['UploaderHeader']}>{sectionLabel}</div>
+            <div className={styles?.['DataContainer']}>
+                {namespace.publicDocs.map((doc) => {
+                    const type = fileTypeKey(doc);
+                    const active = doc.id === namespace.activeDocId;
+                    const select = () => namespace.setActiveDoc(doc.id);
+                    return (
+                        <div
+                            key={doc.id}
+                            className={styles?.['fileCard']}
+                            role="button"
+                            tabIndex={0}
+                            title={doc.description || undefined}
+                            onClick={select}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } }}
+                            style={{ cursor: 'pointer', borderColor: active ? themeColor : undefined, boxShadow: active ? `0 0 0 1px ${themeColor} inset` : undefined }}
+                        >
+                            <div className={styles?.['fileCardTop']}>
+                                <div className={styles?.['fileIcon']}>
+                                    <DemoFileIcon type={type} />
+                                </div>
+                                <div className={styles?.['fileMeta']}>
+                                    <div className={styles?.['fileName']}>{doc.title || 'Untitled document'}</div>
+                                    {doc.pageCount ? <div className={styles?.['fileSub']}>{doc.pageCount} pages</div> : null}
+                                </div>
+                                <ChevronRight size={18} color={active ? themeColor : '#9ca3af'} aria-hidden="true" style={{ flexShrink: 0 }} />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </>
+    );
+};
+
+export const SidePanel: React.FC<SideDrawerProps> = ({ open, setOpen, namespace }) => {
     const { JSModule, styles } = useContext(ThemeContext);
     const {
         documentList, setDocumentList, uploads, selectedFileType, setTrainingInProgress,
@@ -237,6 +317,11 @@ export const SidePanel: React.FC<SideDrawerProps> = ({ open, setOpen }) => {
                 handleFileChange={handleFileChange}
                 fileInputRef={fileInputRef}
             />
+
+            {/* Demo path —  hidden once the user has any private doc */}
+            {namespace?.mode === 'public' && namespace.publicDocs.length > 0 && uploads.length === 0 && documentList.length === 0 && (
+                <DemoDocsSection styles={styles} namespace={namespace} />
+            )}
 
             <UploadsSection
                 styles={styles}

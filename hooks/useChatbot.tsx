@@ -12,7 +12,11 @@ import type { Socket } from 'socket.io-client';
 import ThemeContext from '@/contexts/ThemeContext';
 import { generateRandomString } from '@/utils/generateRandomeString';
 import { getDocumentNameAndPageNumber } from '@/utils/extractDocumentNameAndPage';
-import { getGraphIds } from '@/utils/sessionJobs';
+import { getGraphIds, GRAPH_IDS_CHANGED_EVENT } from '@/utils/sessionJobs';
+import { listPublicNamespaces, listPublicNamespaceDocuments } from '@/apiRequests/ttt';
+import { NamespaceMode, PublicDocument, NamespaceState } from '@/types/namespace';
+// TODO(demo-seed): temporary frontend demo docs; remove once demo-library is seeded on the backend
+import { DEMO_FALLBACK_DOCS } from '@/data/demoFallbackDocs';
 
 declare const window: any;
 
@@ -57,6 +61,66 @@ export const useChatbot = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isCheckingSession, setIsCheckingSession] = useState(true);
     const [authError, setAuthError] = useState<string | null>(null);
+
+    // --- Public/private document namespace switch ---
+    const [graphIdsVersion, setGraphIdsVersion] = useState(0);
+    const [publicDocs, setPublicDocs] = useState<PublicDocument[]>([]);
+    const [activeDocId, setActiveDocId] = useState<string | null>(null);
+    const [demoActivated, setDemoActivated] = useState(false);
+
+    useEffect(() => {
+        const bump = () => setGraphIdsVersion((v) => v + 1);
+        window.addEventListener(GRAPH_IDS_CHANGED_EVENT, bump);
+        window.addEventListener('focus', bump);
+        return () => {
+            window.removeEventListener(GRAPH_IDS_CHANGED_EVENT, bump);
+            window.removeEventListener('focus', bump);
+        };
+    }, []);
+
+    const hasPrivateDocs = getGraphIds().length > 0;
+    const namespaceMode: NamespaceMode = hasPrivateDocs ? 'private' : 'public';
+
+    useEffect(() => {
+        if (hasPrivateDocs) return;
+        let cancelled = false;
+        (async () => {
+            // Discover the public (demo) namespace, then load its documents.
+            const namespaces = await listPublicNamespaces();
+            if (cancelled) return;
+            const namespace = Array.isArray(namespaces) && namespaces.length > 0 ? namespaces[0]?.namespace : null;
+            const fetched = namespace ? await listPublicNamespaceDocuments(namespace) : false;
+            if (cancelled) return;
+            // TODO(demo-seed): drop the DEMO_FALLBACK_DOCS fallback once the backend seeds the public namespace.
+            const docs = fetched && fetched.length > 0 ? fetched : DEMO_FALLBACK_DOCS;
+            setPublicDocs(docs);
+            setActiveDocId((prev) => prev ?? docs[0]?.id ?? null);
+        })();
+        return () => { cancelled = true; };
+    }, [hasPrivateDocs, graphIdsVersion]);
+
+    const activeDoc = publicDocs.find((d) => d.id === activeDocId) || null;
+    const resolveGraphIds = (): string[] =>
+        namespaceMode === 'public' && demoActivated && activeDoc?.result_graph_id
+            ? [activeDoc.result_graph_id]
+            : getGraphIds();
+
+
+    const activateDemo = () => {
+        setDemoActivated(true);
+        setActiveDocId((prev) => prev ?? publicDocs[0]?.id ?? null);
+    };
+
+    const namespace: NamespaceState = {
+        mode: namespaceMode,
+        hasPrivateDocs,
+        publicDocs,
+        activeDocId,
+        activeDoc,
+        setActiveDoc: setActiveDocId,
+        demoActivated,
+        activateDemo,
+    };
 
     const { JSModule, styles } = useContext(ThemeContext) || {};
 
@@ -363,7 +427,8 @@ export const useChatbot = () => {
             }
             setQuery('');
             try {
-                const graphIds = getGraphIds()
+                // private mode -> session graph ids; public mode -> active demo doc graph
+                const graphIds = resolveGraphIds()
                 let access_token = localStorage.getItem('access_token');
                 const conversation_id = localStorage.getItem('conversation_id')
                 const response = await fetch(
@@ -719,6 +784,7 @@ export const useChatbot = () => {
         handleLogin,
         handleLogout,
         authError,
-        setAuthError
+        setAuthError,
+        namespace,
     };
 };
