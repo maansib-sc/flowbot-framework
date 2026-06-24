@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useChatbot } from '@/hooks/useChatbot';
 import { ChatHeader } from '@/modules/ChatHeader';
 import { SidePanel } from '@/modules/SideDrawer';
@@ -41,18 +41,24 @@ const Chatbot: React.FC = () => {
   const [documentTreeLoading, setDocumentTreeLoading] = useState<boolean>(false);
   const [documentTreeJSon, setDocumentTreeJSon] = useState<DocumentTreeData | null>(null);
 
+  const latestRequestRef = useRef(0);
   const switchTab = async (tabName: string, graphId: string ='') => {
     setActiveTabName(tabName)
 
     // if documentTree tab is being selected, then setting the graphId of selected document;
     if (tabName === 'documentTree') {
+      const requestId = ++latestRequestRef.current;
       setDocumentTreeLoading(true);
   
       try {
         const response = await getDocumentTreeJSon(graphId);
-        if (response) setDocumentTreeJSon(response);
+        if (requestId === latestRequestRef.current && response) {
+          setDocumentTreeJSon(response);
+        }
       } finally {
-        setDocumentTreeLoading(false);
+        if (requestId === latestRequestRef.current) {
+          setDocumentTreeLoading(false);
+        }
       }
     }
   }
