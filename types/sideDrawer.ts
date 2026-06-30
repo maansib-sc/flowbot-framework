@@ -4,6 +4,7 @@ import { NamespaceState } from '@/types/namespace';
 export interface SideDrawerProps {
     open: boolean;
     setOpen: (val: boolean) => void;
+    switchTab: (tabName: string, graphId?: string) => Promise<void>;
     namespace?: NamespaceState;
 }
 
@@ -42,4 +43,5 @@ export interface UploadsSectionProps {
 export interface TrainedDocumentsProps {
     styles: any;
     documentList: any[];
+    switchTab: (tabName: string, graphId?: string) => Promise<void>;
 }

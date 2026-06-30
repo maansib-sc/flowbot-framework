@@ -6,6 +6,7 @@ import UploadIcon from '@/assets/svgs/UploadIcon';
 import FileTextIcon from '@/assets/svgs/FileTextIcon';
 import Spinner from '@/components/ui/Spinner';
 import { ToastContainer } from 'react-toastify';
+import { MoreVertical } from 'lucide-react';
 import { SideDrawerProps, UploadDropZoneProps, UploadFileCardProps, UploadsSectionProps, TrainedDocumentsProps, DemoDocsSectionProps } from '@/types/sideDrawer';
 import { formatBytes } from '@/utils/formatBytes';
 import { FILE_TYPE_GLYPH, DEFAULT_FILE_GLYPH, fileTypeKey } from '@/utils/fileType';
@@ -55,7 +56,7 @@ const UploadFileCard: React.FC<UploadFileCardProps> = ({
     const statusLabel = isDone ? 'Upload complete'
         : isError ? (file.error || 'Failed to upload')
         : isProcessing ? 'Processing...'
-        : isCancelling? 'Cancelling...'
+        : isCancelling ? 'Cancelling...'
         : 'Uploading...';
 
     return (
@@ -151,15 +152,17 @@ const UploadsSection: React.FC<UploadsSectionProps> = ({
     );
 };
 
-const TrainedDocuments: React.FC<TrainedDocumentsProps> = ({ styles, documentList }) => {
+const TrainedDocuments: React.FC<TrainedDocumentsProps> = ({ styles, documentList, switchTab }) => {
+    const [openMenu, setOpenMenu] = useState<number | null>(null);
+
     const { JSModule } = useContext(ThemeContext);
     const trainedDocs = documentList?.filter((d: any) => d.phase == "done") || [];
     return (
-    <>
-        <div className={styles?.['Divider']} />
-        <div className={styles?.['UploaderHeader']}>Trained Documents</div>
-        <div className={styles?.['DataContainer']}>
-            {trainedDocs.length === 0 && (
+        <>
+            <div className={styles?.['Divider']} />
+            <div className={styles?.['UploaderHeader']}>Trained Documents</div>
+            <div className={styles?.['DataContainer']}>
+                {trainedDocs.length === 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '28px 16px', border: '1px solid #f0f1f3', borderRadius: '12px', background: '#fcfcfd' }}>
                     <div style={{ color: '#cbd5e1', marginBottom: '8px' }}>
                         <FolderOpen size={40} strokeWidth={1.6} aria-hidden="true" />
@@ -169,23 +172,72 @@ const TrainedDocuments: React.FC<TrainedDocumentsProps> = ({ styles, documentLis
                 </div>
             )}
             {trainedDocs.map((document, index) => (
-                <div key={index} className={styles?.['fileCard']}>
-                    <div className={styles?.['fileCardTop']}>
-                        <div className={styles?.['fileIcon']}>
-                            <FileTextIcon size={22} stroke="#10b981" />
+                    <div key={index} className={styles?.['fileCard']}>
+                        <div className={styles?.['fileCardTop']}>
+                            <div className={styles?.['fileIcon']}>
+                                <FileTextIcon size={22} stroke="#10b981" />
+                            </div>
+                            <div className={styles?.['fileMeta']}>
+                                <div className={styles?.['fileName']}>{document?.name || document?.jobId}</div>
+                            </div>
+                            <span className={styles?.['fileDoneLabel']}>✓ Done</span>
+                            
+                            {/* More Button */}
+                            <div style={{ position: 'relative', marginLeft: '8px' }}>
+                                <button
+                                    onClick={() => setOpenMenu(openMenu === index ? null : index)}
+                                    style={{
+                                        border: 'none',
+                                        background: 'transparent',
+                                        cursor: 'pointer',
+                                        fontSize: '18px',
+                                    }}
+                                >
+                                    <MoreVertical size={18} />
+                                </button>
+
+                                {openMenu === index && (
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            right: 0,
+                                            top: '100%',
+                                            background: '#fff',
+                                            border: '1px solid #ddd',
+                                            borderRadius: '6px',
+                                            boxShadow:
+                                                '0 2px 8px rgba(0,0,0,0.1)',
+                                            zIndex: 100,
+                                            minWidth: '140px',
+                                        }}
+                                    >
+                                        <button
+                                            style={{
+                                                width: '100%',
+                                                padding: '8px 12px',
+                                                textAlign: 'left',
+                                                border: 'none',
+                                                background: 'transparent',
+                                                cursor: 'pointer',
+                                            }}
+                                            onClick={() => {
+                                                switchTab('documentTree', document?.graphId);
+                                                setOpenMenu(null);
+                                            }}
+                                        >
+                                            View Tree
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div className={styles?.['fileMeta']}>
-                            <div className={styles?.['fileName']}>{document?.name || document?.jobId}</div>
+                        <div className={styles?.['fileProgressBg']}>
+                            <div className={`${styles?.['fileProgressFill']} ${styles?.['fileProgressDone']}`} style={{ width: '100%' }} />
                         </div>
-                        <span className={styles?.['fileDoneLabel']}>✓ Done</span>
                     </div>
-                    <div className={styles?.['fileProgressBg']}>
-                        <div className={`${styles?.['fileProgressFill']} ${styles?.['fileProgressDone']}`} style={{ width: '100%' }} />
-                    </div>
-                </div>
-            ))}
-        </div>
-    </>
+                ))}
+            </div>
+        </>
     );
 };
 
@@ -260,7 +312,7 @@ const DemoDocsSection: React.FC<DemoDocsSectionProps> = ({ styles, namespace }) 
     );
 };
 
-export const SidePanel: React.FC<SideDrawerProps> = ({ open, setOpen, namespace }) => {
+export const SidePanel: React.FC<SideDrawerProps> = ({ open, setOpen, namespace, switchTab }) => {
     const { JSModule, styles } = useContext(ThemeContext);
     const {
         documentList, setDocumentList, uploads, selectedFileType, setTrainingInProgress,
@@ -332,7 +384,7 @@ export const SidePanel: React.FC<SideDrawerProps> = ({ open, setOpen, namespace 
                 removeUpload={removeUpload}
             />
 
-            <TrainedDocuments styles={styles} documentList={documentList} />
+            <TrainedDocuments switchTab={switchTab} styles={styles} documentList={documentList} />
             <ToastContainer />
         </div>
     );

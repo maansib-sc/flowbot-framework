@@ -196,3 +196,5 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     </div>
   );
 };
+
+export default SignInScreen;

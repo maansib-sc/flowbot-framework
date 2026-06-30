@@ -12,46 +12,40 @@ services:
         NEXT_PUBLIC_NEXTAUTH_URL: ${NEXT_PUBLIC_NEXTAUTH_URL}
         NEXT_PUBLIC_DEFAULT_CHAT_ID: ${NEXT_PUBLIC_DEFAULT_CHAT_ID}
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-    container_name: llm-chatbot
     restart: unless-stopped
+    env_file:
+      - .env
     logging:
       options:
         max-size: "50m"
         max-file: "3"
-    env_file:
-      - .env
     volumes:
       - ../configurations:/app/configuration
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.llm-chatbot.rule=Host(`${CHAT_HOST}`)"
-      - "traefik.http.routers.llm-chatbot.entrypoints=websecure"
-      - "traefik.http.routers.llm-chatbot.tls.certresolver=le"
-      - "traefik.http.services.llm-chatbot.loadbalancer.server.port=80"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${CHAT_HOST}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=le"
+      - "traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=80"
     networks:
-      - docker_net
+      - docker
 
   mongodb:
     image: mongo:7
-    container_name: mongodb
     logging:
       options:
         max-size: "50m"
         max-file: "3"
     restart: always
-    env_file:
-      - .env
-    ports:
-      - 27017:27017
     volumes:
       - mongodb-data:/data/db
     networks:
-      - docker_net
+      - docker
 
 volumes:
   mongodb-data:
 
 networks:
-  docker_net:
+  docker:
     external: true
-    name: docker_default
+    name: docker

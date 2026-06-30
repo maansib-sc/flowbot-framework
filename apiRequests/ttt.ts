@@ -18,7 +18,7 @@ export const uploadDocument = async (file: File) => {
 
 export const getJobProgress = async (jobId: string) => {
     try {
-        const response = await axiosTTTInstance.get(`/v1/jobs/${jobId}`);
+        const response = await axiosTTTInstance.get(`/v1/jobs/${encodeURIComponent(jobId)}`);
         return response?.data;
     } catch (error: any) {
         console.log(`Error fetching job progress for ${jobId}`, {
@@ -32,10 +32,28 @@ export const getJobProgress = async (jobId: string) => {
 
 export const cancelDocumentProcessing = async (jobId: string) => {
     try {
-        const response = await axiosTTTInstance.post(`/v1/jobs/${jobId}/cancel`);
+        const response = await axiosTTTInstance.post(`/v1/jobs/${encodeURIComponent(jobId)}/cancel`);
         return response?.data;
     } catch (error: any) {
         console.log(`Error in cancelling the document processing with jobid: ${jobId}`, {
+            message: error?.message,
+            status: error?.response?.status,
+            responseData: error?.response?.data
+        });
+        return false;
+    }
+}
+
+export const getDocumentTreeJSon = async (graphId: string) => {
+    try {
+        const response = await axiosTTTInstance.get('/v1/tree/json', {
+            params: {
+                graph_id: graphId,
+            },
+        });
+        return response?.data;
+    } catch (error: any) {
+        console.log(`Error in fetching document tree json with graphId: ${graphId}`, {
             message: error?.message,
             status: error?.response?.status,
             responseData: error?.response?.data

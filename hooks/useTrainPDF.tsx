@@ -40,6 +40,7 @@ const pollProgress = async (
 
                     return {
                         ...f,
+                        graphId: response?.result_graph_id,
                         phase: currentState == "FAILED"? "error": "done",
                         progress: progressPercentage
                     };
