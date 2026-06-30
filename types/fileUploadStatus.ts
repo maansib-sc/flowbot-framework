@@ -9,6 +9,7 @@ export type FileUploadStatus = {
     jobId?: string;
     graphId?: string;
     error?: string;
+    stage?: string;
 };
 
 export type ActiveJob = {

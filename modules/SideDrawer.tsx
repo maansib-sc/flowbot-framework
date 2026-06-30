@@ -57,7 +57,7 @@ const UploadFileCard: React.FC<UploadFileCardProps> = ({
     const isCancelling = file.phase === 'cancelling'
     const statusLabel = isDone ? 'Upload complete'
         : isError ? (file.error || 'Failed to upload')
-        : isProcessing ? 'Processing...'
+        : isProcessing ? (file.stage || 'Processing...')
         : isCancelling ? 'Cancelling...'
         : 'Uploading...';
 
@@ -119,7 +119,7 @@ const UploadFileCard: React.FC<UploadFileCardProps> = ({
                     : styles?.['fileStatusUploading']
                 }`}>
                     {!isDone && <Spinner size={12} />}
-                    {statusLabel}
+                    {statusLabel.toUpperCase()}
                 </div>
             )}
 

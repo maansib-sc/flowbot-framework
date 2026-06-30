@@ -15,7 +15,7 @@ export function usePolling<T>({ fn, interval = 400, shouldStop, onComplete, enab
 
     const stop = useCallback(() => {
         if (timerRef.current) {
-            clearInterval(timerRef.current);
+            clearTimeout(timerRef.current);
             timerRef.current = null;
         }
         setIsPolling(false);
@@ -25,15 +25,19 @@ export function usePolling<T>({ fn, interval = 400, shouldStop, onComplete, enab
         if (timerRef.current) return;
         setIsPolling(true);
 
-        timerRef.current = setInterval(async () => {
+        // self-scheduling: wait for each poll to finish before queuing the next,
+        const tick = async () => {
             const result = await fnRef.current();
             setData(result);
 
             if (shouldStopRef.current?.(result)) {
                 stop();
                 onCompleteRef.current?.(result);
+                return;
             }
-        }, interval);
+            timerRef.current = setTimeout(tick, interval);
+        };
+        timerRef.current = setTimeout(tick, interval);
     }, [interval, stop]);
 
     useEffect(() => {

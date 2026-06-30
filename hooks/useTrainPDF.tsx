@@ -19,7 +19,7 @@ const pollProgress = async (
 
             try {
                 const response = await getJobProgress(f?.jobId);
-                const progressPercentage = response?.percent || f.progress || 0;
+                const progressPercentage = response?.progress ?? f.progress ?? 0;
 
                 const currentState = response?.state
                 if (currentState == "CANCELLED") {
@@ -42,16 +42,20 @@ const pollProgress = async (
                         ...f,
                         graphId: response?.result_graph_id,
                         phase: currentState == "FAILED"? "error": "done",
-                        progress: progressPercentage
+                        progress: progressPercentage,
+                        // surface the backend's real failure reason instead of a generic message
+                        error: currentState == "FAILED"
+                            ? [response?.error_message, response?.error_code && `(${response.error_code})`].filter(Boolean).join(' ') || undefined
+                            : f.error
                     };
                 }
 
-                // if the current state is not of failed or completed, 
-                // not changing the phase, updating the progress percentage only;
+                // still in progress: update percentage and surface the backend stage label
                 return {
                     ...f,
                     phase: currentState === "CANCELLING"? "cancelling": "processing",
-                    progress: progressPercentage
+                    progress: progressPercentage,
+                    stage: response?.stage
                 };
             } catch (error: any) {
                 console.error(`something went wrong in polling progress`, {
