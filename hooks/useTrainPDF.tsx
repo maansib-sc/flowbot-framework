@@ -42,11 +42,7 @@ const pollProgress = async (
                         ...f,
                         graphId: response?.result_graph_id,
                         phase: currentState == "FAILED"? "error": "done",
-                        progress: progressPercentage,
-                        // surface the backend's real failure reason instead of a generic message
-                        error: currentState == "FAILED"
-                            ? [response?.error_message, response?.error_code && `(${response.error_code})`].filter(Boolean).join(' ') || undefined
-                            : f.error
+                        progress: progressPercentage
                     };
                 }
 
